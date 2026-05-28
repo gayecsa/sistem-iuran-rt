@@ -81,8 +81,8 @@ class WargaController extends Controller
             'gender' => 'required|in:Laki-laki,Perempuan',
             'phone' => 'required|string',
             'address' => 'required|string',
-            'status_rumah' => 'required|in:Milik Sendiri,Kontrak/Sewa,milik_sendiri,kontrak,sewa',
-        ]);
+// Pastikan di WargaController.php bagian store:
+'status_rumah' => 'required|in:milik_sendiri,kontrak,sewa',        ]);
 
         $warga->update($request->only([
             'name', 'no_kk', 'nik', 'gender', 'phone', 'address', 'status_rumah'

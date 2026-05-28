@@ -81,7 +81,7 @@ Route::middleware('auth')->group(function () {
 
     // Jalur Kas RT tambahan
     Route::post('/kas-rt/store', [KasController::class, 'store'])->name('kas-rt.store');
-    Route::get('/kas-rt', [KasController::class, 'sindex'])->name('kas-rt.index');
+    Route::get('/kas-rt', [KasController::class, 'index'])->name('kas-rt.index');
 
     // Route untuk mengambil data NIK & Alamat secara real-time berdasarkan nama
     Route::get('/get-warga-by-nama', [KasController::class, 'getWargaByNama'])->name('warga.get-by-nama');
