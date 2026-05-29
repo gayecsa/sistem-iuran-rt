@@ -195,7 +195,7 @@
         <div class="container">
             <a class="navbar-brand fw-bold" href="{{ route('dashboard') }}">
                 <i class="fas fa-hand-holding-usd me-2"></i>
-                Sistem Iuran RT 001
+                La Caisse
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
