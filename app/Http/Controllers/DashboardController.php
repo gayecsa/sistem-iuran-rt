@@ -22,11 +22,15 @@ class DashboardController extends Controller
         // DATA GLOBAL (Untuk semua role)
         // ======================================================================
         
-        $data['total_warga'] = User::where('role', 'warga')->count(); 
+        // Buat Base Query: Hanya ambil user yang role-nya 'warga'
+        $baseWargaQuery = User::where('role', 'warga');
         
-        // Hitung Gender untuk Grafik
-        $data['total_laki'] = User::where('role', 'warga')->where('gender', 'Laki-laki')->count();
-        $data['total_perempuan'] = User::where('role', 'warga')->where('gender', 'Perempuan')->count();
+        // Hitung total warga dari base query
+        $data['total_warga'] = (clone $baseWargaQuery)->count(); 
+        
+        // Hitung Gender untuk Grafik dari base query yang sama
+        $data['total_laki'] = (clone $baseWargaQuery)->where('gender', 'Laki-laki')->count();
+        $data['total_perempuan'] = (clone $baseWargaQuery)->where('gender', 'Perempuan')->count();
         
         // Perhitungan Kas RT
         $data['total_pemasukan'] = KasRt::sum('pemasukan');
