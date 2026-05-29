@@ -7,7 +7,7 @@
             <div class="card-header bg-transparent text-center pt-4">
                 <i class="fas fa-hand-holding-usd fa-4x text-primary mb-3"></i>
                 <h3 class="fw-bold">Login</h3>
-                <p class="text-muted">Sistem Iuran RT 001</p>
+                <p class="text-muted">La Caisse</p>
             </div>
             <div class="card-body p-4">
 
