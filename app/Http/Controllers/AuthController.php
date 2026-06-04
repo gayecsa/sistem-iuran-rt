@@ -9,8 +9,21 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+    public function showCover()
+    {
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
+
+        return view('cover');
+    }
+
     public function showLogin()
     {
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
+
         return view('auth.login');
     }
     
