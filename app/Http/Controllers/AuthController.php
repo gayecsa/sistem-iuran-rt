@@ -4,7 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Str;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -73,6 +75,8 @@ class AuthController extends Controller
             'house_number' => 'required|string|max:10',
             'phone' => 'required|string|max:15',
             'address' => 'required|string',
+            'nik' => 'nullable|string|max:20|unique:users,nik',
+            'no_kk' => 'nullable|string|max:20|unique:users,no_kk',
         ]);
         
         if ($validator->fails()) {
@@ -89,6 +93,8 @@ class AuthController extends Controller
             'phone' => $request->phone,
             'address' => $request->address,
             'status_rumah' => $request->status_rumah ?? 'milik_sendiri',
+            'nik' => $request->nik,
+            'no_kk' => $request->no_kk,
         ]);
         
         Auth::login($user);
@@ -113,6 +119,8 @@ class AuthController extends Controller
             'address' => 'nullable|string',
             'status_rumah' => 'nullable|string|max:50',
             'profile_photo' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+            'nik' => 'nullable|string|max:20|unique:users,nik,' . $user->id,
+            'no_kk' => 'nullable|string|max:20|unique:users,no_kk,' . $user->id,
         ]);
 
         if ($validator->fails()) {
@@ -126,6 +134,8 @@ class AuthController extends Controller
             'phone' => $request->phone,
             'address' => $request->address,
             'status_rumah' => $request->status_rumah,
+            'nik' => $request->nik,
+            'no_kk' => $request->no_kk,
         ];
 
         if ($request->hasFile('profile_photo')) {
