@@ -55,6 +55,22 @@
                         <option value="sewa" {{ old('status_rumah', $warga->status_rumah) == 'sewa' ? 'selected' : '' }}>Sewa</option>
                     </select>
                 </div>
+                <div class="col-md-6">
+                    <label class="form-label">NIK</label>
+                    <input type="text" name="nik" value="{{ old('nik', $warga->nik) }}" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">No. KK</label>
+                    <input type="text" name="no_kk" value="{{ old('no_kk', $warga->no_kk) }}" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Gender</label>
+                    <select name="gender" class="form-select">
+                        <option value="">-- Pilih Gender --</option>
+                        <option value="Laki-laki" {{ old('gender', $warga->gender) == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                        <option value="Perempuan" {{ old('gender', $warga->gender) == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                    </select>
+                </div>
                 <div class="col-12">
                     <label class="form-label">Alamat</label>
                     <textarea name="address" rows="3" class="form-control" required>{{ old('address', $warga->address) }}</textarea>
