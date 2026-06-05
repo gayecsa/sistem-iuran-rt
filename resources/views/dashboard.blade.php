@@ -43,26 +43,6 @@
                     </div>
                 </div>
 
-                <div class="card p-3 mb-3">
-                    <h6 class="mb-3">Aksi Cepat</h6>
-                    <div class="list-group sideboard-nav">
-                        <a href="{{ route('laporan.keuangan') }}" class="list-group-item list-group-item-action {{ request()->routeIs('laporan.keuangan') ? 'active' : '' }}">
-                            <i class="fas fa-file-invoice-dollar me-2"></i>
-                            Laporan Keuangan
-                        </a>
-                        @if(in_array(auth()->user()->role, ['admin', 'bendahara']))
-                            <a href="{{ route('warga.index') }}" class="list-group-item list-group-item-action {{ request()->routeIs('warga.*') ? 'active' : '' }}">
-                                <i class="fas fa-users me-2"></i>
-                                Data Warga
-                            </a>
-                        @endif
-                        <a href="{{ route('keuangan.detail') }}" class="list-group-item list-group-item-action {{ request()->routeIs('keuangan.detail') ? 'active' : '' }}">
-                            <i class="fas fa-balance-scale me-2"></i>
-                            Saldo Iuran
-                        </a>
-                    </div>
-                </div>
-
                 <div class="card p-3">
                     <h6 class="mb-3">Ringkasan</h6>
                     <div class="d-flex justify-content-between align-items-center mb-3">
