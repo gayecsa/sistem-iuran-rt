@@ -48,7 +48,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:admin,bendahara')->group(function () {
         Route::resource('warga', WargaController::class);
         Route::patch('/warga/{warga}/toggle-active', [WargaController::class, 'toggleActive'])->name('warga.toggleActive');
-        Route::resource('kas', KasController::class);
+        Route::resource('kas-rt', KasController::class);
         Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
         Route::get('/laporan/keuangan', [LaporanController::class, 'laporanKeuangan'])->name('laporan.keuangan');
         Route::get('/laporan/perwarga', [LaporanController::class, 'laporanPerWarga'])->name('laporan.perwarga');
