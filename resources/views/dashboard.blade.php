@@ -120,16 +120,15 @@
                     <div class="card chart-card p-4 animate__animated animate__fadeInUp">
                         <div class="d-flex align-items-center justify-content-between mb-4">
                             <div>
-                                <h6 class="mb-1">Grafik Kas Bulanan</h6>
-                                <small class="text-muted">Ringkasan pemasukan dan pengeluaran per bulan</small>
+                                <h6 class="mb-1">Komposisi Gender Warga</h6>
+                                <small class="text-muted">Perbandingan jumlah warga Laki-laki dan Perempuan</small>
                             </div>
-                            <span class="badge bg-white text-secondary py-2 px-3 shadow-sm">Rp {{ number_format($saldo_kas ?? 0, 0, ',', '.') }}</span>
+                            <div class="icon-circle shadow-sm" style="background: #f8fafc; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                                <i class="fas fa-venus-mars text-primary"></i>
+                            </div>
                         </div>
-                        <div class="border rounded-4 p-4" style="height: 260px; background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(235, 241, 255, 0.9));">
-                            <div class="h-100 d-flex align-items-center justify-content-center text-muted">
-                                <i class="fas fa-chart-line fa-2x me-3"></i>
-                                <span>Grafik akan tampil di sini</span>
-                            </div>
+                        <div style="height: 260px; display: flex; align-items: center; justify-content: center;">
+                            <canvas id="genderChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -177,4 +176,69 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Data dari controller
+    const totalLaki = {{ $total_laki ?? 0 }};
+    const totalPerempuan = {{ $total_perempuan ?? 0 }};
+    const total = totalLaki + totalPerempuan;
+
+    // Hitung persentase
+    const persenLaki = total > 0 ? ((totalLaki / total) * 100).toFixed(1) : 0;
+    const persenPerempuan = total > 0 ? ((totalPerempuan / total) * 100).toFixed(1) : 0;
+
+    const ctx = document.getElementById('genderChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: [
+                    'Laki-laki (' + totalLaki + ')',
+                    'Perempuan (' + totalPerempuan + ')'
+                ],
+                datasets: [{
+                    data: [totalLaki, totalPerempuan],
+                    backgroundColor: [
+                        '#3b82f6', // Blue for Laki-laki
+                        '#ec4899'  // Pink for Perempuan
+                    ],
+                    borderColor: [
+                        '#1e40af',
+                        '#be185d'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            },
+                            padding: 15,
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.parsed || 0;
+                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                return label + ': ' + percentage + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
 @endsection
