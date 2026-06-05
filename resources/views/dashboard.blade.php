@@ -56,15 +56,7 @@
                                 Data Warga
                             </a>
                         @endif
-                        <a href="{{ route('pembayaran.index') }}" class="list-group-item list-group-item-action {{ request()->routeIs('pembayaran.*') ? 'active' : '' }}">
-                            <i class="fas fa-hand-holding-dollar me-2"></i>
-                            Total Pemasukan
-                        </a>
-                        <a href="{{ route('kas.index') }}" class="list-group-item list-group-item-action {{ request()->routeIs('kas.*') ? 'active' : '' }}">
-                            <i class="fas fa-wallet me-2"></i>
-                            Total Pengeluaran
-                        </a>
-                        <a href="{{ route('iuran.index') }}" class="list-group-item list-group-item-action {{ request()->routeIs('iuran.*') ? 'active' : '' }}">
+                        <a href="{{ route('keuangan.detail') }}" class="list-group-item list-group-item-action {{ request()->routeIs('keuangan.detail') ? 'active' : '' }}">
                             <i class="fas fa-balance-scale me-2"></i>
                             Saldo Iuran
                         </a>
@@ -107,16 +99,19 @@
                     </div>
                 </div>
 
-                @if(in_array(auth()->user()->role, ['admin', 'bendahara']))
-                    <div class="mt-4 mb-3">
+                <div class="mt-4 mb-3">
+                    @if(in_array(auth()->user()->role, ['admin', 'bendahara']))
                         <a href="{{ route('warga.index') }}" class="btn btn-outline-primary me-2">
                             <i class="fas fa-users me-2"></i>Data Warga
                         </a>
-                        <a href="{{ route('laporan.keuangan') }}" class="btn btn-outline-info">
-                            <i class="fas fa-file-invoice-dollar me-2"></i>Laporan Keuangan
-                        </a>
-                    </div>
-                @endif
+                    @endif
+                    <a href="{{ route('laporan.keuangan') }}" class="btn btn-outline-info me-2">
+                        <i class="fas fa-file-invoice-dollar me-2"></i>Laporan Keuangan
+                    </a>
+                    <a href="{{ route('keuangan.detail') }}" class="btn btn-outline-success">
+                        <i class="fas fa-balance-scale me-2"></i>Saldo Iuran
+                    </a>
+                </div>
 
                 <div class="row mt-4 gy-3">
                     <div class="col-sm-4">
