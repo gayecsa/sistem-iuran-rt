@@ -89,7 +89,7 @@
                         <i class="fas fa-file-invoice-dollar me-2"></i>Laporan Keuangan
                     </a>
                     <a href="{{ route('keuangan.detail') }}" class="btn btn-outline-success">
-                        <i class="fas fa-balance-scale me-2"></i>Saldo Iuran
+                        <i class="fas fa-balance-scale me-2"></i>Saldo Kas
                     </a>
                 </div>
 
