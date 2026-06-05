@@ -59,12 +59,15 @@
                         <i class="fas fa-sign-in-alt me-2"></i>Login
                     </button>
                 </form>
-                
+
+                <div class="mt-3 text-center">
+                    <a href="{{ route('password.request') }}" class="text-secondary small">Lupa Password?</a>
+                </div>
+
                 <div class="text-center mt-4">
                     <p class="mb-0">Belum punya akun? 
                         <a href="{{ route('register') }}" class="text-primary">Daftar Sekarang</a>
                     </p>
-                                        </small>
                 </div>
             </div>
         </div>

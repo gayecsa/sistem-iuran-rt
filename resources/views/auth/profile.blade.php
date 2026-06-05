@@ -61,6 +61,16 @@
                                 @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-md-6">
+                                <label class="form-label">NIK</label>
+                                <input type="text" name="nik" value="{{ old('nik', $user->nik) }}" class="form-control @error('nik') is-invalid @enderror">
+                                @error('nik')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">No. KK</label>
+                                <input type="text" name="no_kk" value="{{ old('no_kk', $user->no_kk) }}" class="form-control @error('no_kk') is-invalid @enderror">
+                                @error('no_kk')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="col-md-6">
                                 <label class="form-label">No. Rumah</label>
                                 <input type="text" name="house_number" value="{{ old('house_number', $user->house_number) }}" class="form-control @error('house_number') is-invalid @enderror">
                                 @error('house_number')<div class="invalid-feedback">{{ $message }}</div>@enderror

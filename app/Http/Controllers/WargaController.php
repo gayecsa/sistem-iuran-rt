@@ -15,7 +15,11 @@ class WargaController extends Controller
 
     public function index()
     {
-        $warga = User::where('role', 'warga')
+        $warga = User::withSum(['pembayaran as total_pemasukan' => function ($query) {
+                $query->where('status', 'lunas');
+            }], 'jumlah_bayar')
+            ->withSum('kasRt as total_pengeluaran', 'pengeluaran')
+            ->where('role', 'warga')
             ->orderBy('house_number')
             ->paginate(100);
 
@@ -37,12 +41,9 @@ class WargaController extends Controller
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6',
             'house_number' => 'required|string|unique:users',
-            'no_kk' => 'nullable|string|max:16',
-            'nik' => 'nullable|string|max:16',
-            'gender' => 'required|in:Laki-laki,Perempuan',
             'phone' => 'required|string',
             'address' => 'required|string',
-            'status_rumah' => 'required|in:Milik Sendiri,Kontrak/Sewa,milik_sendiri,kontrak,sewa', 
+            'status_rumah' => 'required|in:milik_sendiri,kontrak,sewa',
         ]);
 
         User::create([
@@ -52,9 +53,6 @@ class WargaController extends Controller
             'role' => 'warga',
             'rt_number' => '001',
             'house_number' => $request->house_number,
-            'no_kk' => $request->no_kk,
-            'nik' => $request->nik,
-            'gender' => $request->gender,
             'phone' => $request->phone,
             'address' => $request->address,
             'status_rumah' => $request->status_rumah,
@@ -76,17 +74,12 @@ class WargaController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'no_kk' => 'nullable|string|max:16',
-            'nik' => 'nullable|string|max:16',
-            'gender' => 'required|in:Laki-laki,Perempuan',
             'phone' => 'required|string',
             'address' => 'required|string',
-// Pastikan di WargaController.php bagian store:
-'status_rumah' => 'required|in:milik_sendiri,kontrak,sewa',        ]);
+            'status_rumah' => 'required|in:milik_sendiri,kontrak,sewa',
+        ]);
 
-        $warga->update($request->only([
-            'name', 'no_kk', 'nik', 'gender', 'phone', 'address', 'status_rumah'
-        ]));
+        $warga->update($request->only(['name', 'phone', 'address', 'status_rumah']));
 
         if ($request->filled('password')) {
             $warga->update(['password' => Hash::make($request->password)]);

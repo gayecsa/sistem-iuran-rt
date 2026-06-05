@@ -4,11 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>La Caisse</title>
+    <title>Sistem Iuran RT 001</title>
     
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animate.css -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
@@ -17,11 +21,10 @@
             --soft-blue: #c7e3ff;
             --deep-pink: #f5a6c5;
             --deep-blue: #7db7ff;
-            /* Mengubah opacity dasar agar efek kaca transparan muncul */
-            --surface: rgba(255, 255, 255, 0.45); 
-            --surface-strong: rgba(255, 255, 255, 0.7);
+            --surface: rgba(255, 255, 255, 0.92);
+            --surface-strong: rgba(255, 255, 255, 1);
             --text-strong: #27314a;
-            --shadow: 0 20px 50px rgba(46, 61, 94, 0.06);
+            --shadow: 0 25px 60px rgba(46, 61, 94, 0.12);
         }
         
         body {
@@ -32,26 +35,22 @@
         }
         
         .navbar {
-            background: rgba(255,255,255,0.85) !important;
+            background: rgba(255,255,255,0.96) !important;
             backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            box-shadow: 0 12px 30px rgba(45, 62, 88, 0.06);
+            box-shadow: 0 15px 35px rgba(45, 62, 88, 0.12);
         }
         
         .card {
-            border: 1px solid rgba(255, 255, 255, 0.5) !important;
+            border: none;
             border-radius: 22px;
             box-shadow: var(--shadow);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            /* Efek Glassmorphism halus */
-            background: rgba(255, 255, 255, 0.5) !important;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: var(--surface);
         }
         
         .card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 25px 60px rgba(46, 61, 94, 0.1);
+            box-shadow: 0 28px 70px rgba(46, 61, 94, 0.15);
         }
         
         .btn {
@@ -68,25 +67,20 @@
             min-height: calc(100vh - 110px);
         }
         
-        /* Merapikan gradasi transparan banner utama */
         .hero-banner {
-            background: linear-gradient(145deg, rgba(255, 255, 255, 0.65), rgba(255, 243, 252, 0.45)) !important;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(255, 243, 252, 0.9));
         }
         
-        /* Merapikan panel samping */
         .sideboard-panel {
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.65), rgba(251, 240, 252, 0.55)) !important;
-            border: 1px solid rgba(255,255,255,0.6) !important;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(251, 240, 252, 0.98));
+            border: 1px solid rgba(255,255,255,0.7);
         }
         
-        /* Mengembalikan warna kotak kecil (saldo, pemasukan, pengeluaran) agar putih semi-transparan tipis */
         .metric-card {
             border-radius: 20px;
-            background: rgba(255, 255, 255, 0.45) !important;
-            border: 1px solid rgba(255, 255, 255, 0.6) !important;
-            box-shadow: 0 8px 24px rgba(46, 61, 94, 0.04);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 230, 245, 0.95));
+            border: 1px solid rgba(255,255,255,0.8);
+            box-shadow: 0 12px 30px rgba(46, 61, 94, 0.08);
         }
         
         .metric-card strong {
@@ -117,8 +111,8 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            background: rgba(255, 255, 255, 0.85);
-            box-shadow: 0 12px 30px rgba(46, 61, 94, 0.05);
+            background: #ffffff;
+            box-shadow: 0 16px 40px rgba(46, 61, 94, 0.08);
             color: var(--deep-pink);
         }
 
@@ -139,21 +133,21 @@
         }
         
         .btn-soft {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.92);
             color: var(--text-strong);
-            border: 1px solid rgba(255,255,255,0.7);
+            border: 1px solid rgba(255,255,255,0.9);
         }
         
         .btn-soft:hover {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 1);
         }
         
         .sideboard-nav .nav-link {
             border-radius: 15px;
             margin-bottom: 12px;
             color: #4b4c6d;
-            background: rgba(255,255,255,0.7);
-            border: 1px solid rgba(255,255,255,0.6);
+            background: rgba(255,255,255,0.9);
+            border: 1px solid rgba(255,255,255,0.85);
         }
         
         .sideboard-nav .nav-link.active,
@@ -164,14 +158,14 @@
         
         .chart-card {
             min-height: 320px;
-            background: linear-gradient(145deg, rgba(255, 255, 255, 0.65), rgba(233, 240, 255, 0.55)) !important;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(233, 240, 255, 0.95));
         }
         
         .recent-list .list-group-item {
             border-radius: 18px;
-            border: 1px solid rgba(255,255,255,0.7);
+            border: 1px solid rgba(255,255,255,0.85);
             margin-bottom: 12px;
-            background: rgba(255,255,255,0.65);
+            background: rgba(255,255,255,0.92);
         }
         
         .recent-list .list-group-item:last-child {
@@ -179,14 +173,12 @@
         }
         
         .footer {
-            background: rgba(255,255,255,0.6);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.85);
             color: #4d5673;
             text-align: center;
             padding: 20px;
             margin-top: 40px;
-            border-top: 1px solid rgba(255,255,255,0.5);
+            border-top: 1px solid rgba(255,255,255,0.9);
         }
     </style>
 </head>
@@ -195,7 +187,7 @@
         <div class="container">
             <a class="navbar-brand fw-bold" href="{{ route('dashboard') }}">
                 <i class="fas fa-hand-holding-usd me-2"></i>
-                La Caisse
+                Sistem Iuran RT 001
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -274,9 +266,11 @@
         <div class="container">
             <p class="mb-0">&copy; 2024 Sistem Informasi Iuran RT 001. All rights reserved.</p>
         </div>
-    </footer>
+    </div>
     
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script>
