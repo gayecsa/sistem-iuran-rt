@@ -7,6 +7,7 @@ use App\Http\Controllers\IuranController;
 use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\WargaController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\KeuanganController;
 use App\Http\Controllers\KasController;
 
 // Guest routes
@@ -32,6 +33,9 @@ Route::middleware('auth')->group(function () {
     
     // Pindah ke sini: Agar semua warga yang login bisa upload & ganti foto profil
     Route::post('/profile/upload-foto', [DashboardController::class, 'uploadFoto'])->name('profile.upload-foto');
+
+    // Keuangan detail route
+    Route::get('/keuangan/detail', [KeuanganController::class, 'detail'])->name('keuangan.detail');
     
     // Iuran routes
     Route::resource('iuran', IuranController::class);
