@@ -139,39 +139,51 @@
                                 <h6 class="mb-1">Pengumuman</h6>
                                 <small class="text-muted">Info penting RT</small>
                             </div>
-                            <span class="badge bg-white text-secondary py-2 px-3 shadow-sm">Terbaru</span>
+                            <a href="{{ route('pengumuman.index') }}" class="badge bg-white text-secondary py-2 px-3 shadow-sm text-decoration-none">Terbaru</a>
                         </div>
                         <ul class="list-group recent-list list-group-flush">
-                            <li class="list-group-item">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div>
-                                        <h6 class="mb-1">Rapat Pengurus RT</h6>
-                                        <small class="text-muted">28 April 2024</small>
+                            @forelse($pengumuman ?? [] as $p)
+                                <li class="list-group-item pengumuman-item" style="cursor: pointer;" data-pengumuman-id="{{ $p->id }}">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">{{ $p->judul }}</h6>
+                                            <small class="text-muted">{{ \Carbon\Carbon::parse($p->tanggal_aktif)->format('d M Y') }}</small>
+                                        </div>
+                                        <span class="badge {{ $p->kategori == 'Penting' ? 'bg-pink' : ($p->kategori == 'Informasi' ? 'bg-info' : 'bg-success') }} text-white rounded-pill">{{ $p->kategori }}</span>
                                     </div>
-                                    <span class="badge bg-pink text-white rounded-pill">Penting</span>
-                                </div>
-                            </li>
-                            <li class="list-group-item">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div>
-                                        <h6 class="mb-1">Pembayaran Iuran Mei</h6>
-                                        <small class="text-muted">1 Mei 2024</small>
-                                    </div>
-                                    <span class="badge bg-info text-white rounded-pill">Informasi</span>
-                                </div>
-                            </li>
-                            <li class="list-group-item">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div>
-                                        <h6 class="mb-1">Kerja Bakti Lingkungan</h6>
-                                        <small class="text-muted">5 Mei 2024</small>
-                                    </div>
-                                    <span class="badge bg-success text-white rounded-pill">Selesai</span>
-                                </div>
-                            </li>
+                                </li>
+                            @empty
+                                <li class="list-group-item text-muted text-center py-3">Belum ada pengumuman</li>
+                            @endforelse
                         </ul>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Detail Pengumuman -->
+<div class="modal fade" id="pengumumanModal" tabindex="-1" aria-labelledby="pengumumanModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content rounded-5" style="border: none; box-shadow: 0 25px 60px rgba(46, 61, 94, 0.12);">
+            <div class="modal-header border-0 pb-0">
+                <div class="w-100">
+                    <h5 class="modal-title fw-bold" id="pengumumanModalLabel">-</h5>
+                    <small class="text-muted" id="pengumumanTanggal">-</small>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex gap-2 mb-3">
+                    <span class="badge" id="pengumumanKategori">-</span>
+                </div>
+                <div id="pengumumanIsi" class="text-muted lh-lg">
+                    -
+                </div>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>
@@ -239,6 +251,34 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Pengumuman item click handler
+    document.querySelectorAll('.pengumuman-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const pengumumanId = this.getAttribute('data-pengumuman-id');
+            fetch(`/pengumuman/${pengumumanId}/detail`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('pengumumanModalLabel').textContent = data.judul;
+                    document.getElementById('pengumumanTanggal').textContent = new Date(data.tanggal_aktif).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+                    document.getElementById('pengumumanIsi').innerHTML = data.isi || '<em>Tidak ada detail pengumuman</em>';
+                    
+                    const badgeEl = document.getElementById('pengumumanKategori');
+                    badgeEl.textContent = data.kategori;
+                    badgeEl.className = 'badge ' + 
+                        (data.kategori === 'Penting' ? 'bg-pink' : 
+                         data.kategori === 'Informasi' ? 'bg-info' : 
+                         'bg-success');
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('pengumumanModal'));
+                    modal.show();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Gagal memuat detail pengumuman');
+                });
+        });
+    });
 });
 </script>
 @endsection

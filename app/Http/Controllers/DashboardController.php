@@ -7,6 +7,7 @@ use App\Models\Iuran;
 use App\Models\Pembayaran;
 use App\Models\User;
 use App\Models\KasRt;
+use App\Models\Pengumuman;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -74,6 +75,12 @@ class DashboardController extends Controller
                 ->sum('jumlah_bayar');
             $data['tagihan_belum_bayar'] = $this->getTagihanBelumBayar($user->id);
         }
+        
+        // Data pengumuman terbaru
+        $data['pengumuman'] = Pengumuman::where('tanggal_aktif', '<=', Carbon::now())
+            ->orderBy('tanggal_aktif', 'desc')
+            ->limit(5)
+            ->get();
         
         $data['user'] = $user;
         return view('dashboard', $data);

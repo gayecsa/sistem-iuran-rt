@@ -5,7 +5,14 @@
     <div class="col-md-5">
         <div class="card animate__animated animate__fadeInUp">
             <div class="card-header bg-transparent text-center pt-4">
-                <i class="fas fa-hand-holding-usd fa-4x text-primary mb-3"></i>
+                <div class="brand-icon">
+                    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <circle cx="32" cy="32" r="28" fill="#7db7ff" opacity="0.16" />
+                        <path d="M23 24h18a6 6 0 0 1 6 6v4a6 6 0 0 1-6 6H23v-4h16a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2H23v-4Z" fill="none" stroke="#7db7ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M25 30c0-4 3-7 7-7h5c4 0 7 3 7 7s-3 7-7 7h-5c-4 0-7-3-7-7Z" fill="#7db7ff" opacity="0.4" />
+                        <path d="M28 33h8m-4-4v8" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </div>
                 <h3 class="fw-bold">Login</h3>
                 <p class="text-muted">La Caisse</p>
             </div>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Sistem Iuran RT 001</title>
+    <title>La Caisse</title>
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -116,6 +116,39 @@
             color: var(--deep-pink);
         }
 
+        .brand-logo {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(125, 183, 255, 0.16);
+            box-shadow: 0 10px 24px rgba(46, 61, 94, 0.08);
+        }
+
+        .brand-logo svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .brand-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(125, 183, 255, 0.16);
+            box-shadow: 0 18px 40px rgba(46, 61, 94, 0.08);
+        }
+
+        .brand-icon svg {
+            width: 40px;
+            height: 40px;
+        }
+
         .profile-avatar {
             width: 36px;
             height: 36px;
@@ -185,9 +218,16 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light fixed-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('dashboard') }}">
-                <i class="fas fa-hand-holding-usd me-2"></i>
-                Sistem Iuran RT 001
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="{{ route('dashboard') }}">
+                <span class="brand-logo me-2">
+                    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <circle cx="32" cy="32" r="28" fill="currentColor" opacity="0.12" />
+                        <path d="M23 24h18a6 6 0 0 1 6 6v4a6 6 0 0 1-6 6H23v-4h16a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2H23v-4Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M25 30c0-4 3-7 7-7h5c4 0 7 3 7 7s-3 7-7 7h-5c-4 0-7-3-7-7Z" fill="currentColor" opacity="0.4" />
+                        <path d="M28 33h8m-4-4v8" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </span>
+                La Caisse
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -264,7 +304,7 @@
     
     <div class="footer">
         <div class="container">
-            <p class="mb-0">&copy; 2024 Sistem Informasi Iuran RT 001. All rights reserved.</p>
+            <p class="mb-0">&copy; 2024 La Caisse. All rights reserved.</p>
         </div>
     </div>
     

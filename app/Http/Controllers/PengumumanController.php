@@ -14,4 +14,16 @@ class PengumumanController extends Controller
         
         return view('pengumuman.index', compact('semua_pengumuman'));
     }
+
+    public function show($id)
+    {
+        $pengumuman = Pengumuman::findOrFail($id);
+        return view('pengumuman.show', compact('pengumuman'));
+    }
+
+    public function detail($id)
+    {
+        $pengumuman = Pengumuman::findOrFail($id);
+        return response()->json($pengumuman);
+    }
 }

@@ -9,6 +9,7 @@ use App\Http\Controllers\WargaController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\KeuanganController;
 use App\Http\Controllers\KasController;
+use App\Http\Controllers\PengumumanController;
 
 // Guest routes
 Route::middleware('guest')->group(function () {
@@ -36,6 +37,11 @@ Route::middleware('auth')->group(function () {
 
     // Keuangan detail route
     Route::get('/keuangan/detail', [KeuanganController::class, 'detail'])->name('keuangan.detail');
+    
+    // Pengumuman routes
+    Route::get('/pengumuman', [PengumumanController::class, 'index'])->name('pengumuman.index');
+    Route::get('/pengumuman/{id}', [PengumumanController::class, 'show'])->name('pengumuman.show');
+    Route::get('/pengumuman/{id}/detail', [PengumumanController::class, 'detail'])->name('pengumuman.detail');
     
     // Iuran routes
     Route::resource('iuran', IuranController::class);

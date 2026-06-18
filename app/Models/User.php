@@ -6,13 +6,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use App\Models\KasRt;
 use App\Models\Pembayaran;
+use App\Models\KasRt;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'name',
         'email',
@@ -25,13 +30,26 @@ class User extends Authenticatable
         'status_rumah',
         'is_active',
         'profile_photo',
+        'nik',
+        'no_kk',
+        'gender',
     ];
 
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
     protected $casts = [
         'email_verified_at' => 'datetime',
         'is_active' => 'boolean',
@@ -44,21 +62,6 @@ class User extends Authenticatable
 
     public function kasRt()
     {
-        return $this->hasManyThrough(KasRt::class, Pembayaran::class, 'user_id', 'pembayaran_id');
-    }
-
-    public function isAdmin()
-    {
-        return $this->role === 'admin';
-    }
-
-    public function isBendahara()
-    {
-        return $this->role === 'bendahara';
-    }
-
-    public function isWarga()
-    {
-        return $this->role === 'warga';
+        return $this->hasMany(KasRt::class, 'dibuat_oleh', 'name');
     }
 }

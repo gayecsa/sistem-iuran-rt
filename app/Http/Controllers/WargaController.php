@@ -36,6 +36,9 @@ class WargaController extends Controller
     {
         $this->authorizeAdminOrBendahara();
 
+        // KODE DETEKTIF: Ini untuk mengecek apakah data dari form beneran masuk atau tidak
+        dd($request->all());
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
@@ -44,6 +47,9 @@ class WargaController extends Controller
             'phone' => 'required|string',
             'address' => 'required|string',
             'status_rumah' => 'required|in:milik_sendiri,kontrak,sewa',
+            'nik' => 'nullable|string|max:20|unique:users',
+            'no_kk' => 'nullable|string|max:20|unique:users',
+            'gender' => 'nullable|in:Laki-laki,Perempuan',
         ]);
 
         User::create([
@@ -56,6 +62,9 @@ class WargaController extends Controller
             'phone' => $request->phone,
             'address' => $request->address,
             'status_rumah' => $request->status_rumah,
+            'nik' => $request->nik,
+            'no_kk' => $request->no_kk,
+            'gender' => $request->gender,
         ]);
 
         return redirect()->route('warga.index')
@@ -77,9 +86,12 @@ class WargaController extends Controller
             'phone' => 'required|string',
             'address' => 'required|string',
             'status_rumah' => 'required|in:milik_sendiri,kontrak,sewa',
+            'nik' => 'nullable|string|max:20|unique:users,nik,' . $warga->id,
+            'no_kk' => 'nullable|string|max:20|unique:users,no_kk,' . $warga->id,
+            'gender' => 'nullable|in:Laki-laki,Perempuan',
         ]);
 
-        $warga->update($request->only(['name', 'phone', 'address', 'status_rumah']));
+        $warga->update($request->only(['name', 'phone', 'address', 'status_rumah', 'nik', 'no_kk', 'gender']));
 
         if ($request->filled('password')) {
             $warga->update(['password' => Hash::make($request->password)]);

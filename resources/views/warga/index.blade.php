@@ -58,8 +58,8 @@
                                 @endif
                             </td>
 
-                            <td class="font-monospace text-secondary">{{ $item->no_kk ?? '-' }}</td>
-                            <td class="font-monospace text-secondary">{{ $item->nik ?? '-' }}</td>
+                            <td class="font-monospace text-secondary" title="No. KK: {{ $item->no_kk }}">{{ $item->no_kk ?? '-' }}</td>
+                            <td class="font-monospace text-secondary" title="NIK: {{ $item->nik }}">{{ $item->nik ?? '-' }}</td>
                             <td>
                                 @if($item->gender === 'Laki-laki')
                                     <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Laki-laki</span>
