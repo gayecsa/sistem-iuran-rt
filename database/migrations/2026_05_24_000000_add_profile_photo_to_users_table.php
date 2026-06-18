@@ -6,17 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('profile_photo')->nullable()->after('remember_token');
+            // Menambahkan kolom foto_profil setelah kolom email
+            $table->string('foto_profil')->nullable()->after('email');
         });
     }
 
-    public function down()
+    public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('profile_photo');
+            $table->dropColumn('foto_profil');
         });
     }
 };
