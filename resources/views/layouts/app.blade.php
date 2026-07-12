@@ -204,6 +204,68 @@
         .recent-list .list-group-item:last-child {
             margin-bottom: 0;
         }
+
+        .service-card {
+            border: 1px solid rgba(255,255,255,0.85);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(237, 250, 242, 0.96));
+        }
+
+        .whatsapp-float {
+            position: fixed;
+            right: 1rem;
+            bottom: 1rem;
+            z-index: 1050;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 155px;
+            max-width: 260px;
+            background: #25d366;
+            color: #ffffff;
+            padding: 0.55rem 0.85rem;
+            border-radius: 999px;
+            box-shadow: 0 22px 45px rgba(37, 211, 102, 0.25);
+            text-decoration: none;
+            backdrop-filter: blur(10px);
+            transition: transform 0.2s ease;
+        }
+
+        .whatsapp-float:hover {
+            transform: translateY(-2px);
+        }
+
+        .whatsapp-float .whatsapp-dot {
+            width: 34px;
+            height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.18);
+            font-size: 1rem;
+        }
+
+        .whatsapp-float .whatsapp-text {
+            display: inline-block;
+            font-size: 0.82rem;
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        @media (max-width: 768px) {
+            .whatsapp-float {
+                right: 0.75rem;
+                bottom: 0.75rem;
+                min-width: 140px;
+                padding: 0.45rem 0.7rem;
+            }
+
+            .whatsapp-float .whatsapp-text {
+                display: none;
+            }
+        }
         
         .footer {
             background: rgba(255,255,255,0.85);

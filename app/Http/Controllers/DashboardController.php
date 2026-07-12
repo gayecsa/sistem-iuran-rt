@@ -82,6 +82,7 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
         
+        $data['admin_contact_phone'] = User::where('role', 'admin')->value('phone') ?? $user->phone ?? '081234567890';
         $data['user'] = $user;
         return view('dashboard', $data);
     }

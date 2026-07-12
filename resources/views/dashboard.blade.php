@@ -79,6 +79,45 @@
                     </div>
                 </div>
 
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="card service-card p-3 h-100 animate__animated animate__fadeInUp">
+                            <div class="d-flex align-items-start justify-content-between mb-3">
+                                <div>
+                                    <p class="text-uppercase text-secondary mb-2 small">Posyandu</p>
+                                    <h5 class="mb-1">Info Posyandu</h5>
+                                    <p class="text-muted mb-0">Jadwal layanan kesehatan keluarga dan balita.</p>
+                                </div>
+                                <div class="icon-circle shadow-sm" style="background:#d1fae5;color:#047857;">
+                                    <i class="fas fa-heartbeat"></i>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="badge bg-success">Sabtu, 08.00 WIB</span>
+                                <a href="#" class="small text-primary text-decoration-none">Lihat detail</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card service-card p-3 h-100 animate__animated animate__fadeInUp">
+                            <div class="d-flex align-items-start justify-content-between mb-3">
+                                <div>
+                                    <p class="text-uppercase text-secondary mb-2 small">Bank Sampah</p>
+                                    <h5 class="mb-1">Info Bank Sampah</h5>
+                                    <p class="text-muted mb-0">Kumpulkan sampah plastik & kertas, dapatkan manfaat.</p>
+                                </div>
+                                <div class="icon-circle shadow-sm" style="background:#e0f2fe;color:#0369a1;">
+                                    <i class="fas fa-recycle"></i>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="badge bg-info text-white">Buka setiap Rabu</span>
+                                <a href="#" class="small text-primary text-decoration-none">Lihat detail</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="mt-4 mb-3">
                     @if(in_array(auth()->user()->role, ['admin', 'bendahara']))
                         <a href="{{ route('warga.index') }}" class="btn btn-outline-primary me-2">
@@ -188,6 +227,17 @@
         </div>
     </div>
 </div>
+
+@php
+    $adminPhone = preg_replace('/^0/', '62', preg_replace('/\D/', '', $admin_contact_phone ?? '081234567890'));
+@endphp
+
+<a href="https://wa.me/{{ $adminPhone }}" target="_blank" rel="noopener noreferrer" class="whatsapp-float animate__animated animate__pulse animate__infinite animate__slow">
+    <span class="whatsapp-dot">
+        <i class="fab fa-whatsapp"></i>
+    </span>
+    <span class="whatsapp-text">Admin: {{ $admin_contact_phone }}</span>
+</a>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
