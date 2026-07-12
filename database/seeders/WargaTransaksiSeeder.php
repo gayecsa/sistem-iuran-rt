@@ -24,11 +24,10 @@ class WargaTransaksiSeeder extends Seeder
                     'email' => 'wargasampel' . $nomorUrut . '@gmail.com',
                     'password' => bcrypt('password123'),
                     'role' => 'warga',
-                    // TAMBAHAN DATA DUMMY YANG HILANG:
-                    'nik' => '327501' . str_pad($nomorUrut, 10, '0', STR_PAD_LEFT), // Generates 16 digit NIK
-                    'no_kk' => '327502' . str_pad($nomorUrut, 10, '0', STR_PAD_LEFT), // Generates 16 digit KK
-                    'jenis_kelamin' => $nomorUrut % 2 == 0 ? 'Laki-laki' : 'Perempuan', // Selang-seling (Sesuaikan dengan enum database-mu: L/P atau Laki-laki/Perempuan)
-                    'rt_number' => '001', // Disamakan dengan struktur UserSeeder kamu kemarin
+                    'nik' => '32750' . str_pad($nomorUrut, 11, '0', STR_PAD_LEFT),
+                    'no_kk' => '32751' . str_pad($nomorUrut, 11, '0', STR_PAD_LEFT),
+                    'gender' => $nomorUrut % 2 == 0 ? 'Laki-laki' : 'Perempuan',
+                    'rt_number' => '001',
                     'house_number' => str_pad($nomorUrut, 3, '0', STR_PAD_LEFT),
                     'phone' => '081234567' . str_pad($nomorUrut, 3, '0', STR_PAD_LEFT),
                     'address' => 'Jl. Gandaria No. ' . $nomorUrut,

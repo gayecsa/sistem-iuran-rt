@@ -139,4 +139,16 @@ class DashboardController extends Controller
 
         return back()->with('success', 'Foto profil berhasil diperbarui!');
     }
+
+    public function posyandu()
+    {
+        $user = Auth::user();
+        return view('posyandu', compact('user'));
+    }
+
+    public function bankSampah()
+    {
+        $user = Auth::user();
+        return view('bank-sampah', compact('user'));
+    }
 }

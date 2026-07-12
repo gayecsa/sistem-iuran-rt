@@ -42,6 +42,7 @@ class UserSeeder extends Seeder
 
         for ($i = 1; $i <= 100; $i++) {
             $houseNumber = str_pad($i + 2, 3, '0', STR_PAD_LEFT);
+            $gender = $i % 2 === 0 ? 'Laki-laki' : 'Perempuan';
             User::updateOrCreate([
                 'email' => "warga{$i}@rt001.com"
             ], [
@@ -53,6 +54,9 @@ class UserSeeder extends Seeder
                 'phone' => '08' . $faker->numerify('##########'),
                 'address' => $faker->streetAddress . ' RT 001',
                 'status_rumah' => $statusOptions[array_rand($statusOptions)],
+                'nik' => '32750' . str_pad($i, 11, '0', STR_PAD_LEFT),
+                'no_kk' => '32751' . str_pad($i, 11, '0', STR_PAD_LEFT),
+                'gender' => $gender,
             ]);
         }
     }

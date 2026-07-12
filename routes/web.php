@@ -42,6 +42,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/pengumuman', [PengumumanController::class, 'index'])->name('pengumuman.index');
     Route::get('/pengumuman/{id}', [PengumumanController::class, 'show'])->name('pengumuman.show');
     Route::get('/pengumuman/{id}/detail', [PengumumanController::class, 'detail'])->name('pengumuman.detail');
+
+    Route::get('/posyandu', [DashboardController::class, 'posyandu'])->name('posyandu');
+    Route::get('/bank-sampah', [DashboardController::class, 'bankSampah'])->name('bank.sampah');
     
     // Iuran routes
     Route::resource('iuran', IuranController::class);

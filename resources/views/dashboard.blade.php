@@ -94,7 +94,7 @@
                             </div>
                             <div class="d-flex align-items-center justify-content-between">
                                 <span class="badge bg-success">Sabtu, 08.00 WIB</span>
-                                <a href="#" class="small text-primary text-decoration-none">Lihat detail</a>
+                                <a href="{{ route('posyandu') }}" class="small text-primary text-decoration-none">Lihat detail</a>
                             </div>
                         </div>
                     </div>
@@ -112,7 +112,7 @@
                             </div>
                             <div class="d-flex align-items-center justify-content-between">
                                 <span class="badge bg-info text-white">Buka setiap Rabu</span>
-                                <a href="#" class="small text-primary text-decoration-none">Lihat detail</a>
+                                <a href="{{ route('bank.sampah') }}" class="small text-primary text-decoration-none">Lihat detail</a>
                             </div>
                         </div>
                     </div>
@@ -157,13 +157,29 @@
             <div class="row g-3 mt-3">
                 <div class="col-md-7">
                     <div class="card chart-card p-4 animate__animated animate__fadeInUp">
-                        <div class="d-flex align-items-center justify-content-between mb-4">
+                        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
                             <div>
                                 <h6 class="mb-1">Komposisi Gender Warga</h6>
                                 <small class="text-muted">Perbandingan jumlah warga Laki-laki dan Perempuan</small>
                             </div>
                             <div class="icon-circle shadow-sm" style="background: #f8fafc; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
                                 <i class="fas fa-venus-mars text-primary"></i>
+                            </div>
+                        </div>
+                        <div class="row gx-3 mb-4">
+                            <div class="col-sm-6">
+                                <div class="card metric-card p-3 h-100">
+                                    <span class="text-muted">Laki-laki</span>
+                                    <h5 class="mt-2 mb-1">{{ $total_laki ?? 0 }}</h5>
+                                    <small class="text-success">{{ $total_warga > 0 ? round(($total_laki / $total_warga) * 100, 1) : 0 }}%</small>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="card metric-card p-3 h-100">
+                                    <span class="text-muted">Perempuan</span>
+                                    <h5 class="mt-2 mb-1">{{ $total_perempuan ?? 0 }}</h5>
+                                    <small class="text-pink">{{ $total_warga > 0 ? round(($total_perempuan / $total_warga) * 100, 1) : 0 }}%</small>
+                                </div>
                             </div>
                         </div>
                         <div style="height: 260px; display: flex; align-items: center; justify-content: center;">
