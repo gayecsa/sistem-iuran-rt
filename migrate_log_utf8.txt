@@ -1,0 +1,57 @@
+﻿
+  Dropping all tables ................................................ 1s DONE
+
+   INFO  Preparing database.  
+
+  Creating migration table ..................................... 273.85ms DONE
+
+   INFO  Running migrations.  
+
+  0001_01_01_000000_create_users_table ............................... 2s DONE
+  0001_01_01_000001_create_cache_table ............................... 1s DONE
+  0001_01_01_000002_create_jobs_table ................................ 1s DONE
+  2026_04_16_193215_add_role_to_users_table .......................... 1s DONE
+  2026_04_16_193225_create_iuran_table ......................... 309.49ms DONE
+  2026_04_16_193236_create_pembayaran_table .......................... 2s DONE
+  2026_04_16_193246_create_kas_rt_table .............................. 1s DONE
+  2026_05_24_000000_add_profile_photo_to_users_table ........... 173.52ms DONE
+  2026_05_24_100000_add_is_active_to_users_table ............... 190.66ms DONE
+  2026_05_26_134409_create_wargas_table ........................ 496.28ms DONE
+  2026_05_26_160249_add_foto_profil_to_users_table ............... 0.30ms DONE
+  2026_05_27_091637_add_no_hp_and_bukti_pembayaran_to_kas_rt_table  768.26ms DONE
+  2026_05_28_083542_add_identity_columns_to_users_table ........ 945.42ms DONE
+  2026_05_28_105751_create_pengumuman_table .................... 221.07ms DONE
+  2026_06_12_000000_ensure_tanggal_aktif_in_pengumuman ......... 188.50ms DONE
+  2026_06_12_000001_recreate_pengumuman_table .................. 596.85ms DONE
+  2026_06_12_000002_fix_pengumuman_table_final ................. 537.32ms DONE
+  2026_07_12_000000_add_rw_number_to_users_table ............... 204.78ms DONE
+
+
+   INFO  Seeding database.  
+
+  Database\Seeders\UserSeeder ........................................ RUNNING  
+  Database\Seeders\UserSeeder ................................. 91,295 ms DONE  
+
+  Database\Seeders\WargaTransaksiSeeder .............................. RUNNING  
+
+   Illuminate\Database\QueryException 
+
+  SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iuran_rt001.kas_rt' doesn't exist (Connection: mysql, Host: 127.0.0.1, Port: 3306, Database: iuran_rt001, SQL: insert into `kas_rt` (`tanggal_transaksi`, `keterangan`, `kategori`, `pemasukan`, `pengeluaran`, `dibuat_oleh`, `updated_at`, `created_at`) values (2026-01-02, Kas Kasiran Pratama - Bulan 1, Kas, 100000, 0, Sistem Seeder, 2026-07-12 04:55:46, 2026-07-12 04:55:46))
+
+  at vendor\laravel\framework\src\Illuminate\Database\Connection.php:841
+    837Γûò             $exceptionType = ($isUniqueConstraintError = $this->isUniqueConstraintError($e))
+    838Γûò                 ? UniqueConstraintViolationException::class
+    839Γûò                 : QueryException::class;
+    840Γûò 
+  Γ₧£ 841Γûò             $exception = new $exceptionType(
+    842Γûò                 $this->getNameWithReadWriteType(),
+    843Γûò                 $query,
+    844Γûò                 $this->prepareBindings($bindings),
+    845Γûò                 $e,
+
+  1   vendor\laravel\framework\src\Illuminate\Database\MySqlConnection.php:47
+      PDOException::("SQLSTATE[42S02]: Base table or view not found: 1146 Table 'iuran_rt001.kas_rt' doesn't exist")
+
+  2   vendor\laravel\framework\src\Illuminate\Database\MySqlConnection.php:47
+      PDO::prepare("insert into `kas_rt` (`tanggal_transaksi`, `keterangan`, `kategori`, `pemasukan`, `pengeluaran`, `dibuat_oleh`, `updated_at`, `created_at`) values (?, ?, ?, ?, ?, ?, ?, ?)")
+

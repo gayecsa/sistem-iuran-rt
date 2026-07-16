@@ -24,6 +24,7 @@ class User extends Authenticatable
         'password',
         'role',
         'rt_number',
+        'rw_number',
         'house_number',
         'phone',
         'address',
