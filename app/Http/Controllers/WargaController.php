@@ -13,15 +13,31 @@ class WargaController extends Controller
         $this->middleware(['auth', 'role:admin,bendahara']);
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $warga = User::withSum(['pembayaran as total_pemasukan' => function ($query) {
-                $query->where('status', 'lunas');
+        // Membangun query dasar sesuai aslinya
+        $query = User::withSum(['pembayaran as total_pemasukan' => function ($q) {
+                $q->where('status', 'lunas');
             }], 'jumlah_bayar')
             ->withSum('kasRt as total_pengeluaran', 'pengeluaran')
-            ->where('role', 'warga')
-            ->orderBy('house_number')
-            ->paginate(100);
+            ->where('role', 'warga');
+
+        // Menambahkan logika pencarian
+        if ($request->filled('search')) {
+            $search = $request->search;
+            
+            // Dibungkus function($q) agar orWhere tidak mengabaikan where('role', 'warga')
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('nik', 'like', "%{$search}%");
+            });
+        }
+
+        // Eksekusi query dengan sorting dan paginasi
+        $warga = $query->orderBy('house_number')->paginate(100);
+        
+        // Membawa parameter search ke link paginasi agar tidak reset saat pindah halaman
+        $warga->appends($request->all());
 
         return view('warga.index', compact('warga'));
     }
@@ -35,9 +51,6 @@ class WargaController extends Controller
     public function store(Request $request)
     {
         $this->authorizeAdminOrBendahara();
-
-        // KODE DETEKTIF: Ini untuk mengecek apakah data dari form beneran masuk atau tidak
-        dd($request->all());
 
         $request->validate([
             'name' => 'required|string|max:255',

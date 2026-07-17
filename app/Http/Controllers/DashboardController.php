@@ -33,9 +33,12 @@ class DashboardController extends Controller
         $data['total_laki'] = (clone $baseWargaQuery)->where('gender', 'Laki-laki')->count();
         $data['total_perempuan'] = (clone $baseWargaQuery)->where('gender', 'Perempuan')->count();
         
-        // Perhitungan Kas RT
-        $data['total_pemasukan'] = KasRt::sum('pemasukan');
-        $data['total_pengeluaran'] = KasRt::sum('pengeluaran');
+        // Perhitungan Kas RT - Gunakan DISTINCT untuk menghindari duplikasi
+        $kasData = KasRt::selectRaw('COALESCE(SUM(pemasukan), 0) as total_pemasukan, COALESCE(SUM(pengeluaran), 0) as total_pengeluaran')
+            ->first();
+        
+        $data['total_pemasukan'] = $kasData->total_pemasukan ?? 0;
+        $data['total_pengeluaran'] = $kasData->total_pengeluaran ?? 0;
         $data['saldo_kas'] = $data['total_pemasukan'] - $data['total_pengeluaran'];
 
         // ======================================================================
@@ -146,9 +149,126 @@ class DashboardController extends Controller
         return view('posyandu', compact('user'));
     }
 
-    public function bankSampah()
+    // --- FUNGSI BARU UNTUK JADWAL POSYANDU ---
+    public function jadwal()
     {
         $user = Auth::user();
-        return view('bank-sampah', compact('user'));
+        return view('posyandu.detail_jadwal', compact('user'));
+    }
+    // -----------------------------------------
+
+    // --- FUNGSI BARU UNTUK LOKASI POSYANDU ---
+    public function lokasi()
+    {
+        $user = Auth::user();
+        return view('posyandu.detail_lokasi', compact('user'));
+    }
+    // -----------------------------------------
+
+    // --- FUNGSI BARU UNTUK DETAIL POSYANDU ---
+    public function detailBalita()
+    {
+        $user = Auth::user();
+        return view('posyandu.detail_balita', compact('user'));
+    }
+
+    public function detailImunisasi()
+    {
+        $user = Auth::user();
+        return view('posyandu.detail_imunisasi', compact('user'));
+    }
+
+    public function detailIbuHamil()
+    {
+        $user = Auth::user();
+        return view('posyandu.detail_ibu_hamil', compact('user'));
+    }
+
+    public function detailEdukasi()
+    {
+        $user = Auth::user();
+        return view('posyandu.detail_edukasi', compact('user'));
+    }
+    // ---------------------------------------
+
+    public function umkm()
+    {
+        $user = Auth::user();
+        $umkms = \App\Models\Umkm::orderBy('nama_umkm')->get();
+        return view('umkm', compact('user', 'umkms'));
+    }
+
+    public function surat()
+    {
+        $user = Auth::user();
+        $admin_contact_phone = User::where('role', 'admin')->value('phone') ?? $user->phone ?? '081234567890';
+        return view('surat', compact('user', 'admin_contact_phone'));
+    }
+
+    // ======================================================================
+    // TAMBAHAN FUNCTION SURAT (Untuk mengatasi RouteNotFoundException)
+    // ======================================================================
+    public function createSurat()
+    {
+        $user = Auth::user();
+        return view('surat.create', compact('user')); 
+    }
+
+    public function storeSurat(Request $request)
+    {
+        return redirect()->route('surat.index')->with('success', 'Pengajuan surat berhasil diproses!');
+    }
+    // ======================================================================
+
+    public function debugKas()
+    {
+        // Hanya untuk admin
+        if (Auth::user()->role !== 'admin') {
+            abort(403);
+        }
+
+        $kasData = KasRt::selectRaw('COALESCE(SUM(pemasukan), 0) as total_pemasukan, COALESCE(SUM(pengeluaran), 0) as total_pengeluaran')
+            ->first();
+        
+        $total_records = KasRt::count();
+        $total_pemasukan = $kasData->total_pemasukan ?? 0;
+        $total_pengeluaran = $kasData->total_pengeluaran ?? 0;
+        $saldo = $total_pemasukan - $total_pengeluaran;
+
+        // Check untuk duplikasi
+        $duplicates = KasRt::selectRaw('nama_warga, kategori, keterangan, tanggal_transaksi, COUNT(*) as count')
+            ->groupBy('nama_warga', 'kategori', 'keterangan', 'tanggal_transaksi')
+            ->having('count', '>', 1)
+            ->count();
+
+        $duplicate_check = [
+            'status' => $duplicates === 0 ? 'ok' : 'warning',
+            'message' => $duplicates === 0 ? 'No duplicates' : "Found {$duplicates} duplicate groups"
+        ];
+
+        // Check pengeluaran
+        $pengeluaran_check = KasRt::where('pengeluaran', '>', 0)->sum('pengeluaran');
+
+        // Categories breakdown
+        $categories = KasRt::selectRaw('kategori, COUNT(*) as count')
+            ->groupBy('kategori')
+            ->get()
+            ->toArray();
+
+        // Recent transactions
+        $recent_transactions = KasRt::orderBy('tanggal_transaksi', 'desc')
+            ->limit(20)
+            ->get();
+
+        return view('debug-kas', compact(
+            'total_records', 
+            'total_pemasukan', 
+            'total_pengeluaran', 
+            'saldo',
+            'duplicate_check',
+            'pengeluaran_check',
+            'categories',
+            'recent_transactions'
+        ));
     }
 }

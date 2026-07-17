@@ -45,7 +45,8 @@ class UserSeeder extends Seeder
 
         for ($i = 1; $i <= 250; $i++) {
             $houseNumber = str_pad($i + 2, 3, '0', STR_PAD_LEFT);
-            $gender = $i % 2 === 0 ? 'Laki-laki' : 'Perempuan';
+            // 75% laki-laki, 25% perempuan agar lebih realistis
+            $gender = rand(1, 100) > 25 ? 'Laki-laki' : 'Perempuan';
             $rwNumber = str_pad(rand(1, 5), 2, '0', STR_PAD_LEFT);
             $rtNumber = '001';
             $email = "warga{$i}@rt001.com";
@@ -53,7 +54,7 @@ class UserSeeder extends Seeder
             User::create([
                 'name' => $faker->name,
                 'email' => $email,
-                'password' => Hash::make('password123'),
+                'password' => Hash::make('password123'),  
                 'role' => 'warga',
                 'rt_number' => $rtNumber,
                 'rw_number' => $rwNumber,

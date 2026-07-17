@@ -2,25 +2,46 @@
 
 @section('content')
 <div class="container mt-4">
-    <div class="d-flex align-items-center justify-content-between mb-4">
-        <div>
-            <h3 class="mb-1">Daftar Warga RT 001</h3>
-            <p class="text-muted mb-0">Menampilkan identitas kependudukan, kontak, dan status warga.</p>
-        </div>
-        @if(auth()->user()->role === 'admin')
-            <a href="{{ route('warga.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus me-2"></i>Tambah Warga
-            </a>
-        @endif
-    </div>
-
+    
+    <!-- Notifikasi Sukses (Hanya 1 dan desain lebih rapi) -->
     @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="alert alert-success alert-dismissible fade show mb-4 d-flex align-items-center" role="alert" style="background-color: #d1fae5; color: #047857; border-color: #a7f3d0; border-radius: 8px;">
+            <i class="fas fa-check-circle me-2"></i>
+            <div>{{ session('success') }}</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
 
+    <!-- Bagian Header: Judul, Pencarian, & Tombol -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <!-- Judul -->
+        <div>
+            <h3 class="mb-1" style="color: #334155;">Daftar Warga RT 001</h3>
+            <p class="text-muted mb-0">Menampilkan identitas kependudukan, kontak, dan status warga.</p>
+        </div>
+
+        <!-- Aksi: Pencarian & Tambah Warga -->
+        <div class="d-flex align-items-center gap-2">
+            <!-- Form Pencarian -->
+            <form action="{{ route('warga.index') }}" method="GET" class="d-flex mb-0">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control" placeholder="Cari nama atau NIK..." value="{{ request('search') }}" style="border-radius: 20px 0 0 20px;">
+                    <button class="btn border" type="submit" style="border-radius: 0 20px 20px 0; background-color: #f8fafc; border-color: #dee2e6;">
+                        <i class="fas fa-search text-muted"></i>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Tombol Tambah Warga (Hanya untuk admin) -->
+            @if(auth()->user()->role === 'admin')
+                <a href="{{ route('warga.create') }}" class="btn btn-primary px-4 py-2" style="border-radius: 20px;">
+                    <i class="fas fa-plus me-1"></i> Tambah Warga
+                </a>
+            @endif
+        </div>
+    </div>
+
+    <!-- Tabel Warga -->
     <div class="card p-3 shadow-sm">
         <div class="mb-3">
             <span class="badge bg-info text-white">Total Warga: {{ $warga->total() }}</span>

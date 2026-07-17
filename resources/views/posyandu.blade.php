@@ -15,29 +15,58 @@
                 </div>
 
                 <div class="row g-3 mt-4">
+                    <!-- KOTAK JADWAL YANG BISA DIKLIK -->
                     <div class="col-md-6">
-                        <div class="card metric-card p-3">
-                            <h6>Jadwal Rutin</h6>
-                            <p class="mb-1">Setiap Sabtu</p>
-                            <p class="text-muted mb-0">Pukul 08.00 - 11.00 WIB</p>
-                        </div>
+                        <a href="{{ route('posyandu.jadwal') }}" class="text-decoration-none" style="color: inherit;">
+                            <div class="card metric-card p-3 h-100 shadow-sm" style="cursor: pointer;">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <h6 class="mb-0 text-primary">Jadwal Rutin</h6>
+                                    <span class="badge bg-primary rounded-pill" style="font-size: 0.7rem;">Lihat Detail</span>
+                                </div>
+                                <p class="mb-1">Setiap Sabtu</p>
+                                <p class="text-muted mb-0">Pukul 08.00 - 11.00 WIB</p>
+                            </div>
+                        </a>
                     </div>
+                    
+                    <!-- KOTAK LOKASI -->
                     <div class="col-md-6">
-                        <div class="card metric-card p-3">
-                            <h6>Lokasi</h6>
-                            <p class="mb-1">Balai RT 001</p>
-                            <p class="text-muted mb-0">Jl. Gandaria, Gandaria Selatan</p>
-                        </div>
+                        <a href="{{ route('posyandu.lokasi') }}" class="text-decoration-none" style="color: inherit;">
+                            <div class="card metric-card p-3 h-100 shadow-sm" style="cursor: pointer;">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <h6 class="mb-0 text-primary">Lokasi</h6>
+                                    <span class="badge bg-primary rounded-pill" style="font-size: 0.7rem;">Lihat Semua RW</span>
+                                </div>
+                                <p class="mb-1">Balai RT 001</p>
+                                <p class="text-muted mb-0">Jl. Gandaria, Gandaria Selatan</p>
+                            </div>
+                        </a>
                     </div>
                 </div>
 
                 <div class="card p-4 mt-4">
                     <h5 class="mb-3">Layanan yang tersedia</h5>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item">Pemeriksaan kesehatan balita</li>
-                        <li class="list-group-item">Imunisasi dan gizi anak</li>
-                        <li class="list-group-item">Konsultasi ibu hamil</li>
-                        <li class="list-group-item">Edukasi kesehatan keluarga</li>
+                        <li class="list-group-item">
+                            <a href="{{ route('posyandu.detail_balita') }}" class="text-decoration-none text-primary fw-medium d-block w-100">
+                                Pemeriksaan kesehatan balita
+                            </a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{{ route('posyandu.detail_imunisasi') }}" class="text-decoration-none text-primary fw-medium d-block w-100">
+                                Imunisasi dan gizi anak
+                            </a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{{ route('posyandu.detail_ibu_hamil') }}" class="text-decoration-none text-primary fw-medium d-block w-100">
+                                Konsultasi ibu hamil
+                            </a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{{ route('posyandu.detail_edukasi') }}" class="text-decoration-none text-primary fw-medium d-block w-100">
+                                Edukasi kesehatan keluarga
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>

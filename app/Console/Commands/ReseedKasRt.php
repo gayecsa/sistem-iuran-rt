@@ -1,23 +1,33 @@
 <?php
 
-namespace Database\Seeders;
+namespace App\Console\Commands;
 
-use Illuminate\Database\Seeder;
+use Illuminate\Console\Command;
 use App\Models\KasRt;
 use App\Models\User;
 use Carbon\Carbon;
 
-class KasRtSeeder extends Seeder
+class ReseedKasRt extends Command
 {
-    public function run(): void
+    protected $signature = 'reseed:kas-rt {--force : Skip confirmation}';
+    protected $description = 'Reset KasRt table dan re-seed dengan data yang clean';
+
+    public function handle()
     {
-        // 1. Kosongkan tabel kas_rt terlebih dahulu agar data lama terhapus bersih
+        if (!$this->option('force') && !$this->confirm('⚠️  Ini akan MENGHAPUS semua data KasRt dan re-seed ulang. Lanjutkan?')) {
+            $this->info('Dibatalkan.');
+            return;
+        }
+
+        $this->info('Clearing KasRt table...');
         KasRt::truncate();
 
-        // 2. Ambil semua data user yang berstatus 'warga'
-        $warga = User::where('role', 'warga')->get();
+        $this->info('Re-seeding data...');
 
-        // Mapping nama bulan Indonesia agar aman dari bug locale sistem
+        // Ambil semua warga
+        $warga = User::where('role', 'warga')->get();
+        $this->info("Found {$warga->count()} warga");
+
         $list_bulan = [
             1 => 'Januari',
             2 => 'Februari',
@@ -26,10 +36,13 @@ class KasRtSeeder extends Seeder
             5 => 'Mei'
         ];
 
-        // 3. Looping PEMASUKAN: Setiap warga dibuatkan riwayat iuran dari Januari-Mei (semua 5 bulan)
+        // Seed pemasukan
+        $bar = $this->output->createProgressBar($warga->count() * 5);
+        $bar->start();
+
         foreach ($warga as $w) {
             for ($bulan = 1; $bulan <= 5; $bulan++) {
-                // Iuran Wajib - Rp 100.000
+                // Iuran
                 KasRt::create([
                     'nama_warga' => $w->name,
                     'no_hp' => $w->phone,
@@ -40,8 +53,8 @@ class KasRtSeeder extends Seeder
                     'tanggal_transaksi' => Carbon::create(2026, $bulan, rand(1, 25)),
                     'dibuat_oleh' => 'Bendahara RT 001',
                 ]);
-                
-                // Iuran Sampah - Rp 50.000
+
+                // Sampah
                 KasRt::create([
                     'nama_warga' => $w->name,
                     'no_hp' => $w->phone,
@@ -52,37 +65,36 @@ class KasRtSeeder extends Seeder
                     'tanggal_transaksi' => Carbon::create(2026, $bulan, rand(1, 25)),
                     'dibuat_oleh' => 'Bendahara RT 001',
                 ]);
+
+                $bar->advance();
             }
         }
+        $bar->finish();
+        $this->newLine();
 
-        // 4. PENGELUARAN REALISTIS: Ambil nama-nama warga untuk acara sosial
+        // Seed pengeluaran
         $wargaNames = $warga->pluck('name')->toArray();
         shuffle($wargaNames);
 
-        $kegiatan_pengeluaran = [
-            // Januari
+        $kegiatan = [
             ['bulan' => 1, 'kategori' => 'Jenguk Sakit', 'jumlah' => 150000, 'ket' => 'Jenguk ibu @NAMA yang sakit di rumah sakit', 'hari' => 5],
             ['bulan' => 1, 'kategori' => 'Kebersihan', 'jumlah' => 300000, 'ket' => 'Membeli alat kebersihan & trash bag bulan Januari', 'hari' => 10],
             ['bulan' => 1, 'kategori' => 'Operasional', 'jumlah' => 100000, 'ket' => 'Konsumsi rapat RT bulan Januari', 'hari' => 15],
             
-            // Februari
             ['bulan' => 2, 'kategori' => 'Khitanan', 'jumlah' => 200000, 'ket' => 'Khitanan anak Bapak @NAMA', 'hari' => 8],
             ['bulan' => 2, 'kategori' => 'Jenguk Sakit', 'jumlah' => 120000, 'ket' => 'Jenguk Pak @NAMA yang sedang sakit', 'hari' => 14],
             ['bulan' => 2, 'kategori' => 'Kebersihan', 'jumlah' => 250000, 'ket' => 'Upah petugas kebersihan minggu 1-4 Februari', 'hari' => 20],
             
-            // Maret
             ['bulan' => 3, 'kategori' => 'Syukuran', 'jumlah' => 180000, 'ket' => 'Syukuran pernikahan anak Ibu @NAMA', 'hari' => 5],
             ['bulan' => 3, 'kategori' => 'Infrastruktur', 'jumlah' => 400000, 'ket' => 'Perbaikan jalan utama RT', 'hari' => 12],
             ['bulan' => 3, 'kategori' => 'Arisan', 'jumlah' => 80000, 'ket' => 'Dana arisan Bapak @NAMA yang menang', 'hari' => 18],
             ['bulan' => 3, 'kategori' => 'Kebersihan', 'jumlah' => 250000, 'ket' => 'Pengangkutan sampah ke TPA', 'hari' => 25],
             
-            // April
             ['bulan' => 4, 'kategori' => 'Sosial', 'jumlah' => 200000, 'ket' => 'Bantuan sosial untuk keluarga Pak @NAMA yang sedang susah', 'hari' => 3],
             ['bulan' => 4, 'kategori' => 'Khitanan', 'jumlah' => 220000, 'ket' => 'Khitanan anak Ibu @NAMA', 'hari' => 10],
             ['bulan' => 4, 'kategori' => 'Operasional', 'jumlah' => 150000, 'ket' => 'Perbaikan pompa air warga & material', 'hari' => 16],
             ['bulan' => 4, 'kategori' => 'Kebersihan', 'jumlah' => 250000, 'ket' => 'Upah petugas kebersihan dan pembersihan saluran', 'hari' => 22],
             
-            // Mei
             ['bulan' => 5, 'kategori' => 'Lingkungan', 'jumlah' => 300000, 'ket' => 'Kegiatan penghijauan RT dan pemeliharaan taman', 'hari' => 5],
             ['bulan' => 5, 'kategori' => 'Jenguk Sakit', 'jumlah' => 100000, 'ket' => 'Jenguk Mbak @NAMA yang melahirkan di klinik', 'hari' => 12],
             ['bulan' => 5, 'kategori' => 'Operasional', 'jumlah' => 80000, 'ket' => 'Fotokopi berkas & konsumsi rapat evaluasi RT', 'hari' => 18],
@@ -90,13 +102,12 @@ class KasRtSeeder extends Seeder
         ];
 
         $nameIndex = 0;
-        foreach ($kegiatan_pengeluaran as $peng) {
+        foreach ($kegiatan as $peng) {
             $keterangan = $peng['ket'];
             
-            // Ganti @NAMA dengan nama warga yang berbeda
             if (strpos($keterangan, '@NAMA') !== false) {
                 if ($nameIndex >= count($wargaNames)) {
-                    $nameIndex = 0; // Reset jika sudah habis
+                    $nameIndex = 0;
                 }
                 $keterangan = str_replace('@NAMA', $wargaNames[$nameIndex], $keterangan);
                 $nameIndex++;
@@ -113,5 +124,17 @@ class KasRtSeeder extends Seeder
                 'dibuat_oleh' => 'Bendahara RT 001',
             ]);
         }
+
+        $this->newLine();
+        $kasData = KasRt::selectRaw('COALESCE(SUM(pemasukan), 0) as total_pemasukan, COALESCE(SUM(pengeluaran), 0) as total_pengeluaran')
+            ->first();
+        
+        $saldo = ($kasData->total_pemasukan ?? 0) - ($kasData->total_pengeluaran ?? 0);
+        
+        $this->info("✅ Re-seed complete!");
+        $this->line("📊 Final Balance:");
+        $this->line("  Pemasukan: Rp " . number_format($kasData->total_pemasukan ?? 0, 0, ',', '.'));
+        $this->line("  Pengeluaran: Rp " . number_format($kasData->total_pengeluaran ?? 0, 0, ',', '.'));
+        $this->line("  Saldo: Rp " . number_format($saldo, 0, ',', '.'));
     }
 }

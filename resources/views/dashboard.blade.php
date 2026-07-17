@@ -7,43 +7,16 @@
             <div class="card sideboard-panel p-4 h-100 animate__animated animate__fadeInUp">
                 <div class="d-flex align-items-center justify-content-between mb-4">
                     <div>
-                        <p class="text-uppercase text-secondary mb-2 small">Iuran-RT</p>
-                        <h4 class="mb-1">Halo, {{ $user->name ?? 'Warga RT 001' }}</h4>
-                        <p class="text-muted mb-0">Selamat datang di dashboard Iuran RT Gandaria</p>
+                        <p class="text-uppercase text-secondary mb-2 small">Iuran-RW</p>
+                        <h4 class="mb-1">Halo, {{ $user->name ?? 'Warga RW 001' }}</h4>
+                        <p class="text-muted mb-0">Selamat datang di dashboard Iuran RW </p>
                     </div>
                     <div class="icon-circle shadow-sm">
                         <i class="fas fa-house-user fa-lg"></i>
                     </div>
                 </div>
 
-                <div class="row g-3 mb-4">
-                    <div class="col-12">
-                        <div class="metric-card p-3">
-                            <small class="text-muted">Saldo Saat Ini</small>
-                            <div class="d-flex align-items-end justify-content-between mt-3">
-                                <div>
-                                    <h3 class="mb-0">Rp {{ number_format($saldo_kas ?? 0, 0, ',', '.') }}</h3>
-                                    <p class="mb-0 text-muted">Per {{ date('d M Y') }}</p>
-                                </div>
-                                <span class="gradient-pill">+12%</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="metric-card p-3 text-center">
-                            <small class="text-muted">Pemasukan</small>
-                            <h5 class="mt-2 mb-0">Rp {{ number_format($total_pemasukan ?? 0, 0, ',', '.') }}</h5>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="metric-card p-3 text-center">
-                            <small class="text-muted">Pengeluaran</small>
-                            <h5 class="mt-2 mb-0">Rp {{ number_format($total_pengeluaran ?? 0, 0, ',', '.') }}</h5>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card p-3">
+                <div class="card p-3 mb-4">
                     <h6 class="mb-3">Ringkasan</h6>
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <div>
@@ -63,6 +36,68 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="mt-2">
+                    <p class="text-uppercase text-secondary mb-3 small fw-bold">Layanan & Informasi</p>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="card service-card p-3 h-100 animate__animated animate__fadeInUp">
+                                <div class="d-flex align-items-start justify-content-between mb-3">
+                                    <div>
+                                        <p class="text-uppercase text-secondary mb-2 small">Posyandu</p>
+                                        <h5 class="mb-1">Info Posyandu</h5>
+                                        <p class="text-muted mb-0">Jadwal layanan kesehatan keluarga dan balita.</p>
+                                    </div>
+                                    <div class="icon-circle shadow-sm" style="background:#d1fae5;color:#047857;">
+                                        <i class="fas fa-heartbeat"></i>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span class="badge bg-success">Sabtu, 08.00 WIB</span>
+                                    <a href="{{ route('posyandu') }}" class="small text-primary text-decoration-none">Lihat detail</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12">
+                            <div class="card service-card p-3 h-100 animate__animated animate__fadeInUp">
+                                <div class="d-flex align-items-start justify-content-between mb-3">
+                                    <div>
+                                        <p class="text-uppercase text-secondary mb-2 small">UMKM</p>
+                                        <h5 class="mb-1">UMKM Terdekat</h5>
+                                        <p class="text-muted mb-0">Temukan tempat makanan dan UMKM terdekat.</p>
+                                    </div>
+                                    <div class="icon-circle shadow-sm" style="background:#fef08a;color:#ca8a04;">
+                                        <i class="fas fa-utensils"></i>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span class="badge bg-warning text-dark">8 Tempat</span>
+                                    <a href="{{ route('umkm.index') }}" class="small text-primary text-decoration-none">Lihat detail</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="card service-card p-3 h-100 animate__animated animate__fadeInUp">
+                                <div class="d-flex align-items-start justify-content-between mb-3">
+                                    <div>
+                                        <p class="text-uppercase text-secondary mb-2 small">Administrasi</p>
+                                        <h5 class="mb-1">Penerbitan Surat</h5>
+                                        <p class="text-muted mb-0">Layanan penerbitan surat keterangan resmi.</p>
+                                    </div>
+                                    <div class="icon-circle shadow-sm" style="background:#e8daef;color:#7d3c98;">
+                                        <i class="fas fa-file-alt"></i>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span class="badge bg-secondary">4 Tipe</span>
+                                    <a href="{{ route('surat.index') }}" class="small text-primary text-decoration-none">Lihat detail</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -74,65 +109,23 @@
                         <h2 class="mb-2">Selamat datang, {{ $user->name ?? 'Admin RT' }} 👋</h2>
                         <p class="text-muted mb-0">Kelola keuangan RT dengan mudah dan transparan.</p>
                     </div>
-                    <div class="text-end">
-                        <div class="gradient-pill">Tambahkan Informasi</div>
-                    </div>
-                </div>
-
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="card service-card p-3 h-100 animate__animated animate__fadeInUp">
-                            <div class="d-flex align-items-start justify-content-between mb-3">
-                                <div>
-                                    <p class="text-uppercase text-secondary mb-2 small">Posyandu</p>
-                                    <h5 class="mb-1">Info Posyandu</h5>
-                                    <p class="text-muted mb-0">Jadwal layanan kesehatan keluarga dan balita.</p>
-                                </div>
-                                <div class="icon-circle shadow-sm" style="background:#d1fae5;color:#047857;">
-                                    <i class="fas fa-heartbeat"></i>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center justify-content-between">
-                                <span class="badge bg-success">Sabtu, 08.00 WIB</span>
-                                <a href="{{ route('posyandu') }}" class="small text-primary text-decoration-none">Lihat detail</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card service-card p-3 h-100 animate__animated animate__fadeInUp">
-                            <div class="d-flex align-items-start justify-content-between mb-3">
-                                <div>
-                                    <p class="text-uppercase text-secondary mb-2 small">Bank Sampah</p>
-                                    <h5 class="mb-1">Info Bank Sampah</h5>
-                                    <p class="text-muted mb-0">Kumpulkan sampah plastik & kertas, dapatkan manfaat.</p>
-                                </div>
-                                <div class="icon-circle shadow-sm" style="background:#e0f2fe;color:#0369a1;">
-                                    <i class="fas fa-recycle"></i>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center justify-content-between">
-                                <span class="badge bg-info text-white">Buka setiap Rabu</span>
-                                <a href="{{ route('bank.sampah') }}" class="small text-primary text-decoration-none">Lihat detail</a>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="mt-4 mb-3">
                     @if(in_array(auth()->user()->role, ['admin', 'bendahara']))
-                        <a href="{{ route('warga.index') }}" class="btn btn-outline-primary me-2">
+                        <a href="{{ route('warga.index') }}" class="btn btn-outline-primary me-2 mb-2">
                             <i class="fas fa-users me-2"></i>Data Warga
                         </a>
                     @endif
-                    <a href="{{ route('laporan.keuangan') }}" class="btn btn-outline-info me-2">
+                    <a href="{{ route('laporan.keuangan') }}" class="btn btn-outline-info me-2 mb-2">
                         <i class="fas fa-file-invoice-dollar me-2"></i>Laporan Keuangan
                     </a>
-                    <a href="{{ route('keuangan.detail') }}" class="btn btn-outline-success">
+                    <a href="{{ route('keuangan.detail') }}" class="btn btn-outline-success mb-2">
                         <i class="fas fa-balance-scale me-2"></i>Saldo Kas
                     </a>
                 </div>
 
-                <div class="row mt-4 gy-3">
+                <div class="row mt-3 gy-3">
                     <div class="col-sm-4">
                         <div class="card metric-card p-3 text-center">
                             <span class="text-muted">Total Pemasukan</span>
@@ -187,6 +180,7 @@
                         </div>
                     </div>
                 </div>
+                
                 <div class="col-md-5">
                     <div class="card chart-card p-4 animate__animated animate__fadeInUp">
                         <div class="d-flex align-items-center justify-content-between mb-4">
@@ -218,7 +212,6 @@
     </div>
 </div>
 
-<!-- Modal Detail Pengumuman -->
 <div class="modal fade" id="pengumumanModal" tabindex="-1" aria-labelledby="pengumumanModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content rounded-5" style="border: none; box-shadow: 0 25px 60px rgba(46, 61, 94, 0.12);">
@@ -252,7 +245,7 @@
     <span class="whatsapp-dot">
         <i class="fab fa-whatsapp"></i>
     </span>
-    <span class="whatsapp-text">Admin: {{ $admin_contact_phone }}</span>
+    <span class="whatsapp-text">Admin: {{ $admin_name ?? 'Caravye' }}</span>
 </a>
 
 <script>
@@ -278,14 +271,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 datasets: [{
                     data: [totalLaki, totalPerempuan],
                     backgroundColor: [
-                        '#3b82f6', // Blue for Laki-laki
-                        '#ec4899'  // Pink for Perempuan
+                        '#7cb3f1', // Biru Laki-laki yang lebih soft/pastel
+                        '#f29bb5'  // Pink Perempuan yang lebih soft/pastel
                     ],
-                    borderColor: [
-                        '#1e40af',
-                        '#be185d'
-                    ],
-                    borderWidth: 2
+                    borderColor: '#ffffff', // Warna garis batas (putih)
+                    borderWidth: 4,         // Ketebalan batas putih
+                    hoverOffset: 4          // Efek pop-up sedikit saat di-hover
                 }]
             },
             options: {

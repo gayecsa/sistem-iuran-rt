@@ -10,6 +10,7 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\KeuanganController;
 use App\Http\Controllers\KasController;
 use App\Http\Controllers\PengumumanController;
+use App\Http\Controllers\UmkmController; // <-- Tambahan Import UmkmController
 
 // Guest routes
 Route::middleware('guest')->group(function () {
@@ -43,8 +44,32 @@ Route::middleware('auth')->group(function () {
     Route::get('/pengumuman/{id}', [PengumumanController::class, 'show'])->name('pengumuman.show');
     Route::get('/pengumuman/{id}/detail', [PengumumanController::class, 'detail'])->name('pengumuman.detail');
 
+    // --- POSYANDU ROUTES ---
     Route::get('/posyandu', [DashboardController::class, 'posyandu'])->name('posyandu');
-    Route::get('/bank-sampah', [DashboardController::class, 'bankSampah'])->name('bank.sampah');
+    Route::get('/posyandu/jadwal', [DashboardController::class, 'jadwal'])->name('posyandu.jadwal'); 
+    Route::get('/posyandu/lokasi', [DashboardController::class, 'lokasi'])->name('posyandu.lokasi');
+    Route::get('/posyandu/detail-balita', [DashboardController::class, 'detailBalita'])->name('posyandu.detail_balita');
+    Route::get('/posyandu/detail-imunisasi', [DashboardController::class, 'detailImunisasi'])->name('posyandu.detail_imunisasi');
+    Route::get('/posyandu/detail-ibu-hamil', [DashboardController::class, 'detailIbuHamil'])->name('posyandu.detail_ibu_hamil');
+    Route::get('/posyandu/detail-edukasi', [DashboardController::class, 'detailEdukasi'])->name('posyandu.detail_edukasi');
+    // -----------------------
+
+    // --- UMKM ROUTES ---
+    Route::get('/umkm', [DashboardController::class, 'umkm'])->name('umkm.index');
+    Route::get('/umkm/{id}/edit', [UmkmController::class, 'edit'])->name('umkm.edit');     // <-- RUTE BARU EDIT UMKM
+    Route::put('/umkm/{id}', [UmkmController::class, 'update'])->name('umkm.update');      // <-- RUTE BARU UPDATE UMKM
+    // -------------------
+    
+    // --- PERBAIKAN ROUTE SURAT ---
+    Route::get('/surat', [DashboardController::class, 'surat'])->name('surat.index');
+    Route::get('/surat/create', [DashboardController::class, 'createSurat'])->name('surat.create');
+    Route::post('/surat', [DashboardController::class, 'storeSurat'])->name('surat.store');
+    // -----------------------------
+    
+    // Debug route - Hanya untuk development
+    if (config('app.debug')) {
+        Route::get('/debug/kas', [DashboardController::class, 'debugKas'])->name('debug.kas');
+    }
     
     // Iuran routes
     Route::resource('iuran', IuranController::class);

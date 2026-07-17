@@ -17,11 +17,15 @@ class KasController extends Controller
     public function index()
     {
         $kas = KasRt::orderBy('tanggal_transaksi', 'desc')->paginate(15);
-        $saldo = KasRt::sum('pemasukan') - KasRt::sum('pengeluaran');
-        $total_pemasukan = KasRt::sum('pemasukan');
-        $total_pengeluaran = KasRt::sum('pengeluaran');
         
-        // PERBAIKAN: Diubah dari kas-rt.index menjadi kas.index agar membaca folder resources/views/kas
+        // Gunakan selectRaw untuk perhitungan yang lebih akurat
+        $kasData = KasRt::selectRaw('COALESCE(SUM(pemasukan), 0) as total_pemasukan, COALESCE(SUM(pengeluaran), 0) as total_pengeluaran')
+            ->first();
+        
+        $saldo = ($kasData->total_pemasukan ?? 0) - ($kasData->total_pengeluaran ?? 0);
+        $total_pemasukan = $kasData->total_pemasukan ?? 0;
+        $total_pengeluaran = $kasData->total_pengeluaran ?? 0;
+        
         return view('kas.index', compact('kas', 'saldo', 'total_pemasukan', 'total_pengeluaran'));
     }
     
