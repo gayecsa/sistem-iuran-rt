@@ -41,17 +41,27 @@
                             <label class="form-label">
                                 <i class="fas fa-lock me-2"></i>Password
                             </label>
-                            <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" required>
-                            @error('password')
-                                <span class="invalid-feedback">{{ $message }}</span>
-                            @enderror
+                            <div class="input-group">
+                                <input type="password" name="password" id="regPassword" class="form-control @error('password') is-invalid @enderror" required placeholder="Min. 6 karakter">
+                                <button type="button" class="btn btn-outline-secondary px-3" onclick="togglePasswordVisibility('regPassword', 'eyeIconReg')" title="Lihat Password">
+                                    <i class="fas fa-eye" id="eyeIconReg"></i>
+                                </button>
+                                @error('password')
+                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                @enderror
+                            </div>
                         </div>
                         
                         <div class="col-md-6 mb-3">
                             <label class="form-label">
                                 <i class="fas fa-lock me-2"></i>Konfirmasi Password
                             </label>
-                            <input type="password" name="password_confirmation" class="form-control" required>
+                            <div class="input-group">
+                                <input type="password" name="password_confirmation" id="regPasswordConfirm" class="form-control" required placeholder="Ulangi password">
+                                <button type="button" class="btn btn-outline-secondary px-3" onclick="togglePasswordVisibility('regPasswordConfirm', 'eyeIconRegConfirm')" title="Lihat Password">
+                                    <i class="fas fa-eye" id="eyeIconRegConfirm"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     

@@ -162,6 +162,8 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            'rt_number' => 'nullable|string|max:10',
+            'rw_number' => 'nullable|string|max:10',
             'house_number' => 'nullable|string|max:10',
             'phone' => 'nullable|string|max:15',
             'address' => 'nullable|string',
@@ -169,7 +171,17 @@ class AuthController extends Controller
             'profile_photo' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
             'nik' => 'nullable|string|max:20|unique:users,nik,' . $user->id,
             'no_kk' => 'nullable|string|max:20|unique:users,no_kk,' . $user->id,
+            'current_password' => 'nullable|string',
+            'password' => 'nullable|string|min:6|confirmed',
         ]);
+
+        if ($request->filled('password')) {
+            if (!$request->filled('current_password') || !Hash::check($request->current_password, $user->password)) {
+                $validator->after(function ($validator) {
+                    $validator->errors()->add('current_password', 'Password saat ini salah atau belum diisi.');
+                });
+            }
+        }
 
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
@@ -178,6 +190,8 @@ class AuthController extends Controller
         $data = [
             'name' => $request->name,
             'email' => $request->email,
+            'rt_number' => $request->rt_number ?? '001',
+            'rw_number' => $request->rw_number ?? '013',
             'house_number' => $request->house_number,
             'phone' => $request->phone,
             'address' => $request->address,
@@ -185,6 +199,10 @@ class AuthController extends Controller
             'nik' => $request->nik,
             'no_kk' => $request->no_kk,
         ];
+
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
 
         if ($request->hasFile('profile_photo')) {
             if ($user->profile_photo && Storage::disk('public')->exists($user->profile_photo)) {
@@ -198,7 +216,7 @@ class AuthController extends Controller
 
         $user->update($data);
 
-        return redirect()->route('profile.edit')->with('success', 'Profil berhasil diperbarui.');
+        return redirect()->route('profile.edit')->with('success', 'Profil dan informasi login Anda berhasil diperbarui.');
     }
 
     public function makeAdmin(Request $request)

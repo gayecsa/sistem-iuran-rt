@@ -49,6 +49,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/posyandu/jadwal', [DashboardController::class, 'jadwal'])->name('posyandu.jadwal'); 
     Route::get('/posyandu/lokasi', [DashboardController::class, 'lokasi'])->name('posyandu.lokasi');
     Route::get('/posyandu/detail-balita', [DashboardController::class, 'detailBalita'])->name('posyandu.detail_balita');
+    Route::get('/posyandu/detail-balita/{id}', [DashboardController::class, 'getBalitaDetail']);
     Route::get('/posyandu/detail-imunisasi', [DashboardController::class, 'detailImunisasi'])->name('posyandu.detail_imunisasi');
     Route::get('/posyandu/detail-ibu-hamil', [DashboardController::class, 'detailIbuHamil'])->name('posyandu.detail_ibu_hamil');
     Route::get('/posyandu/detail-edukasi', [DashboardController::class, 'detailEdukasi'])->name('posyandu.detail_edukasi');
@@ -59,6 +60,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/umkm/{id}/edit', [UmkmController::class, 'edit'])->name('umkm.edit');     // <-- RUTE BARU EDIT UMKM
     Route::put('/umkm/{id}', [UmkmController::class, 'update'])->name('umkm.update');      // <-- RUTE BARU UPDATE UMKM
     // -------------------
+
+    // --- PETA WILAYAH & WISATA ROUTES ---
+    Route::get('/peta', [DashboardController::class, 'peta'])->name('peta.index');
+    Route::get('/wisata', [DashboardController::class, 'wisata'])->name('wisata.index');
+    // ------------------------------------
     
     // --- PERBAIKAN ROUTE SURAT ---
     Route::get('/surat', [DashboardController::class, 'surat'])->name('surat.index');
@@ -80,6 +86,9 @@ Route::middleware('auth')->group(function () {
     
     // Warga routes (Khusus admin & bendahara saja)
     Route::middleware('role:admin,bendahara')->group(function () {
+        Route::post('/posyandu/detail-balita/{id}/perkembangan', [DashboardController::class, 'storePerkembanganBalita'])->name('posyandu.store_perkembangan');
+        Route::get('/warga/keluarga/{no_kk}', [WargaController::class, 'getKeluargaDetail'])->name('warga.keluarga_detail');
+        Route::post('/warga/keluarga/{no_kk}/anggota', [WargaController::class, 'storeAnggotaKeluarga'])->name('warga.store_anggota');
         Route::resource('warga', WargaController::class);
         Route::patch('/warga/{warga}/toggle-active', [WargaController::class, 'toggleActive'])->name('warga.toggleActive');
         Route::resource('kas-rt', KasController::class);

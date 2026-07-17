@@ -11,10 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('umkm', function (Blueprint $table) {
-            if (!Schema::hasColumn('umkm', 'foto')) {
-                $table->string('foto')->nullable()->after('deskripsi');
-            }
+        Schema::table('users', function (Blueprint $table) {
+            $table->date('tanggal_lahir')->nullable()->after('gender');
         });
     }
 
@@ -23,10 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('umkm', function (Blueprint $table) {
-            if (Schema::hasColumn('umkm', 'foto')) {
-                $table->dropColumn('foto');
-            }
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('tanggal_lahir');
         });
     }
 };

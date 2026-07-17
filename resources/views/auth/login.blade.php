@@ -14,7 +14,7 @@
                     </svg>
                 </div>
                 <h3 class="fw-bold">Login</h3>
-                <p class="text-muted">La Caisse</p>
+                <p class="text-muted">Warkas Machi (RW 013)</p>
             </div>
             <div class="card-body p-4">
 
@@ -51,10 +51,15 @@
                         <label class="form-label">
                             <i class="fas fa-lock me-2"></i>Password
                         </label>
-                        <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" required>
-                        @error('password')
-                            <span class="invalid-feedback">{{ $message }}</span>
-                        @enderror
+                        <div class="input-group">
+                            <input type="password" name="password" id="loginPassword" class="form-control @error('password') is-invalid @enderror" required placeholder="Masukkan password Anda">
+                            <button type="button" class="btn btn-outline-secondary px-3" onclick="togglePasswordVisibility('loginPassword', 'eyeIconLogin')" title="Tampilkan / Sembunyikan Password">
+                                <i class="fas fa-eye" id="eyeIconLogin"></i>
+                            </button>
+                            @error('password')
+                                <span class="invalid-feedback d-block">{{ $message }}</span>
+                            @enderror
+                        </div>
                     </div>
                     
                     <div class="mb-3 form-check">

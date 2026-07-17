@@ -15,151 +15,38 @@ class PengumumanSeeder extends Seeder
     public function run(): void
     {
         Pengumuman::create([
-            'judul' => 'Rapat Pengurus RT Bulan Juni',
-            'isi' => 'Assalamu\'alaikum Warga RT 001,
-
-Kami mengumumkan bahwa akan ada rapat rutin pengurus RT pada:
-
-📅 Tanggal: Minggu, 16 Juni 2026
-🕖 Waktu: Pukul 15.00 WIB
-📍 Lokasi: Rumah Ketua RT (Jalan Gandaria No. 15)
-
-Agenda Rapat:
-• Laporan keuangan RT bulan Mei
-• Pembahasan program RT semester II
-• Evaluasi program kerja bakti
-• Tanya jawab dan aspirasi warga
-
-Diharapkan kehadiran semua pengurus RT. Jika ada yang berhalangan, silakan konfirmasi ke nomor di bawah.
-
-Terima kasih,
-Pengurus RT 001',
+            'judul' => 'Kerja Bakti Akbar & Penataan Lingkungan RW 013',
+            'isi' => "Assalamu'alaikum Warahmatullahi Wabarakatuh,\n\nKepada Yth. Seluruh Warga RT 001 - RT 008 / RW 013,\n\nDalam rangka menjaga kebersihan, kelancaran saluran air, dan keasrian lingkungan, Pengurus RW 013 mengundang seluruh warga untuk hadir dalam Kerja Bakti Akbar pada:\n\n📅 Hari/Tanggal: Minggu, 26 Juli 2026\n🕖 Waktu: Pukul 06.30 WIB - Selesai\n📍 Titik Kumpul: Gedung Serbaguna Utama RW 013\n\nAgenda Utama:\n1. Pembersihan saluran air dan selokan utama RW 013\n2. Pemangkasan dahan pohon rawan tumbang\n3. Penataan Taman Warga dan Pos Ronda\n\nMohon membawa peralatan kerja bakti masing-masing. Konsumsi dan sarapan bersama disediakan oleh Pengurus RW 013.\n\nTerima kasih atas partisipasi aktif warga,\nPengurus RW 013",
             'kategori' => 'Penting',
             'tanggal_aktif' => Carbon::now(),
         ]);
 
         Pengumuman::create([
-            'judul' => 'Jadwal Pembayaran Iuran RT Juni 2026',
-            'isi' => 'Kepada Yth. Semua Warga RT 001,
-
-Dengan hormat kami informasikan jadwal pembayaran iuran RT untuk bulan Juni 2026:
-
-📋 Rincian Pembayaran:
-• Iuran Rutin: Rp 150.000,00
-• Iuran Perbaikan Jalan: Rp 100.000,00
-• Iuran Kebersihan: Rp 50.000,00
-Total: Rp 300.000,00
-
-📅 Jadwal Pembayaran:
-• Tanggal 1-15 Juni: Pembayaran normal
-• Tanggal 16-30 Juni: Denda Rp 10.000,00 per hari
-• Setelah 30 Juni: Akan ada tindakan lanjutan
-
-💳 Cara Pembayaran:
-1. Transfer ke rekening Kas RT
-   BCA: 12345678901 (Bendahara RT)
-2. Bayar langsung ke Bendahara RT
-3. Bayar ke Koordinator Blok masing-masing
-
-📝 Catatan:
-- Cantumkan nama dan nomor rumah saat transfer
-- Jangan lupa menyimpan bukti pembayaran
-- Jika ada pertanyaan, hubungi Bendahara RT
-
-Terima kasih atas perhatian dan partisipasi Anda.
-Salam hormat,
-Bendahara RT 001',
+            'judul' => 'Jadwal Pelayanan Posyandu & Cek Kesehatan RW 013',
+            'isi' => "Kepada Yth. Seluruh Warga RW 013,\n\nInformasi jadwal pelayanan Posyandu Balita, Ibu Hamil, dan Lansia se-RW 013 bulan Juli 2026:\n\n• Posyandu Sejahtera (RT 001): Sabtu Pertama (08.00 - 11.00 WIB)\n• Posyandu Kasih Ibu (RT 003): Sabtu Kedua (08.00 - 11.00 WIB)\n• Posyandu Tunas Bangsa (RT 005): Sabtu Ketiga (08.00 - 11.00 WIB)\n• Posyandu Harapan Bunda (RT 007): Sabtu Keempat (08.00 - 11.00 WIB)\n\nFasilitas GRATIS: Imunisasi lengkap, penimbangan balita, pemberian Vitamin A, serta cek gula darah & kolesterol lansia.\n\nSalam sehat,\nTim Kesehatan RW 013",
             'kategori' => 'Informasi',
             'tanggal_aktif' => Carbon::now(),
         ]);
 
         Pengumuman::create([
-            'judul' => 'Program Kerja Bakti Lingkungan Mei',
-            'isi' => 'Alhamdulillah, kegiatan kerja bakti lingkungan RT 001 bulan Mei telah berhasil dilaksanakan dengan baik.
-
-📊 Hasil Pelaksanaan:
-✅ Pembersihan saluran air: Selesai
-✅ Perbaikan jalan utama RT: Selesai
-✅ Penanaman pohon: 25 pohon tertanam
-✅ Pengecatan batas RT: Selesai
-
-👥 Partisipasi:
-Total peserta: 47 orang (Alhamdulillah tingkat partisipasi tinggi)
-Waktu pelaksanaan: 6 jam kerja
-
-📸 Dokumentasi:
-Semua foto kegiatan telah kami uploadkan di papan informasi RT.
-
-🙏 Terima Kasih kepada:
-• Semua warga yang telah berpartisipasi
-• Ibu-ibu PKK atas penyediaan minuman
-• Tim inti yang telah mengkoordinir
-
-Semoga lingkungan RT kita tetap indah dan bersih.
-
-Salam,
-Pengurus RT 001',
-            'kategori' => 'Selesai',
-            'tanggal_aktif' => Carbon::parse('2026-05-28'),
-        ]);
-
-        Pengumuman::create([
-            'judul' => 'Himbauan Keamanan dan Ketertiban',
-            'isi' => 'Yth. Semua Warga RT 001,
-
-Berdasarkan laporan dari koordinator blok dan observasi pengurus RT, kami mengumumkan beberapa himbauan penting:
-
-🚨 Himbauan Keamanan:
-1. Ada laporan pencurian di area RT. Mohon tingkatkan kewaspadaan
-2. Pastikan pintu dan jendela terkunci dengan baik
-3. Matikan lampu ketika tidak digunakan
-4. Laporkan aktivitas mencurigakan ke pengurus RT atau kepolisian
-
-🚴 Himbauan Tertib Lalu Lintas:
-1. Jangan parkir sembarangan di jalan umum
-2. Kurangi kecepatan di area pemukiman
-3. Parkir kendaraan di area yang sudah ditentukan
-
-🌳 Himbauan Lingkungan:
-1. Jangan membuang sampah sembarangan
-2. Tata tertib penempatan TPS (Tempat Pembuangan Sampah)
-3. Pantau aliran air agar tidak tersumbat
-
-Kami berharap semua warga dapat mematuhi himbauan ini demi kenyamanan dan keamanan bersama.
-
-Hormat,
-Pengurus RT 001',
+            'judul' => 'Himbauan Keamanan Ronda Malam & Siskamling RW 013',
+            'isi' => "Himbauan Keamanan Lingkungan RW 013:\n\nMenindaklanjuti koordinasi keamanan wilayah, diharapkan seluruh jadwal ronda malam di RT 001 s/d RT 008 dapat dilaksanakan sesuai petunjuk berikut:\n\n1. Petugas ronda wajib melapor ke Pos Sekretariat Utama RW 013 pada pukul 23.00 WIB.\n2. Tamu yang berkunjung di atas pukul 22.00 WIB wajib melapor 1x24 jam.\n3. Mengaktifkan portal keamanan RW mulai pukul 23.00 - 05.00 WIB.\n\nHormat kami,\nSeksi Keamanan RW 013",
             'kategori' => 'Penting',
-            'tanggal_aktif' => Carbon::parse('2026-06-05'),
+            'tanggal_aktif' => Carbon::parse('2026-07-10'),
         ]);
 
         Pengumuman::create([
-            'judul' => 'Pengumuman Liburan Raya Idul Fitri 2026',
-            'isi' => 'Assalamu\'alaikum Warahmatullahi Wabarakatuh,
-
-Dengan bahagia kami umumkan menjelang perayaan Idul Fitri 1447 H, pengurus RT 001 akan mengadakan kegiatan silaturrahmi.
-
-📅 Program Idul Fitri 2026:
-• Sholat Idul Fitri: 05.30 WIB di lapangan RT
-• Arisan RT: Setiap keluarga diharapkan berpartisipasi
-• Syukuran bersama: Makan-makan bersama di balai RT
-• Takziyah ke keluarga yang ditinggal
-
-🎁 Persiapan:
-• Iuran takziyah: Rp 50.000,00 per keluarga
-• Jika ada yang kurang mampu, silakan hubungi sekretaris RT
-• Target pengumpulan: sebelum 10 Juni 2026
-
-📝 Jadwal Kegiatan:
-• 15 Juni (Hari H): Pagi - Sholat Idul Fitri
-• 15 Juni (Sore): Arisan dan Syukuran
-
-Semoga ibadah kita diterima oleh Allah SWT dan Idul Fitri menjadi momentum untuk memperkuat silaturrahmi.
-
-Wassalamu\'alaikum Warahmatullahi Wabarakatuh,
-Pengurus RT 001',
+            'judul' => 'Jadwal Pembayaran Iuran & Kebersihan Warga RW 013',
+            'isi' => "Kepada Yth. Semua Warga RT 001 - RT 008 / RW 013,\n\nDengan hormat kami informasikan jadwal dan rincian pembayaran iuran bulanan warga RW 013:\n\n• Iuran Kebersihan & Sampah RW: Rp 50.000,00\n• Iuran Keamanan & Siskamling: Rp 50.000,00\n• Kas Pengembangan RW: Rp 50.000,00\nTotal: Rp 150.000,00 / bulan\n\nPembayaran dapat dilakukan secara online melalui aplikasi Warkas Machi atau menghubungi Bendahara RT/RW.\n\nTerima kasih,\nBendahara RW 013",
             'kategori' => 'Informasi',
-            'tanggal_aktif' => Carbon::parse('2026-06-08'),
+            'tanggal_aktif' => Carbon::parse('2026-07-01'),
+        ]);
+
+        Pengumuman::create([
+            'judul' => 'Persiapan Peringatan HUT RI ke-81 & Lomba Antar-RT',
+            'isi' => "Pengumuman Kepada Warga RW 013:\n\nDalam rangka menyambut HUT Kemerdekaan RI ke-81, Panitia Karang Taruna RW 013 akan mengelar rangkaian perlombaan antar-RT:\n\n• Lomba Kebersihan & Keasrian Lingkungan RT\n• Turnamen Bulutangkis & Catur Warga\n• Panggung Pentas Seni Anak & Lansia\n\nPendaftaran peserta lomba dapat dilakukan melalui ketua RT masing-masing mulai tanggal 1 Agustus 2026.\n\nPanitia HUT RI RW 013",
+            'kategori' => 'Informasi',
+            'tanggal_aktif' => Carbon::parse('2026-06-25'),
         ]);
     }
 }

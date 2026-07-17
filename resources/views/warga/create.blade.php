@@ -6,7 +6,7 @@
         <div class="d-flex align-items-center justify-content-between mb-4">
             <div>
                 <h3 class="mb-1">Tambah Warga Baru</h3>
-                <p class="text-muted mb-0">Isi biodata warga RT 001.</p>
+                <p class="text-muted mb-0">Isi biodata warga lingkungan RW 013 (RT 001 - RT 008) Warkas Machi.</p>
             </div>
             <a href="{{ route('warga.index') }}" class="btn btn-secondary text-white rounded-pill px-3">
                 <i class="fas fa-arrow-left me-2"></i>Kembali
@@ -59,15 +59,43 @@
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="password" class="form-label fw-semibold">Password Akun Warga</label>
-                    <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" required>
-                    @error('password')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                    <div class="input-group">
+                        <input type="password" class="form-control @error('password') is-invalid @enderror" id="wargaPassword" name="password" required placeholder="Masukkan password akun">
+                        <button type="button" class="btn btn-outline-secondary px-3" onclick="togglePasswordVisibility('wargaPassword', 'eyeIconWarga')" title="Lihat Password">
+                            <i class="fas fa-eye" id="eyeIconWarga"></i>
+                        </button>
+                        @error('password')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
                 </div>
                 <div class="col-md-6">
                     <label for="phone" class="form-label fw-semibold">No. Telepon / WhatsApp</label>
                     <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" value="{{ old('phone') }}">
                     @error('phone')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="rt_number" class="form-label fw-semibold">No. RT</label>
+                    <select class="form-select @error('rt_number') is-invalid @enderror" id="rt_number" name="rt_number" required>
+                        <option value="" disabled>-- Pilih RT --</option>
+                        @for($i = 1; $i <= 8; $i++)
+                            @php $rtVal = 'RT ' . str_pad($i, 3, '0', STR_PAD_LEFT); @endphp
+                            <option value="{{ $rtVal }}" {{ old('rt_number', 'RT 001') == $rtVal ? 'selected' : '' }}>{{ $rtVal }}</option>
+                        @endfor
+                    </select>
+                    @error('rt_number')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="col-md-6">
+                    <label for="rw_number" class="form-label fw-semibold">No. RW</label>
+                    <input type="text" class="form-control @error('rw_number') is-invalid @enderror" id="rw_number" name="rw_number" value="{{ old('rw_number', 'RW 013') }}" required readonly style="background-color: #f8fafc;">
+                    @error('rw_number')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
@@ -105,12 +133,19 @@
                 </div>
                 <div class="col-md-6">
                     <label for="gender" class="form-label fw-semibold">Gender</label>
-                    <select class="form-select @error('gender') is-invalid @enderror" id="gender" name="gender" style="height: 58px;" required>
+                    <select class="form-select @error('gender') is-invalid @enderror" id="gender" name="gender" required>
                         <option value="" selected disabled>-- Pilih Gender --</option>
                         <option value="Laki-laki" {{ old('gender') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
                         <option value="Perempuan" {{ old('gender') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
                     </select>
                     @error('gender')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="col-md-6">
+                    <label for="tanggal_lahir" class="form-label fw-semibold">Tanggal Lahir</label>
+                    <input type="date" class="form-control @error('tanggal_lahir') is-invalid @enderror" id="tanggal_lahir" name="tanggal_lahir" value="{{ old('tanggal_lahir') }}">
+                    @error('tanggal_lahir')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>

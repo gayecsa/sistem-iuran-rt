@@ -34,6 +34,7 @@ class User extends Authenticatable
         'nik',
         'no_kk',
         'gender',
+        'tanggal_lahir',
     ];
 
     /**
@@ -64,5 +65,10 @@ class User extends Authenticatable
     public function kasRt()
     {
         return $this->hasMany(KasRt::class, 'dibuat_oleh', 'name');
+    }
+
+    public function perkembanganBalita()
+    {
+        return $this->hasMany(PerkembanganBalita::class, 'user_id');
     }
 }

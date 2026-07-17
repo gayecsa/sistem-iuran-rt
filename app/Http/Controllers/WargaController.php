@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 
 class WargaController extends Controller
 {
@@ -63,6 +64,9 @@ class WargaController extends Controller
             'nik' => 'nullable|string|max:20|unique:users',
             'no_kk' => 'nullable|string|max:20|unique:users',
             'gender' => 'nullable|in:Laki-laki,Perempuan',
+            'rt_number' => 'nullable|string',
+            'rw_number' => 'nullable|string',
+            'tanggal_lahir' => 'nullable|date',
         ]);
 
         User::create([
@@ -70,7 +74,8 @@ class WargaController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 'warga',
-            'rt_number' => '001',
+            'rt_number' => $request->rt_number ?? 'RT 001',
+            'rw_number' => $request->rw_number ?? 'RW 013',
             'house_number' => $request->house_number,
             'phone' => $request->phone,
             'address' => $request->address,
@@ -78,6 +83,7 @@ class WargaController extends Controller
             'nik' => $request->nik,
             'no_kk' => $request->no_kk,
             'gender' => $request->gender,
+            'tanggal_lahir' => $request->tanggal_lahir,
         ]);
 
         return redirect()->route('warga.index')
@@ -102,9 +108,12 @@ class WargaController extends Controller
             'nik' => 'nullable|string|max:20|unique:users,nik,' . $warga->id,
             'no_kk' => 'nullable|string|max:20|unique:users,no_kk,' . $warga->id,
             'gender' => 'nullable|in:Laki-laki,Perempuan',
+            'rt_number' => 'nullable|string',
+            'rw_number' => 'nullable|string',
+            'tanggal_lahir' => 'nullable|date',
         ]);
 
-        $warga->update($request->only(['name', 'phone', 'address', 'status_rumah', 'nik', 'no_kk', 'gender']));
+        $warga->update($request->only(['name', 'phone', 'address', 'status_rumah', 'nik', 'no_kk', 'gender', 'rt_number', 'rw_number', 'tanggal_lahir']));
 
         if ($request->filled('password')) {
             $warga->update(['password' => Hash::make($request->password)]);
@@ -136,5 +145,102 @@ class WargaController extends Controller
     protected function authorizeAdminOrBendahara()
     {
         abort_unless(in_array(auth()->user()->role, ['admin', 'bendahara']), 403);
+    }
+
+    public function getKeluargaDetail($no_kk)
+    {
+        $members = User::where('no_kk', $no_kk)
+            ->orderBy('tanggal_lahir', 'asc')
+            ->get();
+
+        if ($members->isEmpty()) {
+            return response()->json(['message' => 'Data keluarga tidak ditemukan'], 404);
+        }
+
+        $head = $members->first();
+
+        $formattedMembers = $members->map(function ($m) {
+            $age = $m->tanggal_lahir ? Carbon::parse($m->tanggal_lahir)->age : null;
+            
+            $peran = 'Anggota Keluarga';
+            if ($age !== null && $age >= 20) {
+                $peran = ($m->gender === 'Laki-laki') ? 'Kepala Keluarga / Ayah' : 'Ibu Rumah Tangga';
+            } else if ($age !== null && $age < 20) {
+                $peran = ($age <= 5) ? 'Anak (Balita)' : 'Anak';
+            }
+
+            return [
+                'id' => $m->id,
+                'name' => $m->name,
+                'nik' => $m->nik ?? '-',
+                'gender' => $m->gender ?? '-',
+                'phone' => $m->phone ?? '-',
+                'tanggal_lahir' => $m->tanggal_lahir ? Carbon::parse($m->tanggal_lahir)->translatedFormat('d M Y') : '-',
+                'usia' => $age !== null ? $age . ' tahun' : '-',
+                'peran' => $peran,
+                'is_active' => $m->is_active,
+            ];
+        });
+
+        return response()->json([
+            'no_kk' => $no_kk,
+            'address' => $head->address,
+            'status_rumah' => ucfirst(str_replace('_', ' ', $head->status_rumah ?? 'milik_sendiri')),
+            'rt_rw' => 'RT ' . intval($head->rt_number) . ' / RW ' . intval($head->rw_number),
+            'house_number' => $head->house_number,
+            'total_anggota' => $members->count(),
+            'members' => $formattedMembers,
+        ]);
+    }
+
+    public function storeAnggotaKeluarga(Request $request, $no_kk)
+    {
+        $this->authorizeAdminOrBendahara();
+
+        $sampleFamily = User::where('no_kk', $no_kk)->firstOrFail();
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'gender' => 'required|in:Laki-laki,Perempuan',
+            'tanggal_lahir' => 'required|date',
+            'nik' => 'nullable|string|max:20|unique:users,nik',
+            'phone' => 'nullable|string|max:20',
+            'email' => 'nullable|email|unique:users,email',
+        ]);
+
+        $email = $request->email;
+        if (!$email) {
+            $count = User::count() + 1;
+            $email = "warga{$count}_" . rand(100, 999) . "@rt001.com";
+        }
+
+        $nik = $request->nik;
+        if (!$nik) {
+            $nik = '32750' . str_pad(rand(1, 99999999991), 11, '0', STR_PAD_LEFT);
+        }
+
+        $newMember = User::create([
+            'name' => $request->name,
+            'email' => $email,
+            'password' => Hash::make('password123'),
+            'role' => 'warga',
+            'rt_number' => $sampleFamily->rt_number ?? '001',
+            'rw_number' => $sampleFamily->rw_number ?? '01',
+            'house_number' => $sampleFamily->house_number ?? '000',
+            'phone' => $request->phone ?? $sampleFamily->phone,
+            'address' => $sampleFamily->address,
+            'status_rumah' => $sampleFamily->status_rumah ?? 'milik_sendiri',
+            'nik' => $nik,
+            'no_kk' => $no_kk,
+            'gender' => $request->gender,
+            'tanggal_lahir' => $request->tanggal_lahir,
+            'is_active' => true,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Anggota keluarga baru berhasil ditambahkan!',
+            'data' => $newMember
+        ]);
     }
 }
