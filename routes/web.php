@@ -11,6 +11,7 @@ use App\Http\Controllers\KeuanganController;
 use App\Http\Controllers\KasController;
 use App\Http\Controllers\PengumumanController;
 use App\Http\Controllers\UmkmController; // <-- Tambahan Import UmkmController
+use App\Http\Controllers\CctvController;
 
 // Guest routes
 Route::middleware('guest')->group(function () {
@@ -28,6 +29,15 @@ Route::middleware('guest')->group(function () {
 // Auth routes (Semua yang sudah login bisa akses ini)
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    // Tombol Back multi-langkah
+    Route::get('/back', function () {
+        $stack = session(\App\Http\Middleware\NavigationHistory::KEY, []);
+        array_pop($stack); // buang halaman saat ini
+        $target = end($stack) ?: route('dashboard');
+        session([\App\Http\Middleware\NavigationHistory::KEY => $stack]);
+        return redirect()->to($target);
+    })->name('nav.back');
     Route::get('/profile', [AuthController::class, 'showProfile'])->name('profile.edit');
     Route::post('/profile', [AuthController::class, 'updateProfile'])->name('profile.update');
     Route::post('/profile/make-admin', [AuthController::class, 'makeAdmin'])->name('profile.makeAdmin');
@@ -95,5 +105,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
         Route::get('/laporan/keuangan', [LaporanController::class, 'laporanKeuangan'])->name('laporan.keuangan');
         Route::get('/laporan/perwarga', [LaporanController::class, 'laporanPerWarga'])->name('laporan.perwarga');
+    });
+
+    // --- CCTV (kelola khusus admin) ---
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/cctv', [CctvController::class, 'index'])->name('cctv.index');
+        Route::post('/cctv', [CctvController::class, 'store'])->name('cctv.store');
+        Route::put('/cctv/{cctv}', [CctvController::class, 'update'])->name('cctv.update');
+        Route::delete('/cctv/{cctv}', [CctvController::class, 'destroy'])->name('cctv.destroy');
     });
 });

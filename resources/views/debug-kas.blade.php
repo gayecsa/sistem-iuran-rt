@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container mt-4">
-    <h2>🔍 Debug Info - Kas RT</h2>
+    <h2>ðŸ” Debug Info - Kas RT</h2>
     
     <div class="alert alert-info">
         <strong>Update:</strong> Saldo sekarang menggunakan selectRaw yang lebih akurat. Jika masih nambah, kemungkinan ada form implicit submission.
@@ -11,7 +11,7 @@
     <div class="row">
         <div class="col-md-6">
             <div class="card p-4">
-                <h5>📊 Database Statistics</h5>
+                <h5>ðŸ“Š Database Statistics</h5>
                 <table class="table table-sm">
                     <tr>
                         <td><strong>Total Records:</strong></td>
@@ -35,7 +35,7 @@
 
         <div class="col-md-6">
             <div class="card p-4">
-                <h5>📝 Breakdown by Category</h5>
+                <h5>ðŸ“ Breakdown by Category</h5>
                 <table class="table table-sm">
                     @foreach($categories as $cat)
                         <tr>
@@ -51,24 +51,24 @@
     <div class="row mt-4">
         <div class="col-12">
             <div class="card p-4">
-                <h5>✅ Solutions Applied</h5>
+                <h5>âœ… Solutions Applied</h5>
                 <ul>
                     <li><strong>selectRaw() Query:</strong> Menggunakan SQL aggregate function yang lebih akurat</li>
                     <li><strong>COALESCE:</strong> Mengatasi NULL values</li>
                     <li><strong>No Implicit Joins:</strong> Query tidak melakukan join yang bisa duplikasi</li>
                 </ul>
                 
-                <h6 class="mt-4">🔍 Checking for Issues:</h6>
+                <h6 class="mt-4">ðŸ” Checking for Issues:</h6>
                 @if($duplicate_check['status'] === 'ok')
-                    <div class="alert alert-success">✅ Tidak ada duplikasi data</div>
+                    <div class="alert alert-success">âœ… Tidak ada duplikasi data</div>
                 @else
-                    <div class="alert alert-warning">⚠️ {{ $duplicate_check['message'] }}</div>
+                    <div class="alert alert-warning">âš ï¸ {{ $duplicate_check['message'] }}</div>
                 @endif
 
                 @if($pengeluaran_check > 0)
-                    <div class="alert alert-success">✅ Pengeluaran terdeteksi: Rp {{ number_format($pengeluaran_check, 0, ',', '.') }}</div>
+                    <div class="alert alert-success">âœ… Pengeluaran terdeteksi: Rp {{ number_format($pengeluaran_check, 0, ',', '.') }}</div>
                 @else
-                    <div class="alert alert-danger">❌ Pengeluaran 0 - Kemungkinan ada masalah dengan data</div>
+                    <div class="alert alert-danger">âŒ Pengeluaran 0 - Kemungkinan ada masalah dengan data</div>
                 @endif
             </div>
         </div>
@@ -77,7 +77,7 @@
     <div class="row mt-4">
         <div class="col-12">
             <div class="card p-4">
-                <h5>📋 Recent Transactions</h5>
+                <h5>ðŸ“‹ Recent Transactions</h5>
                 <div class="table-responsive">
                     <table class="table table-sm table-hover">
                         <thead>
@@ -105,7 +105,6 @@
     </div>
 
     <div class="mt-4">
-        <a href="{{ route('dashboard') }}" class="btn btn-secondary">← Kembali ke Dashboard</a>
     </div>
 </div>
 @endsection

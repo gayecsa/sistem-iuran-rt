@@ -32,7 +32,6 @@
                         <p class="text-muted mb-0">Daftar tempat usaha, kuliner, dan jasa di sekitar RW 013 yang siap melayani warga.</p>
                         <p class="text-info small mt-2 mb-0"><i class="fas fa-hand-pointer me-1"></i> Klik kartu UMKM untuk melihat <strong>Daftar Menu & Peta Rute Navigasi</strong> dari rumah Anda.</p>
                     </div>
-                    <a href="{{ route('dashboard') }}" class="btn btn-light rounded-pill px-4 shadow-sm border">Kembali ke Dashboard</a>
                 </div>
             </div>
 
@@ -290,7 +289,7 @@
 
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 19,
-                    attribution: '© OpenStreetMap'
+                    attribution: 'Â© OpenStreetMap'
                 }).addTo(leafletUmkmMap);
             } else {
                 leafletUmkmMap.invalidateSize();

@@ -157,14 +157,33 @@ class WargaController extends Controller
             return response()->json(['message' => 'Data keluarga tidak ditemukan'], 404);
         }
 
-        $head = $members->first();
+        // Kepala keluarga = laki-laki dewasa (>=20) tertua; fallback: anggota tertua
+        $isAdultMale = fn ($m, $max) => $m->gender === 'Laki-laki' && $m->tanggal_lahir
+            && Carbon::parse($m->tanggal_lahir)->age >= 20 && Carbon::parse($m->tanggal_lahir)->age < $max;
+        $headMember = $members->first(fn ($m) => $isAdultMale($m, 60))
+            ?? $members->first(fn ($m) => $isAdultMale($m, 200))
+            ?? $members->first();
 
-        $formattedMembers = $members->map(function ($m) {
+        // Urutan: Kepala keluarga -> pasangan (perempuan dewasa) -> lainnya berdasarkan usia
+        $members = $members->sortBy(function ($m) use ($headMember) {
+            if ($m->id === $headMember->id) return '0';
+            $age = $m->tanggal_lahir ? Carbon::parse($m->tanggal_lahir)->age : 0;
+            $group = ($m->gender === 'Perempuan' && $age >= 20 && $age < 60) ? '1' : '2';
+            return $group . '-' . ($m->tanggal_lahir ?? '9999');
+        })->values();
+
+        $head = $headMember;
+
+        $formattedMembers = $members->map(function ($m) use ($headMember) {
             $age = $m->tanggal_lahir ? Carbon::parse($m->tanggal_lahir)->age : null;
             
             $peran = 'Anggota Keluarga';
-            if ($age !== null && $age >= 20) {
-                $peran = ($m->gender === 'Laki-laki') ? 'Kepala Keluarga / Ayah' : 'Ibu Rumah Tangga';
+            if ($m->id === $headMember->id) {
+                $peran = 'Kepala Keluarga / Ayah';
+            } else if ($age !== null && $age >= 60) {
+                $peran = ($m->gender === 'Laki-laki') ? 'Kakek' : 'Nenek';
+            } else if ($age !== null && $age >= 20) {
+                $peran = ($m->gender === 'Perempuan') ? 'Ibu Rumah Tangga' : 'Anggota Keluarga';
             } else if ($age !== null && $age < 20) {
                 $peran = ($age <= 5) ? 'Anak (Balita)' : 'Anak';
             }

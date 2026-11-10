@@ -12,7 +12,6 @@
                         <h2 class="mb-2 fw-bold text-dark">Peta Wilayah RW 013</h2>
                         <p class="text-muted mb-0">Informasi mengenai batas wilayah dan lokasi penting di lingkungan RW 013 (RT 001 - RT 008).</p>
                     </div>
-                    <a href="{{ route('dashboard') }}" class="btn btn-light rounded-pill px-4 shadow-sm border">Kembali ke Dashboard</a>
                 </div>
             </div>
 

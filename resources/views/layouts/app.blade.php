@@ -532,6 +532,16 @@
             </div>
         @endif
         
+        @auth
+            @unless(request()->routeIs('dashboard'))
+                <div class="mb-3" style="position:relative;z-index:10;">
+                    <a href="{{ route('nav.back') }}" id="globalBackBtn" class="btn btn-light rounded-pill px-3 shadow-sm border fw-semibold">
+                        <i class="fas fa-arrow-left me-1"></i> Back
+                    </a>
+                </div>
+            @endunless
+        @endauth
+
         @yield('content')
     </div>
     

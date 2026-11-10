@@ -16,7 +16,6 @@
                         <h2 class="mb-2 fw-bold text-dark">Peta Lokasi Wisata Terdekat</h2>
                         <p class="text-muted small mb-0"><i class="fas fa-home text-primary me-1"></i> Titik Rumah Anda: <strong>{{ $userAddress }}</strong></p>
                     </div>
-                    <a href="{{ route('dashboard') }}" class="btn btn-light rounded-pill px-4 shadow-sm border">Kembali ke Dashboard</a>
                 </div>
 
                 <div class="alert alert-info border-0 rounded-4 shadow-sm mb-0">
@@ -192,7 +191,7 @@
 
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 19,
-                    attribution: '© OpenStreetMap'
+                    attribution: 'Â© OpenStreetMap'
                 }).addTo(leafletWisataMap);
             } else {
                 leafletWisataMap.invalidateSize();

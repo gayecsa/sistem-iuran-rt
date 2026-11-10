@@ -11,7 +11,6 @@
                         <h2 class="mb-2">Layanan Penerbitan Surat RT 001</h2>
                         <p class="text-muted mb-0">Urus penerbitan surat keterangan dari RT dengan cepat dan mudah.</p>
                     </div>
-                    <a href="{{ route('dashboard') }}" class="btn btn-soft">Kembali ke Dashboard</a>
                 </div>
 
                 <div class="row g-3 mt-4">
@@ -26,9 +25,9 @@
                                     <i class="fas fa-home text-primary" style="font-size: 1.5rem;"></i>
                                 </div>
                                 <ul class="small text-muted mb-3">
-                                    <li>✓ Proses cepat 1-2 hari kerja</li>
-                                    <li>✓ Gratis untuk warga RT</li>
-                                    <li>✓ Sah secara administratif</li>
+                                    <li>âœ“ Proses cepat 1-2 hari kerja</li>
+                                    <li>âœ“ Gratis untuk warga RT</li>
+                                    <li>âœ“ Sah secara administratif</li>
                                 </ul>
                                 <a href="{{ route('surat.create', ['jenis' => 'domisili']) }}" class="btn btn-sm btn-primary btn-soft">
                                     <i class="fas fa-file me-1"></i>Buat Permohonan
@@ -48,9 +47,9 @@
                                     <i class="fas fa-heart text-danger" style="font-size: 1.5rem;"></i>
                                 </div>
                                 <ul class="small text-muted mb-3">
-                                    <li>✓ Verifikasi langsung ke rumah</li>
-                                    <li>✓ Proses 3-5 hari kerja</li>
-                                    <li>✓ Berlaku 1 tahun</li>
+                                    <li>âœ“ Verifikasi langsung ke rumah</li>
+                                    <li>âœ“ Proses 3-5 hari kerja</li>
+                                    <li>âœ“ Berlaku 1 tahun</li>
                                 </ul>
                                 <a href="{{ route('surat.create', ['jenis' => 'tidak-mampu']) }}" class="btn btn-sm btn-danger btn-soft">
                                     <i class="fas fa-file me-1"></i>Buat Permohonan
@@ -70,9 +69,9 @@
                                     <i class="fas fa-store text-success" style="font-size: 1.5rem;"></i>
                                 </div>
                                 <ul class="small text-muted mb-3">
-                                    <li>✓ Surat legalisir dari RT</li>
-                                    <li>✓ Proses 1 hari kerja</li>
-                                    <li>✓ Biaya Rp 10.000,-</li>
+                                    <li>âœ“ Surat legalisir dari RT</li>
+                                    <li>âœ“ Proses 1 hari kerja</li>
+                                    <li>âœ“ Biaya Rp 10.000,-</li>
                                 </ul>
                                 <a href="{{ route('surat.create', ['jenis' => 'usaha']) }}" class="btn btn-sm btn-success btn-soft">
                                     <i class="fas fa-file me-1"></i>Buat Permohonan
@@ -92,9 +91,9 @@
                                     <i class="fas fa-envelope text-warning" style="font-size: 1.5rem;"></i>
                                 </div>
                                 <ul class="small text-muted mb-3">
-                                    <li>✓ Pengantar ke kelurahan/camat</li>
-                                    <li>✓ Proses 1 hari kerja</li>
-                                    <li>✓ Gratis untuk warga RT</li>
+                                    <li>âœ“ Pengantar ke kelurahan/camat</li>
+                                    <li>âœ“ Proses 1 hari kerja</li>
+                                    <li>âœ“ Gratis untuk warga RT</li>
                                 </ul>
                                 <a href="{{ route('surat.create', ['jenis' => 'pengantar']) }}" class="btn btn-sm btn-warning btn-soft">
                                     <i class="fas fa-file me-1"></i>Buat Permohonan
@@ -110,9 +109,9 @@
                         <div class="col-md-6">
                             <h6 class="mb-2">Persyaratan Dokumen:</h6>
                             <ul class="list-group list-group-flush small">
-                                <li class="list-group-item">✓ Fotokopi KTP/SIM</li>
-                                <li class="list-group-item">✓ Fotokopi Kartu Keluarga</li>
-                                <li class="list-group-item">✓ Pas Foto 2x3 (jika diperlukan)</li>
+                                <li class="list-group-item">âœ“ Fotokopi KTP/SIM</li>
+                                <li class="list-group-item">âœ“ Fotokopi Kartu Keluarga</li>
+                                <li class="list-group-item">âœ“ Pas Foto 2x3 (jika diperlukan)</li>
                             </ul>
                         </div>
                         <div class="col-md-6">

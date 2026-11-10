@@ -39,6 +39,49 @@
 
                 <div class="mt-2">
                     <p class="text-uppercase text-secondary mb-3 small fw-bold">Layanan & Informasi</p>
+                    <style>
+                        .mini-service{display:flex;align-items:center;gap:.75rem;padding:.6rem .75rem;border-radius:14px;background:#fff;border:1px solid #eef0f5;text-decoration:none;transition:all .2s ease;}
+                        .mini-service:hover{transform:translateX(4px);box-shadow:0 6px 18px rgba(46,61,94,.08);border-color:#dbe3f0;}
+                        .mini-service .mini-icon{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.95rem;}
+                        .mini-service .mini-title{font-size:.9rem;font-weight:700;color:#1f2937;margin:0;line-height:1.2;}
+                        .mini-service .mini-desc{font-size:.75rem;color:#6b7280;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+                        .mini-service .badge{font-size:.68rem;}
+                    </style>
+                    <div class="d-flex flex-column gap-2">
+                        <a href="{{ route('posyandu') }}" class="mini-service">
+                            <div class="mini-icon" style="background:#d1fae5;color:#047857;"><i class="fas fa-heartbeat"></i></div>
+                            <div class="flex-grow-1" style="min-width:0;">
+                                <p class="mini-title">Info Posyandu</p>
+                                <p class="mini-desc">Jadwal layanan kesehatan keluarga & balita</p>
+                            </div>
+                            <span class="badge bg-success">Sabtu 08.00</span>
+                        </a>
+                        <a href="{{ route('umkm.index') }}" class="mini-service">
+                            <div class="mini-icon" style="background:#fef08a;color:#ca8a04;"><i class="fas fa-utensils"></i></div>
+                            <div class="flex-grow-1" style="min-width:0;">
+                                <p class="mini-title">UMKM Terdekat</p>
+                                <p class="mini-desc">Tempat makanan & UMKM terdekat</p>
+                            </div>
+                            <span class="badge bg-warning text-dark">8 Tempat</span>
+                        </a>
+                        <a href="{{ route('surat.index') }}" class="mini-service">
+                            <div class="mini-icon" style="background:#e8daef;color:#7d3c98;"><i class="fas fa-file-alt"></i></div>
+                            <div class="flex-grow-1" style="min-width:0;">
+                                <p class="mini-title">Penerbitan Surat</p>
+                                <p class="mini-desc">Surat keterangan resmi</p>
+                            </div>
+                            <span class="badge bg-secondary">4 Tipe</span>
+                        </a>
+                        <a href="{{ route('wisata.index') }}" class="mini-service">
+                            <div class="mini-icon" style="background:#dbeafe;color:#2563eb;"><i class="fas fa-umbrella-beach"></i></div>
+                            <div class="flex-grow-1" style="min-width:0;">
+                                <p class="mini-title">Wisata Terdekat</p>
+                                <p class="mini-desc">Lokasi wisata & rekreasi sekitar RW 013</p>
+                            </div>
+                            <span class="badge bg-primary">6 Lokasi</span>
+                        </a>
+                    </div>
+                    {{-- OLD_SERVICE_CARDS_START
                     <div class="row g-3">
                         <div class="col-12">
                             <div class="card service-card p-3 h-100 animate__animated animate__fadeInUp">
@@ -116,6 +159,7 @@
                             </div>
                         </div>
                     </div>
+                    OLD_SERVICE_CARDS_END --}}
                 </div>
             </div>
         </div>
@@ -182,6 +226,57 @@
                             <h5 class="mt-2 mb-0 fw-bold text-dark">Rp {{ number_format($saldo_kas ?? 0, 0, ',', '.') }}</h5>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            @php $cctvs = \App\Models\Cctv::where('aktif', true)->latest()->get(); $isAdmin = auth()->user()->role === 'admin'; @endphp
+            <style>
+                .cctv-card{background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);border-radius:18px;border:none;color:#e2e8f0;}
+                .cctv-tile{position:relative;border-radius:14px;overflow:hidden;background:#000;aspect-ratio:16/9;}
+                .cctv-tile video,.cctv-tile img{width:100%;height:100%;object-fit:cover;display:block;}
+                .cctv-live{position:absolute;top:8px;left:8px;background:rgba(220,38,38,.9);color:#fff;font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:.5px;}
+                .cctv-live::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:#fff;margin-right:5px;animation:cctvBlink 1s infinite;vertical-align:middle;}
+                @keyframes cctvBlink{50%{opacity:.2}}
+                .cctv-label{position:absolute;bottom:0;left:0;right:0;padding:18px 10px 8px;background:linear-gradient(transparent,rgba(0,0,0,.8));font-size:.8rem;}
+                .cctv-actions{position:absolute;top:8px;right:8px;display:flex;gap:6px;}
+                .cctv-actions button{border:none;border-radius:999px;font-size:.7rem;padding:3px 10px;background:rgba(255,255,255,.9);color:#0f172a;font-weight:600;}
+                .cctv-actions button.recording{background:#dc2626;color:#fff;}
+            </style>
+            <div class="card cctv-card p-4 mt-4 animate__animated animate__fadeInUp">
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                    <div>
+                        <h6 class="fw-bold mb-1 text-white"><i class="fas fa-video text-danger me-2"></i>CCTV Lingkungan RW 013</h6>
+                        <small class="text-secondary">Pantauan langsung keamanan lingkungan</small>
+                    </div>
+                    @if($isAdmin)
+                        <a href="{{ route('cctv.index') }}" class="btn btn-sm btn-light rounded-pill px-3"><i class="fas fa-cog me-1"></i> Kelola CCTV</a>
+                    @endif
+                </div>
+                <div class="row g-3">
+                    @forelse($cctvs as $cam)
+                        @php $isMjpeg = preg_match('/mjpe?g|\.cgi|snapshot|\.jpg/i', $cam->stream_url); @endphp
+                        <div class="col-md-6">
+                            <div class="cctv-tile" oncontextmenu="return {{ $isAdmin ? 'true' : 'false' }};">
+                                @if($isMjpeg)
+                                    <img src="{{ $cam->stream_url }}" alt="{{ $cam->nama }}" draggable="false">
+                                @else
+                                    <video class="cctv-video" data-src="{{ $cam->stream_url }}" muted autoplay playsinline crossorigin="anonymous"
+                                        @if(!$isAdmin) controlslist="nodownload noplaybackrate" disablepictureinpicture @endif controls></video>
+                                @endif
+                                <span class="cctv-live">LIVE</span>
+                                @if($isAdmin && !$isMjpeg)
+                                    <div class="cctv-actions">
+                                        <button type="button" class="cctv-rec" data-name="{{ \Illuminate\Support\Str::slug($cam->nama) }}"><i class="fas fa-circle me-1"></i>Rekam</button>
+                                    </div>
+                                @endif
+                                <div class="cctv-label"><strong>{{ $cam->nama }}</strong>@if($cam->lokasi) · {{ $cam->lokasi }}@endif</div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="col-12 text-center text-secondary py-4">
+                            <i class="fas fa-video-slash fa-2x mb-2"></i><p class="mb-0">Belum ada kamera CCTV aktif.</p>
+                        </div>
+                    @endforelse
                 </div>
             </div>
 
@@ -283,8 +378,53 @@
 
 
 
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // ===== CCTV player =====
+    document.querySelectorAll('.cctv-video').forEach(v => {
+        const src = v.dataset.src;
+        if (/\.m3u8(\?|$)/i.test(src) && window.Hls && Hls.isSupported()) {
+            const hls = new Hls({ liveDurationInfinity: true });
+            hls.loadSource(src);
+            hls.attachMedia(v);
+        } else {
+            v.src = src;
+        }
+        v.play().catch(() => {});
+    });
+
+    // ===== Rekam & download (khusus admin) =====
+    document.querySelectorAll('.cctv-rec').forEach(btn => {
+        let recorder = null, chunks = [];
+        btn.addEventListener('click', () => {
+            const video = btn.closest('.cctv-tile').querySelector('video');
+            if (recorder && recorder.state === 'recording') { recorder.stop(); return; }
+            try {
+                const stream = (video.captureStream || video.mozCaptureStream).call(video);
+                recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+            } catch (e) {
+                alert('Rekaman gagal. Pastikan server stream mengizinkan CORS.');
+                return;
+            }
+            chunks = [];
+            recorder.ondataavailable = e => e.data.size && chunks.push(e.data);
+            recorder.onstop = () => {
+                const url = URL.createObjectURL(new Blob(chunks, { type: 'video/webm' }));
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `cctv-${btn.dataset.name}-${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.webm`;
+                a.click();
+                setTimeout(() => URL.revokeObjectURL(url), 5000);
+                btn.classList.remove('recording');
+                btn.innerHTML = '<i class="fas fa-circle me-1"></i>Rekam';
+            };
+            recorder.start(1000);
+            btn.classList.add('recording');
+            btn.innerHTML = '<i class="fas fa-stop me-1"></i>Stop & Download';
+        });
+    });
+
     // Data dari controller
     const totalLaki = {{ $total_laki ?? 0 }};
     const totalPerempuan = {{ $total_perempuan ?? 0 }};

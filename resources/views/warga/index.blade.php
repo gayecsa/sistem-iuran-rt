@@ -43,8 +43,21 @@
 
     <!-- Tabel Warga -->
     <div class="card p-3 shadow-sm">
-        <div class="mb-3">
+        <div class="mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
             <span class="badge bg-info text-white">Total Warga: {{ $warga->total() }}</span>
+            @if($warga->hasPages())
+                <div class="d-flex align-items-center gap-2">
+                    <small class="text-muted me-1">Hal. {{ $warga->currentPage() }} / {{ $warga->lastPage() }}</small>
+                    <a href="{{ $warga->appends(request()->query())->previousPageUrl() ?? '#' }}"
+                       class="btn btn-sm btn-outline-primary rounded-pill px-3 {{ $warga->onFirstPage() ? 'disabled' : '' }}">
+                        <i class="fas fa-chevron-left me-1"></i> Previous
+                    </a>
+                    <a href="{{ $warga->appends(request()->query())->nextPageUrl() ?? '#' }}"
+                       class="btn btn-sm btn-primary rounded-pill px-3 {{ $warga->hasMorePages() ? '' : 'disabled' }}">
+                        Next <i class="fas fa-chevron-right ms-1"></i>
+                    </a>
+                </div>
+            @endif
         </div>
         <div class="table-responsive">
             <table class="table table-bordered align-middle mb-0">

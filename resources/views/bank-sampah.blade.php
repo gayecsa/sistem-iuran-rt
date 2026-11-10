@@ -11,7 +11,6 @@
                         <h2 class="mb-2">Program Bank Sampah RT 001</h2>
                         <p class="text-muted mb-0">Tempat pengumpulan sampah terpilah untuk dikumpulkan dan dimanfaatkan kembali.</p>
                     </div>
-                    <a href="{{ route('dashboard') }}" class="btn btn-soft">Kembali ke Dashboard</a>
                 </div>
 
                 <div class="row g-3 mt-4">

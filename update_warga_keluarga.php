@@ -63,14 +63,16 @@ for ($i = 1; $i <= $totalFamilies; $i++) {
     
     // Member 2: Ibu
     $ibuAge = rand(28, 50);
-    $ibuName = array_pop($uniqueFirstNamesFemale) . ' ' . $lastName;
+    $otherLastNames = array_values(array_diff($lastNames, [$lastName]));
+    shuffle($otherLastNames);
+    $ibuName = array_pop($uniqueFirstNamesFemale) . ' ' . array_pop($otherLastNames);
     createUser($ibuName, 'Perempuan', $ibuAge, clone $faker, $noKk, $address, $statusRumah, $rtNumber, $rwNumber, $houseNumber, $userCount, $usedEmails);
     
     // Members 3 to N: Anak / Kakek Nenek
     for ($j = 3; $j <= $familySize; $j++) {
         $isMale = (rand(1, 100) > 50);
         $firstName = $isMale ? array_pop($uniqueFirstNamesMale) : array_pop($uniqueFirstNamesFemale);
-        $memberName = $firstName . ' ' . $lastName;
+        $memberName = $firstName . ' ' . array_pop($otherLastNames);
         
         // Ensure at least some balita
         if ($j === 3 && rand(1, 100) <= 40) { // 40% chance the 3rd member is a balita
