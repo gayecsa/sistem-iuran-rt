@@ -1,119 +1,120 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warkas Machi | Pelayanan Mudah, Warga Sejahtera – RW 013</title>
+    <meta name="description" content="Warkas Machi – Sistem Informasi dan Layanan Terpadu RW 013. Masuk atau daftar untuk mengakses layanan warga.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        (function () {
+            var t = localStorage.getItem('wm-theme');
+            if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+    <style>
+        :root { --primary:#1456A0; --secondary:#2878D0; --light-blue:#EAF3FF; --green:#16865D; --bg:#F4F7FB;
+                --text:#172B4D; --muted:#5E6C84; --border:#DCE4EE; --card:#FFFFFF; --shadow:0 10px 30px rgba(20,86,160,.08); }
+        [data-theme="dark"] { --light-blue:#1A2A44; --bg:#0F1724; --text:#E6EDF7; --muted:#9AA8BC; --border:#2A3A52;
+                --card:#16213A; --shadow:0 10px 30px rgba(0,0,0,.35); }
+        * { box-sizing:border-box; margin:0; padding:0; }
+        body { font-family:'Plus Jakarta Sans',system-ui,sans-serif; background:linear-gradient(180deg,var(--light-blue),var(--bg) 70%);
+               color:var(--text); min-height:100vh; display:flex; flex-direction:column; transition:background .3s,color .3s; }
+        header { display:flex; justify-content:space-between; align-items:center; padding:20px 6vw; }
+        .logo { display:flex; align-items:center; gap:12px; }
+        .logo svg { width:46px; height:46px; }
+        .logo strong { display:block; font-size:1.2rem; color:var(--primary); }
+        [data-theme="dark"] .logo strong { color:#7DB4F5; }
+        .logo small { color:var(--muted); font-size:.78rem; }
+        .nav { display:flex; gap:10px; align-items:center; }
+        .btn { display:inline-flex; align-items:center; gap:9px; padding:12px 22px; border-radius:12px; font:inherit;
+               font-weight:700; text-decoration:none; border:1.5px solid transparent; cursor:pointer; transition:all .2s; }
+        .btn-primary { background:var(--primary); color:#fff; }
+        .btn-primary:hover { background:var(--secondary); transform:translateY(-2px); }
+        .btn-outline { border-color:var(--primary); color:var(--primary); background:var(--card); }
+        [data-theme="dark"] .btn-outline { color:#7DB4F5; border-color:#7DB4F5; }
+        .btn-outline:hover { background:var(--light-blue); transform:translateY(-2px); }
+        .icon-btn { width:42px; height:42px; border-radius:50%; border:1px solid var(--border); background:var(--card); color:var(--text); cursor:pointer; }
 
-@section('content')
-<div class="cover-container min-vh-100 d-flex align-items-center py-5" style="background: linear-gradient(135deg, #d4f3ff 0%, #fbe4f3 45%, #fff9e6 100%);">
-    <div class="container py-4">
-        <div class="row align-items-stretch gy-4">
-            
-            <!-- Left Card: Hero Title & Description -->
-            <div class="col-lg-6 d-flex">
-                <div class="card cover-card border-0 shadow-lg p-4 p-md-5 w-100 d-flex flex-column justify-content-between" style="border-radius: 28px; background: rgba(255,255,255,0.96);">
-                    <div>
-                        <span class="badge bg-primary px-3 py-2 rounded-pill shadow-sm mb-3 fs-6">
-                            <i class="fas fa-city me-1"></i> Selamat Datang di Warkas Machi RW 013
-                        </span>
-                        <h1 class="display-5 fw-bold text-dark mb-3">Sistem Informasi & Layanan Terpadu RW 013</h1>
-                        <p class="lead text-muted mb-4" style="font-size: 1.05rem;">
-                            Platform digital modern untuk warga <strong>RT 001 s/d RT 008</strong> di wilayah RW 013. Pantau laporan kas & iuran warga, jadwal Posyandu kesehatan, lokasi UMKM kuliner, penerbitan surat digital, hingga rute navigasi wisata terdekat dalam satu tempat.
-                        </p>
-                    </div>
+        .hero { flex:1; display:grid; grid-template-columns:1fr 1.1fr; gap:40px; align-items:center; padding:20px 6vw 40px; }
+        .hero h1 { font-size:clamp(2.2rem,4.4vw,3.6rem); line-height:1.12; font-weight:800; animation:rise .6s ease; }
+        .hero h1 span { color:var(--secondary); display:block; }
+        .underline { width:130px; height:5px; border-radius:4px; background:#F2B33D; margin:14px 0 22px; }
+        .hero p { color:var(--muted); line-height:1.7; max-width:480px; font-size:1.05rem; }
+        .cta { display:flex; gap:12px; margin:30px 0 34px; flex-wrap:wrap; }
+        .pillars { display:flex; flex-wrap:wrap; }
+        .pillar { text-align:center; padding:0 20px; border-left:1px solid var(--border); font-size:.8rem; color:var(--muted); }
+        .pillar:first-child { border-left:0; padding-left:0; }
+        .pillar i { display:grid; place-items:center; width:44px; height:44px; margin:0 auto 6px; border-radius:50%;
+                    background:var(--card); box-shadow:var(--shadow); font-size:1.05rem; }
+        .art img { width:100%; border-radius:28px; box-shadow:var(--shadow); display:block; animation:rise .8s ease; }
+        footer { text-align:center; padding:18px; color:var(--muted); font-size:.8rem; }
+        @keyframes rise { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:none; } }
 
-                    <div class="p-3 rounded-4 bg-light border info-footer-box">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="icon-circle bg-primary text-white shadow-sm flex-shrink-0" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
-                                <i class="fas fa-shield-alt fa-lg"></i>
-                            </div>
-                            <div>
-                                <h6 class="mb-1 fw-bold text-dark">Aman, Transparan, & Terintegrasi</h6>
-                                <small class="text-muted">Akses informasi real-time dan terpercaya untuk seluruh warga RW 013.</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right Card: 4 Upgraded Feature Cards + Action Buttons Below Them -->
-            <div class="col-lg-6 d-flex">
-                <div class="card cover-card border-0 shadow-lg p-4 w-100 d-flex flex-column justify-content-between" style="border-radius: 28px; background: rgba(255,255,255,0.96);">
-                    <div>
-                        <div class="d-flex align-items-center justify-content-between mb-4">
-                            <h5 class="fw-bold text-dark mb-0"><i class="fas fa-th-large text-primary me-2"></i>Layanan Utama RW 013</h5>
-                            <span class="badge bg-success-subtle text-success border px-3 py-1 rounded-pill">RT 001 - RT 008</span>
-                        </div>
-
-                        <!-- 4 Feature Cards Grid -->
-                        <div class="row g-3">
-                            <div class="col-sm-6">
-                                <div class="p-3 rounded-4 h-100 shadow-sm border feature-box feature-box-1" style="background: linear-gradient(135deg, #e0f2fe, #f5f0ff);">
-                                    <div class="d-flex align-items-center justify-content-between mb-2">
-                                        <div class="icon-circle bg-white text-primary shadow-sm" style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
-                                            <i class="fas fa-users-cog"></i>
-                                        </div>
-                                        <span class="badge bg-primary small">Keuangan</span>
-                                    </div>
-                                    <h6 class="fw-bold text-dark mb-1">Data Warga & Kas</h6>
-                                    <p class="small text-muted mb-0">Kelola iuran & laporan kas transparan.</p>
-                                </div>
-                            </div>
-
-                            <div class="col-sm-6">
-                                <div class="p-3 rounded-4 h-100 shadow-sm border feature-box feature-box-2" style="background: linear-gradient(135deg, #d1fae5, #f4ecff);">
-                                    <div class="d-flex align-items-center justify-content-between mb-2">
-                                        <div class="icon-circle bg-white text-success shadow-sm" style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
-                                            <i class="fas fa-heartbeat"></i>
-                                        </div>
-                                        <span class="badge bg-success small">Kesehatan</span>
-                                    </div>
-                                    <h6 class="fw-bold text-dark mb-1">Posyandu & Ibu Hamil</h6>
-                                    <p class="small text-muted mb-0">Jadwal imunisasi & edukasi keluarga.</p>
-                                </div>
-                            </div>
-
-                            <div class="col-sm-6">
-                                <div class="p-3 rounded-4 h-100 shadow-sm border feature-box feature-box-3" style="background: linear-gradient(135deg, #fef08a, #fff0f8);">
-                                    <div class="d-flex align-items-center justify-content-between mb-2">
-                                        <div class="icon-circle bg-white text-warning shadow-sm" style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
-                                            <i class="fas fa-store"></i>
-                                        </div>
-                                        <span class="badge bg-warning text-dark small">8 UMKM</span>
-                                    </div>
-                                    <h6 class="fw-bold text-dark mb-1">UMKM & Menu</h6>
-                                    <p class="small text-muted mb-0">Menu harga & rute lokasi kuliner.</p>
-                                </div>
-                            </div>
-
-                            <div class="col-sm-6">
-                                <div class="p-3 rounded-4 h-100 shadow-sm border feature-box feature-box-4" style="background: linear-gradient(135deg, #e8daef, #e5fff0);">
-                                    <div class="d-flex align-items-center justify-content-between mb-2">
-                                        <div class="icon-circle bg-white text-primary shadow-sm" style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
-                                            <i class="fas fa-map-marked-alt text-primary"></i>
-                                        </div>
-                                        <span class="badge bg-secondary small">Peta Rute</span>
-                                    </div>
-                                    <h6 class="fw-bold text-dark mb-1">Surat & Wisata</h6>
-                                    <p class="small text-muted mb-0">Peta destinasi & surat digital.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Tombol Masuk & Daftar Akun DI BAWAH 4 Kotak -->
-                    <div class="mt-4 pt-3 border-top">
-                        <p class="text-muted small mb-2"><i class="fas fa-arrow-circle-right me-1 text-primary"></i> Akses layanan Warkas Machi RW 013:</p>
-                        <div class="d-flex flex-wrap gap-2">
-                            <a href="{{ route('login') }}" class="btn btn-primary btn-lg rounded-pill px-4 shadow-sm fw-bold flex-grow-1">
-                                <i class="fas fa-sign-in-alt me-2"></i>Masuk
-                            </a>
-                            <a href="{{ route('register') }}" class="btn btn-outline-primary btn-lg rounded-pill px-4 shadow-sm fw-bold flex-grow-1">
-                                <i class="fas fa-user-plus me-2"></i>Daftar Akun
-                            </a>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-        </div>
+        @media (max-width:900px) {
+            .hero { grid-template-columns:1fr; text-align:center; padding-top:10px; }
+            .hero p, .underline { margin-left:auto; margin-right:auto; }
+            .cta, .pillars { justify-content:center; }
+            .art { order:-1; }
+            .nav .btn { display:none; }
+        }
+        @media (max-width:520px) {
+            .cta .btn { width:100%; justify-content:center; }
+            .pillar { padding:0 8px; font-size:.72rem; }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="logo">
+        <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M8 30 32 10l24 20" fill="none" stroke="#1456A0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 27v20h36V27" fill="none" stroke="#2878D0" stroke-width="3.5" stroke-linejoin="round"/><circle cx="26" cy="30" r="3.5" fill="#1456A0"/><path d="M21 44v-6a5 5 0 0 1 10 0v6" fill="#1456A0"/><circle cx="38" cy="32" r="3" fill="#2878D0"/><path d="M34 44v-5a4 4 0 0 1 8 0v5" fill="#2878D0"/><path d="M10 52c8-8 18-8 22-2 4-6 14-6 22 2-10 4-34 4-44 0Z" fill="#16865D"/></svg>
+        <div><strong>Warkas Machi</strong><small>RW 013 &bull; Kelurahan Machi</small></div>
     </div>
-</div>
-@endsection
+    <nav class="nav">
+        <a href="{{ route('login') }}" class="btn btn-outline" id="navLogin"><i class="fas fa-right-to-bracket"></i> Masuk</a>
+        <button class="icon-btn" id="themeToggle" type="button" aria-label="Ganti mode gelap/terang"><i class="fas fa-moon"></i></button>
+    </nav>
+</header>
+
+<main class="hero">
+    <section>
+        <h1>Pelayanan Mudah, <span>Warga Sejahtera</span></h1>
+        <div class="underline"></div>
+        @if (session('success'))
+            <p style="display:inline-flex;gap:8px;align-items:center;background:#E3F5EC;color:#16865D;padding:10px 14px;border-radius:12px;font-size:.9rem;margin-bottom:16px"><i class="fas fa-circle-check"></i>{{ session('success') }}</p>
+        @endif
+        <p>Sistem Informasi dan Layanan Terpadu RW 013 untuk mewujudkan lingkungan yang lebih baik, sehat, dan sejahtera.</p>
+        <div class="cta">
+            <a href="{{ route('login') }}" class="btn btn-primary" id="ctaLogin"><i class="fas fa-right-to-bracket"></i> Masuk</a>
+            <a href="{{ route('register') }}" class="btn btn-outline" id="ctaRegister"><i class="fas fa-user-plus"></i> Daftar Akun</a>
+        </div>
+        <div class="pillars">
+            <div class="pillar"><i class="fas fa-users" style="color:#2878D0"></i>Pelayanan<br>Terpadu</div>
+            <div class="pillar"><i class="fas fa-heart-pulse" style="color:#16865D"></i>Kesehatan<br>Masyarakat</div>
+            <div class="pillar"><i class="fas fa-chart-line" style="color:#E59A1A"></i>Ekonomi<br>Warga</div>
+            <div class="pillar"><i class="fas fa-shield-halved" style="color:#7A5AF8"></i>Lingkungan<br>Aman</div>
+        </div>
+    </section>
+    <figure class="art">
+        <img src="{{ asset('images/auth-warga.jpg') }}" alt="Ilustrasi keluarga dan warga Indonesia di lingkungan RW 013">
+    </figure>
+</main>
+
+<footer>&copy; {{ date('Y') }} Warkas Machi &bull; RW 013 Kelurahan Machi</footer>
+
+<script>
+    (function () {
+        var r = document.documentElement, b = document.getElementById('themeToggle');
+        function sync() { b.innerHTML = r.dataset.theme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>'; }
+        sync();
+        b.addEventListener('click', function () {
+            r.dataset.theme = r.dataset.theme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('wm-theme', r.dataset.theme); sync();
+        });
+    })();
+</script>
+</body>
+</html>

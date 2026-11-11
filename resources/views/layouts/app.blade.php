@@ -440,20 +440,18 @@
             border-color: #2d394e !important;
         }
     </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/warkas-theme.css') }}?v=1">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light fixed-top">
         <div class="container">
             <a class="navbar-brand fw-bold d-flex align-items-center" href="{{ route('dashboard') }}">
                 <span class="brand-logo me-2">
-                    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                        <circle cx="32" cy="32" r="28" fill="currentColor" opacity="0.12" />
-                        <path d="M23 24h18a6 6 0 0 1 6 6v4a6 6 0 0 1-6 6H23v-4h16a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2H23v-4Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M25 30c0-4 3-7 7-7h5c4 0 7 3 7 7s-3 7-7 7h-5c-4 0-7-3-7-7Z" fill="currentColor" opacity="0.4" />
-                        <path d="M28 33h8m-4-4v8" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" />
-                    </svg>
+                    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M8 30 32 10l24 20" fill="none" stroke="#1456A0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 27v20h36V27" fill="none" stroke="#2878D0" stroke-width="3.5" stroke-linejoin="round"/><circle cx="26" cy="30" r="3.5" fill="#1456A0"/><path d="M21 44v-6a5 5 0 0 1 10 0v6" fill="#1456A0"/><circle cx="38" cy="32" r="3" fill="#2878D0"/><path d="M34 44v-5a4 4 0 0 1 8 0v5" fill="#2878D0"/><path d="M10 52c8-8 18-8 22-2 4-6 14-6 22 2-10 4-34 4-44 0Z" fill="#16865D"/></svg>
                 </span>
-                Warkas Machi
+                <span>Warkas Machi<small>RW 013 &bull; Kelurahan Machi</small></span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -470,7 +468,7 @@
                         @endif
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                                <img src="{{ Auth::user()->profile_photo ? asset('storage/' . Auth::user()->profile_photo) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=F9D8E5&color=4B3A5C' }}"
+                                <img src="{{ Auth::user()->profile_photo ? asset('storage/' . Auth::user()->profile_photo) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=EAF3FF&color=1456A0' }}"
                                     alt="Avatar" class="profile-avatar">
                                 <span>
                                     {{ Auth::user()->name }}
@@ -634,11 +632,12 @@
             const isDark = document.body.classList.contains('dark-mode');
             const newTheme = isDark ? 'light' : 'dark';
             localStorage.setItem('warkas_theme', newTheme);
+            localStorage.setItem('wm-theme', newTheme);
             applyTheme(newTheme);
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            const savedTheme = localStorage.getItem('warkas_theme') || 'light';
+            const savedTheme = localStorage.getItem('wm-theme') || localStorage.getItem('warkas_theme') || 'light';
             applyTheme(savedTheme);
         });
     </script>

@@ -1,0 +1,173 @@
+/* ==========================================================================
+   Warkas Machi – Tema Pelayanan Publik & Kesejahteraan
+   Menyamakan halaman internal dengan tampilan halaman utama / login.
+   Dimuat SETELAH style bawaan layouts/app.blade.php sehingga hanya meng-override visual.
+   ========================================================================== */
+:root {
+    --wm-primary: #1456A0;
+    --wm-secondary: #2878D0;
+    --wm-light: #EAF3FF;
+    --wm-green: #16865D;
+    --wm-bg: #F4F7FB;
+    --wm-text: #172B4D;
+    --wm-muted: #5E6C84;
+    --wm-border: #DCE4EE;
+    --wm-card: #FFFFFF;
+    --wm-shadow: 0 10px 30px rgba(20, 86, 160, .08);
+
+    /* override variabel lama */
+    --soft-pink: #EAF3FF;
+    --soft-blue: #EAF3FF;
+    --deep-pink: #2878D0;
+    --deep-blue: #1456A0;
+    --surface: #FFFFFF;
+    --text-strong: #172B4D;
+    --shadow: var(--wm-shadow);
+
+    --bs-primary: #1456A0;
+    --bs-primary-rgb: 20, 86, 160;
+    --bs-success: #16865D;
+    --bs-success-rgb: 22, 134, 93;
+    --bs-link-color: #2878D0;
+    --bs-link-hover-color: #1456A0;
+    --bs-body-font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+body {
+    background: linear-gradient(180deg, var(--wm-light) 0, var(--wm-bg) 420px) !important;
+    background-attachment: fixed !important;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
+    color: var(--wm-text);
+}
+
+/* ---------- Navbar ---------- */
+.navbar {
+    background: rgba(255, 255, 255, .92) !important;
+    backdrop-filter: blur(12px);
+    box-shadow: none !important;
+    border-bottom: 1px solid var(--wm-border);
+}
+.navbar-brand { color: var(--wm-primary) !important; font-weight: 800 !important; letter-spacing: -.01em; }
+.navbar-brand small { display: block; font-size: .7rem; font-weight: 500; color: var(--wm-muted); line-height: 1; }
+.brand-logo { width: 42px !important; height: 42px !important; background: transparent !important; box-shadow: none !important; }
+.brand-logo svg { width: 42px !important; height: 42px !important; }
+.navbar .nav-link { color: var(--wm-text) !important; font-weight: 600; border-radius: 10px; padding: .45rem .8rem !important; }
+.navbar .nav-link:hover { background: var(--wm-light); color: var(--wm-primary) !important; }
+#themeToggleBtn { background: var(--wm-card) !important; border-color: var(--wm-border) !important; box-shadow: none !important; }
+
+/* ---------- Cards & panels ---------- */
+.card,
+.hero-banner,
+.sideboard-panel,
+.chart-card,
+.service-card {
+    background: var(--wm-card) !important;
+    border: 1px solid var(--wm-border) !important;
+    border-radius: 20px !important;
+    box-shadow: var(--wm-shadow) !important;
+}
+.card:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(20, 86, 160, .11) !important; }
+
+.metric-card {
+    background: var(--wm-card) !important;
+    border: 1px solid var(--wm-border) !important;
+    border-top: 4px solid var(--wm-secondary) !important;
+    border-radius: 16px !important;
+    box-shadow: none !important;
+}
+.metric-card strong { color: var(--wm-text) !important; }
+
+.soft-gradient { background: var(--wm-light) !important; color: var(--wm-primary) !important; }
+.gradient-pill {
+    background: var(--wm-light) !important;
+    color: var(--wm-primary) !important;
+    box-shadow: none !important;
+    border: 1px solid #CFE2FA;
+}
+.icon-circle { color: var(--wm-secondary) !important; background: var(--wm-light) !important; box-shadow: none !important; }
+.bg-pink { background-color: var(--wm-secondary) !important; }
+.text-pink { color: var(--wm-secondary) !important; }
+
+.sideboard-nav .nav-link {
+    background: var(--wm-card) !important;
+    border: 1px solid var(--wm-border) !important;
+    color: var(--wm-text) !important;
+    border-radius: 12px !important;
+}
+.sideboard-nav .nav-link.active,
+.sideboard-nav .nav-link:hover {
+    background: var(--wm-light) !important;
+    border-color: #CFE2FA !important;
+    color: var(--wm-primary) !important;
+}
+.recent-list .list-group-item { border: 1px solid var(--wm-border) !important; background: var(--wm-card) !important; border-radius: 14px !important; }
+
+/* ---------- Buttons ---------- */
+.btn { border-radius: 12px !important; font-weight: 600; }
+.btn:hover { box-shadow: none !important; }
+.btn-primary { background: var(--wm-primary) !important; border-color: var(--wm-primary) !important; }
+.btn-primary:hover, .btn-primary:focus { background: var(--wm-secondary) !important; border-color: var(--wm-secondary) !important; }
+.btn-success { background: var(--wm-green) !important; border-color: var(--wm-green) !important; }
+.btn-success:hover { background: #12704E !important; border-color: #12704E !important; }
+.btn-outline-primary { color: var(--wm-primary) !important; border-color: var(--wm-primary) !important; }
+.btn-outline-primary:hover { background: var(--wm-light) !important; color: var(--wm-primary) !important; }
+.btn-outline-success { color: var(--wm-green) !important; border-color: var(--wm-green) !important; }
+.btn-outline-success:hover { background: #E3F5EC !important; color: var(--wm-green) !important; }
+.btn-light, .btn-soft { background: var(--wm-card) !important; border: 1px solid var(--wm-border) !important; color: var(--wm-text) !important; box-shadow: none !important; }
+.btn-light:hover, .btn-soft:hover { background: var(--wm-light) !important; color: var(--wm-primary) !important; }
+
+.text-primary { color: var(--wm-primary) !important; }
+.text-success { color: var(--wm-green) !important; }
+.bg-primary { background-color: var(--wm-primary) !important; }
+.bg-success { background-color: var(--wm-green) !important; }
+.badge { border-radius: 8px; font-weight: 600; }
+
+/* ---------- Forms & tables ---------- */
+.form-control, .form-select {
+    border-radius: 12px !important;
+    border: 1.5px solid var(--wm-border) !important;
+    padding: .6rem .9rem;
+}
+.form-control:focus, .form-select:focus {
+    border-color: var(--wm-secondary) !important;
+    box-shadow: 0 0 0 4px rgba(40, 120, 208, .15) !important;
+}
+.form-label { font-weight: 600; font-size: .9rem; }
+.table thead th { background: var(--wm-light) !important; color: var(--wm-primary) !important; font-weight: 700; border-bottom: 0; }
+.alert { border: 0 !important; border-radius: 12px !important; }
+.alert-success { background: #E3F5EC !important; color: var(--wm-green) !important; }
+.alert-danger { background: #FFECEB !important; color: #C9372C !important; }
+.dropdown-menu { border: 1px solid var(--wm-border) !important; border-radius: 14px !important; box-shadow: var(--wm-shadow) !important; padding: .4rem; }
+.dropdown-item { border-radius: 8px; }
+.dropdown-item:hover { background: var(--wm-light); color: var(--wm-primary); }
+
+.footer { background: transparent !important; border-top: 1px solid var(--wm-border) !important; color: var(--wm-muted) !important; }
+
+/* ---------- Dark mode (selaras halaman utama) ---------- */
+body.dark-mode {
+    --wm-light: #1A2A44;
+    --wm-bg: #0F1724;
+    --wm-text: #E6EDF7;
+    --wm-muted: #9AA8BC;
+    --wm-border: #2A3A52;
+    --wm-card: #16213A;
+    --wm-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+    background: linear-gradient(180deg, #13203A 0, #0F1724 420px) !important;
+    background-attachment: fixed !important;
+}
+body.dark-mode .card,
+body.dark-mode .navbar,
+body.dark-mode .dropdown-menu,
+body.dark-mode .hero-banner,
+body.dark-mode .sideboard-panel,
+body.dark-mode .metric-card,
+body.dark-mode .modal-content { background: #16213A !important; border-color: #2A3A52 !important; }
+body.dark-mode .navbar { background: rgba(22, 33, 58, .92) !important; }
+body.dark-mode .navbar-brand { color: #7DB4F5 !important; }
+body.dark-mode .text-primary { color: #7DB4F5 !important; }
+body.dark-mode .table thead th { background: #1A2A44 !important; color: #7DB4F5 !important; }
+body.dark-mode .form-control, body.dark-mode .form-select { background: #0F1A2E !important; border-color: #2A3A52 !important; }
+body.dark-mode .btn-outline-primary { color: #7DB4F5 !important; border-color: #7DB4F5 !important; }
+body.dark-mode .alert-success { background: #12352A !important; }
+body.dark-mode .alert-danger { background: #3A1D1D !important; }
+body.dark-mode .footer { background: transparent !important; }
