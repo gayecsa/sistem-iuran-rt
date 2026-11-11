@@ -12,6 +12,12 @@ use App\Models\PerkembanganBalita;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
+use App\Models\JadwalRonda;
+use App\Models\Pengaduan;
+use App\Models\PosyanduKegiatan;
+use App\Models\BankSampah;
+use App\Models\WilayahAdministratif;
+use App\Models\Umkm;
 
 class DashboardController extends Controller
 {
@@ -91,11 +97,15 @@ class DashboardController extends Controller
             return str_contains($p['rt'] ?? '', (string)$rtNum);
         }));
 
-        // Permohonan surat warga RT
+        // Permohonan surat warga RT (Dinamis dari database warga RT setempat)
+        $sampleResidents = User::where('role', 'warga')->where('rt_number', $rtLabel)->take(3)->get();
+        $res1 = $sampleResidents->get(0)?->name ?? 'Theodore Williams';
+        $res2 = $sampleResidents->get(1)?->name ?? 'Charlotte Williams';
+        $res3 = $sampleResidents->get(2)?->name ?? 'Clara Williams';
         $permohonanSurat = [
-            ['nama' => 'Bpk. Hendra Gunawan', 'jenis' => 'Surat Pengantar KTP / Domisili', 'tanggal' => 'Hari ini, 09:30 WIB', 'status' => 'Menunggu Tanda Tangan'],
-            ['nama' => 'Ibu Siti Aminah', 'jenis' => 'Surat Keterangan Usaha (UMKM)', 'tanggal' => 'Kemarin, 16:15 WIB', 'status' => 'Diproses'],
-            ['nama' => 'Sdr. Rizky Ramadhan', 'jenis' => 'Surat Pengantar SKCK', 'tanggal' => '09 Nov 2026', 'status' => 'Selesai'],
+            ['nama' => $res1, 'jenis' => 'Surat Pengantar KTP / Domisili', 'tanggal' => 'Hari ini, 09:30 WIB', 'status' => 'Menunggu Tanda Tangan'],
+            ['nama' => $res2, 'jenis' => 'Surat Keterangan Usaha (UMKM)', 'tanggal' => 'Kemarin, 16:15 WIB', 'status' => 'Diproses'],
+            ['nama' => $res3, 'jenis' => 'Surat Pengantar SKCK', 'tanggal' => '09 Nov 2026', 'status' => 'Selesai'],
         ];
 
         // Kegiatan mendatang RT
@@ -267,121 +277,35 @@ class DashboardController extends Controller
     public function lokasi()
     {
         $user = Auth::user();
-        $userAddress = $user->address ?? 'Jl. Melati Utama No. 15, RT 001 / RW 013';
+        $userAddress = $user->address ?? "Jl. Pacuan Kuda No. 12, RT 001 / RW 013, Sukamiskin";
         $userRt = intval($user->rt_number ?? 1);
         if ($userRt === 0 && preg_match('/RT\s*(\d+)/i', $userAddress, $m)) {
             $userRt = intval($m[1]);
         }
         if ($userRt === 0) $userRt = 1;
 
-        $posyanduList = [
-            [
-                'id' => 1,
-                'nama' => 'Posyandu Sejahtera (RT 001)',
-                'rt' => 1,
-                'lokasi' => 'Balai Warga RT 001, Jl. Gandaria No. 12',
-                'jadwal' => 'Sabtu Pertama (08.00 - 11.00 WIB)',
-                'lat' => -6.229728,
-                'lng' => 106.816482,
-                'penanggung_jawab' => 'Bidan Ratna & Kader Ibu Ningsih',
-                'jarak' => '150 meter',
-                'waktu' => '2 Menit Jalan Kaki',
-                'rute_petunjuk' => 'Dari tempat tinggal Anda (' . $userAddress . '), jalan lurus ke arah barat 100m, lalu belok kanan di gang RT 001. Balai RT 001 berada tepat di sebelah kiri lapangan.'
-            ],
-            [
-                'id' => 2,
-                'nama' => 'Posyandu Kasih Ibu (RT 002)',
-                'rt' => 2,
-                'lokasi' => 'Lapangan Serbaguna RT 002, Jl. Kenanga No. 8',
-                'jadwal' => 'Sabtu Pertama (08.00 - 11.00 WIB)',
-                'lat' => -6.230150,
-                'lng' => 106.817200,
-                'penanggung_jawab' => 'Bidan Melati & Kader Ibu Sri',
-                'jarak' => '280 meter',
-                'waktu' => '3 Menit Jalan Kaki',
-                'rute_petunjuk' => 'Dari tempat tinggal Anda, menuju ke utara melintasi Jl. Kenanga. Posyandu berada di samping Pendopo Serbaguna RT 002.'
-            ],
-            [
-                'id' => 3,
-                'nama' => 'Posyandu Tunas Bangsa (RT 003)',
-                'rt' => 3,
-                'lokasi' => 'Pos Kesehatan RT 003, Jl. Anggrek No. 15',
-                'jadwal' => 'Sabtu Kedua (08.00 - 11.00 WIB)',
-                'lat' => -6.231200,
-                'lng' => 106.818100,
-                'penanggung_jawab' => 'dr. Farhan & Kader Ibu Dewita',
-                'jarak' => '400 meter',
-                'waktu' => '5 Menit Jalan Kaki / 1 Menit Motor',
-                'rute_petunjuk' => 'Berjalanlah ke arah timur menyusuri Jl. Anggrek. Gedung Pos Kesehatan RT 003 berada di pojok pertigaan jalan.'
-            ],
-            [
-                'id' => 4,
-                'nama' => 'Posyandu Harapan Bunda (RT 004)',
-                'rt' => 4,
-                'lokasi' => 'Gedung PAUD Ceria RT 004, Jl. Mawar No. 22',
-                'jadwal' => 'Sabtu Kedua (08.00 - 11.00 WIB)',
-                'lat' => -6.232000,
-                'lng' => 106.819000,
-                'penanggung_jawab' => 'Bidan Anita & Kader Ibu Endang',
-                'jarak' => '520 meter',
-                'waktu' => '6 Menit Jalan Kaki / 2 Menit Motor',
-                'rute_petunjuk' => 'Melintasi jalan utama RW 013 menuju Blok RT 004, lokasi berada di halaman depan PAUD Ceria.'
-            ],
-            [
-                'id' => 5,
-                'nama' => 'Posyandu Cendekia (RT 005)',
-                'rt' => 5,
-                'lokasi' => 'Balai Pertemuan RT 005, Jl. Melati No. 5',
-                'jadwal' => 'Sabtu Ketiga (08.00 - 11.00 WIB)',
-                'lat' => -6.232800,
-                'lng' => 106.819800,
-                'penanggung_jawab' => 'dr. Amanda & Kader Ibu Yanti',
-                'jarak' => '600 meter',
-                'waktu' => '7 Menit Jalan Kaki / 2 Menit Motor',
-                'rute_petunjuk' => 'Dari rumah Anda, ikuti jalur utama RW ke arah selatan menuju RT 005. Balai pertemuan berada di dekat Taman Melati.'
-            ],
-            [
-                'id' => 6,
-                'nama' => 'Posyandu Permata Hati (RT 006)',
-                'rt' => 6,
-                'lokasi' => 'Pos Sekretariat RW 013 / RT 006, Jl. Flamboyan No. 19',
-                'jadwal' => 'Sabtu Ketiga (08.00 - 11.00 WIB)',
-                'lat' => -6.233500,
-                'lng' => 106.820600,
-                'penanggung_jawab' => 'dr. Setyo & Kader Ibu Kartini',
-                'jarak' => '750 meter',
-                'waktu' => '8 Menit Jalan Kaki / 3 Menit Motor',
-                'rute_petunjuk' => 'Posyandu terletak di Pos Utama Sekretariat RW 013 (RT 006). Patokannya bersebelahan dengan Kantor RW.'
-            ],
-            [
-                'id' => 7,
-                'nama' => 'Posyandu Bintang Kecil (RT 007)',
-                'rt' => 7,
-                'lokasi' => 'Ruang Serbaguna RT 007, Jl. Dahlia No. 30',
-                'jadwal' => 'Sabtu Keempat (08.00 - 11.00 WIB)',
-                'lat' => -6.234200,
-                'lng' => 106.821400,
-                'penanggung_jawab' => 'Bidan Nurul & Kader Ibu Tuti',
-                'jarak' => '850 meter',
-                'waktu' => '9 Menit Jalan Kaki / 3 Menit Motor',
-                'rute_petunjuk' => 'Berada di Komplek Dahlia RT 007. Masuk melalui gerbang timur RW 013, bangunan cat hijau di sebelah kanan.'
-            ],
-            [
-                'id' => 8,
-                'nama' => 'Posyandu Pelangi Nusantara (RT 008)',
-                'rt' => 8,
-                'lokasi' => 'Balai Kemasyarakatan RT 008, Jl. Cempaka No. 45',
-                'jadwal' => 'Sabtu Keempat (08.00 - 11.00 WIB)',
-                'lat' => -6.235000,
-                'lng' => 106.822200,
-                'penanggung_jawab' => 'dr. Nabila & Kader Ibu Rahma',
-                'jarak' => '950 meter',
-                'waktu' => '10 Menit Jalan Kaki / 4 Menit Motor',
-                'rute_petunjuk' => 'Berada di ujung jalan Cempaka RT 008. Akses mudah dari gapura selatan RW 013.'
-            ]
-        ];
+        $dbPosyandu = PosyanduKegiatan::with('kaderUtama')->orderBy('rt_number')->get();
+        $posyanduList = [];
 
-        return view('posyandu.detail_lokasi', compact('user', 'posyanduList', 'userAddress', 'userRt'));
+        foreach ($dbPosyandu as $p) {
+            $rtInt = intval($p->rt_number);
+            $jarak = abs($userRt - $rtInt) * 120 + 80;
+            $posyanduList[] = [
+                'id' => $p->id,
+                'nama' => $p->nama_posyandu,
+                'rt' => $rtInt,
+                'lokasi' => $p->lokasi,
+                'jadwal' => $p->jadwal,
+                'lat' => (float)$p->latitude,
+                'lng' => (float)$p->longitude,
+                'penanggung_jawab' => $p->tenaga_medis . ' & Kader ' . $p->kader_name,
+                'jarak' => $jarak . ' meter',
+                'waktu' => max(2, round($jarak / 70)) . ' Menit Jalan Kaki',
+                'rute_petunjuk' => 'Dari lokasi tempat tinggal Anda di ' . $userAddress . ', ikuti jalur lingkungan RW 013 menuju ' . $p->lokasi . '.'
+            ];
+        }
+
+        return view('posyandu.detail_lokasi', compact('user', 'posyanduList', 'userRt', 'userAddress'));
     }
     // -----------------------------------------
 
@@ -742,104 +666,177 @@ class DashboardController extends Controller
     public function peta()
     {
         $user = Auth::user();
-        return view('peta', compact('user'));
+        $markers = [
+            'rw' => [
+                'nama' => 'Balai Pertemuan & Sekretariat RW 013 Sukamiskin',
+                'alamat' => 'Jl. Arcamanik Endah No. 1, Kelurahan Sukamiskin, Kec. Arcamanik, Kota Bandung 40293',
+                'lat' => -6.915000,
+                'lng' => 107.679000,
+                'kategori' => 'Sekretariat RW',
+                'keterangan' => 'Pusat pelayanan administrasi warga, koordinasi siskamling, dan balai musyawarah RW 013.'
+            ],
+            'rt' => WilayahAdministratif::where('level', 'rt')->get()->map(fn($r) => [
+                'nama' => $r->nama,
+                'alamat' => $r->keterangan,
+                'lat' => (float)$r->latitude,
+                'lng' => (float)$r->longitude,
+                'kategori' => 'Wilayah RT',
+            ])->toArray(),
+            'ronda' => JadwalRonda::with(['coordinator1', 'coordinator2'])->get()->map(fn($j) => [
+                'nama' => $j->pos_ronda,
+                'alamat' => $j->area_patroli,
+                'lat' => (float)$j->latitude,
+                'lng' => (float)$j->longitude,
+                'koordinator' => $j->koordinator_text,
+                'avatar' => $j->koordinator_avatar_url,
+                'status' => $j->status,
+                'jam' => substr($j->jam_mulai, 0, 5) . ' - ' . substr($j->jam_selesai, 0, 5) . ' WIB',
+                'kategori' => 'Pos Ronda & Keamanan',
+            ])->toArray(),
+            'posyandu' => PosyanduKegiatan::with('kaderUtama')->get()->map(fn($p) => [
+                'nama' => $p->nama_posyandu,
+                'alamat' => $p->lokasi,
+                'lat' => (float)$p->latitude,
+                'lng' => (float)$p->longitude,
+                'kader' => $p->kader_name,
+                'avatar' => $p->kader_avatar_url,
+                'jadwal' => $p->jadwal,
+                'layanan' => $p->layanan,
+                'kategori' => 'Posyandu & Kesehatan',
+            ])->toArray(),
+            'bank_sampah' => BankSampah::with('petugas')->get()->map(fn($b) => [
+                'nama' => $b->nama_unit,
+                'alamat' => $b->lokasi,
+                'lat' => (float)$b->latitude,
+                'lng' => (float)$b->longitude,
+                'petugas' => $b->petugas_name,
+                'avatar' => $b->petugas_avatar_url,
+                'jadwal' => $b->jadwal,
+                'total_kg' => $b->total_terkumpul_kg . ' kg',
+                'kategori' => 'Bank Sampah',
+            ])->toArray(),
+            'umkm' => Umkm::with('owner')->get()->map(fn($u) => [
+                'nama' => $u->nama_umkm,
+                'pemilik' => $u->owner_name,
+                'avatar' => $u->owner_avatar_url,
+                'jenis' => $u->jenis_usaha,
+                'alamat' => $u->alamat,
+                'lat' => (float)$u->latitude,
+                'lng' => (float)$u->longitude,
+                'jam' => $u->jam_buka . ' - ' . $u->jam_tutup . ' WIB',
+                'foto' => $u->foto_url,
+                'kategori' => 'UMKM Warga',
+            ])->toArray(),
+            'pengaduan' => Pengaduan::with('pelapor')->get()->map(fn($ad) => [
+                'nama' => $ad->kategori . ' (' . $ad->status . ')',
+                'pelapor' => $ad->pelapor_name,
+                'alamat' => $ad->lokasi,
+                'lat' => (float)$ad->latitude,
+                'lng' => (float)$ad->longitude,
+                'deskripsi' => $ad->deskripsi,
+                'status' => $ad->status,
+                'kategori' => 'Titik Pengaduan',
+            ])->toArray(),
+        ];
+
+        return view('peta', compact('user', 'markers'));
     }
 
     public function wisata()
     {
         $user = Auth::user();
-        $userAddress = $user->address ?? 'Jl. Melati Utama No. 15, RT 001 / RW 013';
+        $userAddress = $user->address ?? "Jl. Pacuan Kuda No. 12, RT 001 / RW 013, Sukamiskin";
 
         $wisataList = [
             [
                 'id' => 1,
-                'nama' => 'Taman Hijau & Danau Edukasi RW 013',
-                'kategori' => 'Taman & Ruang Terbuka',
-                'badge_color' => 'bg-success',
-                'lokasi' => 'Jl. Taman Edukasi No. 1, RW 013',
-                'lat' => -6.227500,
-                'lng' => 106.814800,
-                'jarak' => '450 meter',
+                'nama' => 'Arcamanik Sport Center & Taman Pemuda',
+                'kategori' => 'Fasilitas Olahraga & Taman Terbuka',
+                'badge_color' => 'bg-primary',
+                'lokasi' => 'Jl. Pacuan Kuda, Kelurahan Sukamiskin, Kec. Arcamanik, Kota Bandung',
+                'lat' => -6.913500,
+                'lng' => 107.677800,
+                'jarak' => '400 meter',
                 'waktu' => '5 Menit Jalan Kaki',
-                'jam_buka' => '05:30 - 20:00 WIB',
-                'tiket' => 'Gratis (Fasilitas Warga)',
-                'fasilitas' => 'Jogging Track, Arena Bermain Anak, Gazebo & Wi-Fi Publik',
-                'deskripsi' => 'Taman ramah keluarga dengan pepohonan rimbun, danau buatan dengan ikan hias, dan arena bermain balita yang aman dan bersih.'
+                'jam_buka' => '06:00 - 21:00 WIB',
+                'tiket' => 'Gratis Area Publik (Sewa Lapangan Sesuai Tarif Pemda)',
+                'fasilitas' => 'Stadion Sepak Bola, Jogging Track Sintetis, Lapangan Voli, Arena Senam & Taman Bermain',
+                'deskripsi' => 'Kompleks sarana olahraga modern kebanggaan warga Arcamanik tempat jogging, senam pagi keluarga, dan rekreasi akhir pekan.'
             ],
             [
                 'id' => 2,
-                'nama' => 'Pasar Kuliner Malam & Festival Warga',
-                'kategori' => 'Wisata Kuliner',
+                'nama' => 'Saung Angklung Udjo Bandung',
+                'kategori' => 'Wisata Budaya & Seni Sunda',
                 'badge_color' => 'bg-warning text-dark',
-                'lokasi' => 'Lapangan Utama RW 013 (RT 006)',
-                'lat' => -6.233800,
-                'lng' => 106.821000,
-                'jarak' => '750 meter',
-                'waktu' => '8 Menit Jalan Kaki / 3 Menit Motor',
-                'jam_buka' => '16:00 - 23:00 WIB',
-                'tiket' => 'Gratis Masuk Area',
-                'fasilitas' => 'Panggung Live Music, Stan Jajanan Lokal, Parkir Luas & Musholla',
-                'deskripsi' => 'Pusat jajanan kuliner malam favorit warga RW 013 yang menyajikan puluhan aneka kuliner kekinian, jajanan tradisional, dan wahana bermain anak.'
+                'lokasi' => 'Jl. Padasuka No. 118, Pasirlayung, Kec. Cibeunying Kidul, Kota Bandung',
+                'lat' => -6.897800,
+                'lng' => 107.655200,
+                'jarak' => '4.2 km',
+                'waktu' => '12 Menit Berkendara',
+                'jam_buka' => '08:00 - 17:00 WIB',
+                'tiket' => 'Rp 60.000 / Orang',
+                'fasilitas' => 'Pertunjukan Musik Angklung Interaktif, Teater Terbuka, Sentra Kerajinan Bambu & Kuliner Tradisional',
+                'deskripsi' => 'Destinasi budaya kelas dunia pelestari seni bambu dan angklung Sunda di Bandung Timur yang sangat mengedukasi.'
             ],
             [
                 'id' => 3,
-                'nama' => 'Museum Sejarah & Galeri Kebudayaan',
-                'kategori' => 'Wisata Budaya & Edukasi',
-                'badge_color' => 'bg-primary',
-                'lokasi' => 'Jl. Kebudayaan No. 10 (Dekat Gerbang RW 013)',
-                'lat' => -6.226000,
-                'lng' => 106.813000,
-                'jarak' => '1.2 km',
-                'waktu' => '4 Menit Motor',
-                'jam_buka' => '08:00 - 16:00 WIB',
-                'tiket' => 'Rp 5.000 / Orang',
-                'fasilitas' => 'Pemandu Wisata, Ruang AC, Perpustakaan Mini & Spot Foto',
-                'deskripsi' => 'Destinasi wisata edukatif memamerkan sejarah daerah, peninggalan kerajinan tangan, dan galeri foto tempo doeloe wilayah pemukiman.'
+                'nama' => 'Kiara Artha Park & Taman Asia Afrika',
+                'kategori' => 'Taman Rekreasi & Air Mancur Menari',
+                'badge_color' => 'bg-info text-white',
+                'lokasi' => 'Jl. Banten, Kebonwaru, Kec. Batununggal, Kota Bandung',
+                'lat' => -6.917200,
+                'lng' => 107.643500,
+                'jarak' => '4.8 km',
+                'waktu' => '15 Menit Berkendara',
+                'jam_buka' => '09:00 - 21:00 WIB',
+                'tiket' => 'Rp 10.000 / Orang',
+                'fasilitas' => 'Dancing Fountain (Air Mancur Menari), Trem Wisata, Area Sepeda & Kuliner Modern',
+                'deskripsi' => 'Taman kota terpadu ramah anak dengan danau buatan luas dan pertunjukan air mancur spektakuler di malam hari.'
             ],
             [
                 'id' => 4,
-                'nama' => 'Hutan Kota & Eco-Park Konservasi',
-                'kategori' => 'Wisata Alam & Ekowisata',
-                'badge_color' => 'bg-success text-white',
-                'lokasi' => 'Kawasan Jalur Hijau RW 013',
-                'lat' => -6.236000,
-                'lng' => 106.823500,
-                'jarak' => '1.5 km',
-                'waktu' => '5 Menit Motor',
-                'jam_buka' => '06:00 - 18:00 WIB',
-                'tiket' => 'Gratis (Donasi Rp 2.000)',
-                'fasilitas' => 'Jembatan Kayu Aesthetic, Rumah Burung, & Area Foto Instagramable',
-                'deskripsi' => 'Kawasan konservasi hijau dengan pepohonan rindang tempat habitat berbagai spesies burung kota, cocok untuk refreshing dan jalan sehat.'
+                'nama' => 'Tebing Keraton & Taman Hutan Raya Djuanda',
+                'kategori' => 'Wisata Alam & Pemandangan Hutan Pinus',
+                'badge_color' => 'bg-success',
+                'lokasi' => 'Kawasan Tahura Djuanda, Ciburial, Kec. Cimenyan, Kab. Bandung',
+                'lat' => -6.833800,
+                'lng' => 107.663500,
+                'jarak' => '12.5 km',
+                'waktu' => '30 Menit Berkendara',
+                'jam_buka' => '05:00 - 18:00 WIB',
+                'tiket' => 'Rp 15.000 / Orang',
+                'fasilitas' => 'Spot Sunrise Fotografi, Gazebo Pandang, Jalur Trekking Hutan Pinus & Warung Kopi',
+                'deskripsi' => 'Puncak tebing mempesona dengan panorama hamparan kabut hutan pinus dan lembah pegunungan Bandung Utara.'
             ],
             [
                 'id' => 5,
-                'nama' => 'Waterpark Ceria & Kolam Renang',
-                'kategori' => 'Wisata Rekreasi Air',
-                'badge_color' => 'bg-info text-white',
-                'lokasi' => 'Jl. Raya Tirta No. 88 (Dekat RW 013)',
-                'lat' => -6.224500,
-                'lng' => 106.811500,
-                'jarak' => '2.1 km',
-                'waktu' => '7 Menit Motor',
-                'jam_buka' => '07:30 - 17:30 WIB',
-                'tiket' => 'Rp 20.000 / Orang',
-                'fasilitas' => 'Kolam Renang Anak & Dewasa, Perosotan Water Slide, Ember Tumpah & Kantin',
-                'deskripsi' => 'Wahana rekreasi air menyenangkan favorit anak-anak dan keluarga untuk menghabiskan waktu libur akhir pekan.'
+                'nama' => 'Museum Geologi Kota Bandung',
+                'kategori' => 'Wisata Edukasi & Sains Bumi',
+                'badge_color' => 'bg-secondary',
+                'lokasi' => 'Jl. Diponegoro No. 57, Cihaur Geulis, Kec. Cibeunying Kaler, Kota Bandung',
+                'lat' => -6.900700,
+                'lng' => 107.621400,
+                'jarak' => '7.8 km',
+                'waktu' => '20 Menit Berkendara',
+                'jam_buka' => '09:00 - 15:00 WIB',
+                'tiket' => 'Rp 3.000 (Pelajar) / Rp 5.000 (Umum)',
+                'fasilitas' => 'Replika Fosil Dinosaurus T-Rex, Ruang Kegempaan & Vulkanologi, Teater 3D & Audio Visual',
+                'deskripsi' => 'Museum bersejarah favorit keluarga untuk mengenalkan formasi batuan, mineral, dan sejarah geologi Indonesia.'
             ],
             [
                 'id' => 6,
-                'nama' => 'Alun-Alun Olahraga & Ruang Terbuka Hijau',
-                'kategori' => 'Wisata Olahraga',
-                'badge_color' => 'bg-secondary',
-                'lokasi' => 'Pusat Alun-Alun Kecamatan',
-                'lat' => -6.223000,
-                'lng' => 106.810000,
-                'jarak' => '2.8 km',
-                'waktu' => '9 Menit Motor',
-                'jam_buka' => '24 Jam (Terbuka Umum)',
-                'tiket' => 'Gratis',
-                'fasilitas' => 'Lapangan Basket, Futsal, Fitness Outdoor, Track Sepeda & Penjual Makanan',
-                'deskripsi' => 'Ruang publik terbuka luas untuk kegiatan olahraga pagi, senam bersama akhir pekan, serta ajang kumpul komunitas warga.'
+                'nama' => 'Wisata Bukit Moko & Caringin Tilu Bandung',
+                'kategori' => 'Wisata Panorama Citylight Bandung',
+                'badge_color' => 'bg-dark',
+                'lokasi' => 'Cimenyan, Kec. Cimenyan, Kabupaten Bandung',
+                'lat' => -6.852100,
+                'lng' => 107.689000,
+                'jarak' => '9.5 km',
+                'waktu' => '25 Menit Berkendara',
+                'jam_buka' => '24 Jam',
+                'tiket' => 'Rp 15.000 / Orang',
+                'fasilitas' => 'Gardu Pandang Citylight, Warung Jagung Bakar & Bandrek Hangat, Area Camping',
+                'deskripsi' => 'Puncak perbukitan tinggi tempat menikmati pemandangan kelap-kelip lampu gemerlap seluruh kota Bandung di malam hari.'
             ]
         ];
 
@@ -926,22 +923,15 @@ class DashboardController extends Controller
     public function bankSampah()
     {
         $user = Auth::user();
-        return view('bank-sampah', compact('user'));
+        $bankSampahList = BankSampah::with('petugas')->orderBy('rt_number')->get();
+        return view('bank-sampah', compact('user', 'bankSampahList'));
     }
 
     public function ronda()
     {
         $user = Auth::user();
         $cctvs = \App\Models\Cctv::where('aktif', true)->latest()->get();
-        $jadwalRonda = [
-            ['hari' => 'Senin', 'rt' => 'RT 001 & RT 002', 'koordinator' => 'Pak Joko & Pak Hadi', 'anggota' => '6 Petugas', 'status' => 'Selesai'],
-            ['hari' => 'Selasa', 'rt' => 'RT 003 & RT 004', 'koordinator' => 'Pak Rudi & Pak Ahmad', 'anggota' => '6 Petugas', 'status' => 'Selesai'],
-            ['hari' => 'Rabu (Malam Ini)', 'rt' => 'RT 005 & RT 006', 'koordinator' => 'Pak Hendra & Pak Rahmat', 'anggota' => '8 Petugas', 'status' => 'Bertugas (22.00 - 04.30)'],
-            ['hari' => 'Kamis', 'rt' => 'RT 007 & RT 008', 'koordinator' => 'Pak Dedi & Pak Eko', 'anggota' => '6 Petugas', 'status' => 'Terjadwal'],
-            ['hari' => 'Jumat', 'rt' => 'RT 001 - RT 004', 'koordinator' => 'Koordinator Linmas RW', 'anggota' => '10 Petugas (Patroli Gabungan)', 'status' => 'Terjadwal'],
-            ['hari' => 'Sabtu', 'rt' => 'RT 005 - RT 008', 'koordinator' => 'Koordinator Linmas RW', 'anggota' => '10 Petugas (Patroli Gabungan)', 'status' => 'Terjadwal'],
-            ['hari' => 'Minggu', 'rt' => 'Bergilir Semua RT', 'koordinator' => 'Piket Pengurus RW', 'anggota' => '8 Petugas', 'status' => 'Terjadwal'],
-        ];
+        $jadwalRonda = JadwalRonda::with(['coordinator1', 'coordinator2'])->orderBy('id')->get();
         return view('ronda.index', compact('user', 'cctvs', 'jadwalRonda'));
     }
 
@@ -950,14 +940,41 @@ class DashboardController extends Controller
         $user = Auth::user();
         $kategori = $request->query('kategori');
         $status = $request->query('status');
-        $pengaduanList = $this->getPengaduanData();
+        $filterRt = $request->query('rt');
+
+        $query = Pengaduan::with(['pelapor', 'petugas'])->latest();
 
         if ($kategori) {
-            $pengaduanList = array_values(array_filter($pengaduanList, fn($p) => $p['kategori'] == $kategori));
+            $query->where('kategori', $kategori);
         }
         if ($status) {
-            $pengaduanList = array_values(array_filter($pengaduanList, fn($p) => $p['status'] == $status));
+            $query->where('status', $status);
         }
+        if ($filterRt) {
+            $query->where('rt_number', $filterRt);
+        }
+
+        // Isolasi RT jika yang login Ketua RT
+        if ($user->isRt()) {
+            $query->where('rt_number', $user->clean_rt_number);
+        }
+
+        $pengaduanList = $query->get()->map(function ($p) {
+            return [
+                'id' => $p->id,
+                'kategori' => $p->kategori,
+                'rt' => 'RT ' . str_pad($p->rt_number, 3, '0', STR_PAD_LEFT),
+                'lokasi' => $p->lokasi,
+                'deskripsi' => $p->deskripsi,
+                'pelapor' => $p->pelapor_name,
+                'avatar' => $p->pelapor_avatar_url,
+                'phone' => $p->pelapor_phone ?? '-',
+                'status' => $p->status,
+                'foto' => $p->foto ? (str_starts_with($p->foto, 'http') ? $p->foto : asset('storage/' . $p->foto)) : null,
+                'catatan_tindak_lanjut' => $p->catatan_tindak_lanjut,
+                'created_at' => $p->created_at ? $p->created_at->translatedFormat('d M Y, H:i') . ' WIB' : 'Baru saja',
+            ];
+        });
 
         return view('pengaduan.index', compact('user', 'pengaduanList', 'kategori', 'status'));
     }
@@ -978,27 +995,27 @@ class DashboardController extends Controller
             $fotoPath = $request->file('foto')->store('pengaduan', 'public');
         }
 
-        $all = $this->getPengaduanData();
-        $newId = count($all) ? (max(array_column($all, 'id')) + 1) : 1;
+        $cleanRt = str_pad(intval(preg_replace('/\D/', '', $request->rt)), 3, '0', STR_PAD_LEFT);
+        $ketuaRt = User::where('role', 'rt')->where('rt_number', $cleanRt)->first();
 
-        $newComplaint = [
-            'id' => $newId,
+        Pengaduan::create([
+            'user_id' => $user->id,
+            'pelapor_nama' => $user->name,
+            'pelapor_phone' => $user->phone ?? '-',
             'kategori' => $request->kategori,
-            'rt' => $request->rt,
+            'rt_number' => $cleanRt,
+            'rw_number' => '013',
             'lokasi' => $request->lokasi,
             'deskripsi' => $request->deskripsi,
-            'pelapor' => $user->name,
-            'phone' => $user->phone ?? '-',
-            'status' => 'Menunggu',
-            'foto' => $fotoPath ? asset('storage/' . $fotoPath) : null,
-            'catatan_tindak_lanjut' => 'Pengaduan baru terkirim, menunggu verifikasi pengurus RW 013.',
-            'created_at' => Carbon::now()->translatedFormat('d M Y, H:i') . ' WIB'
-        ];
+            'status' => 'Diproses',
+            'foto' => $fotoPath,
+            'catatan_tindak_lanjut' => 'Pengaduan terdaftar di antrean pemeriksaan Pengurus RW & Ketua RT ' . $cleanRt,
+            'petugas_id' => $ketuaRt ? $ketuaRt->id : 1,
+            'latitude' => -6.9150,
+            'longitude' => 107.6790,
+        ]);
 
-        array_unshift($all, $newComplaint);
-        Storage::disk('local')->put('pengaduan.json', json_encode($all, JSON_PRETTY_PRINT));
-
-        return redirect()->route('pengaduan.index')->with('success', 'Pengaduan warga berhasil dikirim dan akan segera ditindaklanjuti oleh pengurus RW!');
+        return redirect()->route('pengaduan.index')->with('success', 'Pengaduan berhasil disampaikan dan tercatat di sistem koordinasi RW 013!');
     }
 
     public function updateStatusPengaduan(Request $request, $id)
@@ -1008,19 +1025,14 @@ class DashboardController extends Controller
             'catatan_tindak_lanjut' => 'nullable|string'
         ]);
 
-        $all = $this->getPengaduanData();
-        foreach ($all as &$item) {
-            if ($item['id'] == $id) {
-                $item['status'] = $request->status;
-                if ($request->filled('catatan_tindak_lanjut')) {
-                    $item['catatan_tindak_lanjut'] = $request->catatan_tindak_lanjut;
-                }
-                break;
-            }
-        }
+        $pengaduan = Pengaduan::findOrFail($id);
+        $pengaduan->update([
+            'status' => $request->status,
+            'catatan_tindak_lanjut' => $request->catatan_tindak_lanjut ?: $pengaduan->catatan_tindak_lanjut,
+            'petugas_id' => Auth::id(),
+        ]);
 
-        Storage::disk('local')->put('pengaduan.json', json_encode($all, JSON_PRETTY_PRINT));
-        return back()->with('success', 'Status dan catatan pengaduan berhasil diperbarui!');
+        return back()->with('success', 'Status dan catatan tindak lanjut pengaduan berhasil diperbarui!');
     }
 
     public function dataRt()
@@ -1116,7 +1128,7 @@ class DashboardController extends Controller
                 'rt_number' => 1,
                 'rt_label' => 'RT 001',
                 'periode' => 'November 2026',
-                'ketua_rt' => 'Bambang Suprayitno',
+                'ketua_rt' => 'Ethan Williams',
                 'kontak' => '0812-9844-0101',
                 'status' => 'Lengkap',
                 'administrasi' => [
@@ -1144,7 +1156,7 @@ class DashboardController extends Controller
                     'kejadian_menonjol' => 'Nihil / Aman',
                     'bank_sampah_terkumpul' => '65 kg'
                 ],
-                'usulan_rt' => 'Pengajuan perbaikan 2 unit PJU Gang Mawar.',
+                'usulan_rt' => 'Pengajuan perbaikan 2 unit PJU Jl. Pacuan Kuda.',
                 'evaluasi_rw' => 'Administrasi sangat tertib, partisipasi gotong royong dan pos ronda sangat tinggi.',
                 'rekomendasi_rw' => 'Pertahankan transparansi pelaporan kas dan komunikasi aktif.',
                 'updated_at' => '10 Nov 2026, 14:00 WIB',
@@ -1158,7 +1170,7 @@ class DashboardController extends Controller
                 'rt_number' => 2,
                 'rt_label' => 'RT 002',
                 'periode' => 'November 2026',
-                'ketua_rt' => 'H. Agus Mulyadi',
+                'ketua_rt' => 'Alexander Hayes',
                 'kontak' => '0813-8821-0202',
                 'status' => 'Perlu perbaikan',
                 'administrasi' => [
@@ -1186,7 +1198,7 @@ class DashboardController extends Controller
                     'kejadian_menonjol' => 'Laporan parkir liar',
                     'bank_sampah_terkumpul' => '40 kg'
                 ],
-                'usulan_rt' => 'Rambu larangan parkir sembarangan di persimpangan jalan Kenanga.',
+                'usulan_rt' => 'Rambu larangan parkir sembarangan di persimpangan Jl. Arcamanik Endah.',
                 'evaluasi_rw' => 'Laporan keuangan sudah masuk, namun rekap absensi siskamling bulan ini belum dilampirkan.',
                 'rekomendasi_rw' => 'Lengkapi lembar rekap jaga pos ronda dan laporan penerbitan surat pengantar.',
                 'updated_at' => '08 Nov 2026, 11:30 WIB',
@@ -1200,7 +1212,7 @@ class DashboardController extends Controller
                 'rt_number' => 3,
                 'rt_label' => 'RT 003',
                 'periode' => 'November 2026',
-                'ketua_rt' => 'Suryanto',
+                'ketua_rt' => 'Lucas Mitchell',
                 'kontak' => '0815-7766-0303',
                 'status' => 'Lengkap',
                 'administrasi' => [
@@ -1242,7 +1254,7 @@ class DashboardController extends Controller
                 'rt_number' => 4,
                 'rt_label' => 'RT 004',
                 'periode' => 'November 2026',
-                'ketua_rt' => 'Wahyudi Kusuma',
+                'ketua_rt' => 'Sebastian Blake',
                 'kontak' => '0818-4455-0404',
                 'status' => 'Perlu perbaikan',
                 'administrasi' => [
@@ -1283,7 +1295,7 @@ class DashboardController extends Controller
                 'rt_number' => 5,
                 'rt_label' => 'RT 005',
                 'periode' => 'November 2026',
-                'ketua_rt' => 'Hendro Purnomo',
+                'ketua_rt' => 'Noah Anderson',
                 'kontak' => '0819-1122-0505',
                 'status' => 'Lengkap',
                 'administrasi' => [
@@ -1325,7 +1337,7 @@ class DashboardController extends Controller
                 'rt_number' => 6,
                 'rt_label' => 'RT 006',
                 'periode' => 'November 2026',
-                'ketua_rt' => 'Rahmat Hidayat',
+                'ketua_rt' => 'Adrian Parker',
                 'kontak' => '0812-3344-0606',
                 'status' => 'Perlu perbaikan',
                 'administrasi' => [
@@ -1367,7 +1379,7 @@ class DashboardController extends Controller
                 'rt_number' => 7,
                 'rt_label' => 'RT 007',
                 'periode' => 'November 2026',
-                'ketua_rt' => 'Eko Prasetyo',
+                'ketua_rt' => 'Oliver James',
                 'kontak' => '0817-2233-0707',
                 'status' => 'Perlu perbaikan',
                 'administrasi' => [
@@ -1409,7 +1421,7 @@ class DashboardController extends Controller
                 'rt_number' => 8,
                 'rt_label' => 'RT 008',
                 'periode' => 'November 2026',
-                'ketua_rt' => 'Ir. Dedi Kurniawan',
+                'ketua_rt' => 'Nathaniel Reed',
                 'kontak' => '0811-9988-0808',
                 'status' => 'Perlu perbaikan',
                 'administrasi' => [
@@ -1676,9 +1688,9 @@ class DashboardController extends Controller
         $rtLabel = $user->clean_rt_label;
 
         $mutasiList = [
-            ['nama' => 'Bambang Sudarsono', 'nik' => '3276010508820001', 'jenis' => 'Pindah Datang', 'tanggal' => '05 Nov 2026', 'asal_tujuan' => 'Kec. Sukmajaya, Depok', 'status' => 'Disetujui RT'],
-            ['nama' => 'Dewi Safitri', 'nik' => '3276014409950003', 'jenis' => 'Pindah Keluar', 'tanggal' => '28 Okt 2026', 'asal_tujuan' => 'Jakarta Selatan', 'status' => 'Selesai Pengantar'],
-            ['nama' => 'Ananda Rayyan', 'nik' => '-', 'jenis' => 'Kelahiran', 'tanggal' => '15 Okt 2026', 'asal_tujuan' => 'Keluarga Bpk. Herman', 'status' => 'Tercatat'],
+            ['nama' => 'Arthur Bennett', 'nik' => '3273230508820001', 'jenis' => 'Pindah Datang', 'tanggal' => '05 Nov 2026', 'asal_tujuan' => 'Kec. Coblong, Kota Bandung', 'status' => 'Disetujui RT'],
+            ['nama' => 'Emily Foster', 'nik' => '3273234409950003', 'jenis' => 'Pindah Keluar', 'tanggal' => '28 Okt 2026', 'asal_tujuan' => 'Kec. Lembang, Kab. Bandung Barat', 'status' => 'Selesai Pengantar'],
+            ['nama' => 'Baby Leo Williams', 'nik' => '-', 'jenis' => 'Kelahiran', 'tanggal' => '15 Okt 2026', 'asal_tujuan' => 'Keluarga Theodore Williams (RT 001)', 'status' => 'Tercatat'],
         ];
 
         return view('rt.mutasi', compact('user', 'rtNum', 'rtLabel', 'mutasiList'));
@@ -1845,13 +1857,13 @@ class DashboardController extends Controller
                 'rt' => 1,
                 'nomor' => '001',
                 'nama' => 'RT 001',
-                'ketua_rt' => 'Bambang Suprayitno',
-                'sekretaris' => 'Agus Priyono',
-                'bendahara' => 'Siti Nurhaliza',
+                'ketua_rt' => 'Ethan Williams',
+                'sekretaris' => 'Theodore Williams',
+                'bendahara' => 'Charlotte Williams',
                 'kontak' => '0812-9844-0101',
                 'jumlah_kk' => 45,
                 'jumlah_warga' => 142,
-                'alamat_pos' => 'Jl. Gandaria No. 12, RT 001 / RW 013',
+                'alamat_pos' => 'Jl. Pacuan Kuda No. 12, RT 001 / RW 013, Sukamiskin',
                 'status_laporan' => 'Lengkap',
                 'administrasi' => 'Lengkap (Verifikasi 100%)',
                 'keuangan' => 'Lengkap (Saldo Rp 14.850.000)',
@@ -1870,13 +1882,13 @@ class DashboardController extends Controller
                 'rt' => 2,
                 'nomor' => '002',
                 'nama' => 'RT 002',
-                'ketua_rt' => 'H. Agus Mulyadi',
-                'sekretaris' => 'Hendra Setiawan',
-                'bendahara' => 'Dewi Lestari',
+                'ketua_rt' => 'Alexander Hayes',
+                'sekretaris' => 'Brian Hayes',
+                'bendahara' => 'Rebecca Hayes',
                 'kontak' => '0813-8821-0202',
                 'jumlah_kk' => 42,
                 'jumlah_warga' => 138,
-                'alamat_pos' => 'Jl. Kenanga No. 8, RT 002 / RW 013',
+                'alamat_pos' => 'Jl. Arcamanik Endah No. 8, RT 002 / RW 013, Sukamiskin',
                 'status_laporan' => 'Perlu diperiksa',
                 'administrasi' => 'Perlu Diperiksa (2 Berkas Belum Lengkap)',
                 'keuangan' => 'Lengkap (Saldo Rp 12.400.000)',
@@ -1894,13 +1906,13 @@ class DashboardController extends Controller
                 'rt' => 3,
                 'nomor' => '003',
                 'nama' => 'RT 003',
-                'ketua_rt' => 'Suparman Hadi',
-                'sekretaris' => 'Teguh Wibowo',
-                'bendahara' => 'Rina Kartika',
+                'ketua_rt' => 'Lucas Mitchell',
+                'sekretaris' => 'Frank Mitchell',
+                'bendahara' => 'Christine Mitchell',
                 'kontak' => '0812-7711-0303',
                 'jumlah_kk' => 48,
                 'jumlah_warga' => 156,
-                'alamat_pos' => 'Jl. Anggrek No. 15, RT 003 / RW 013',
+                'alamat_pos' => 'Jl. Golf Raya No. 15, RT 003 / RW 013, Sukamiskin',
                 'status_laporan' => 'Lengkap',
                 'administrasi' => 'Lengkap (Verifikasi 100%)',
                 'keuangan' => 'Lengkap (Saldo Rp 16.200.000)',
@@ -1918,13 +1930,13 @@ class DashboardController extends Controller
                 'rt' => 4,
                 'nomor' => '004',
                 'nama' => 'RT 004',
-                'ketua_rt' => 'Hendra Wijaya',
-                'sekretaris' => 'Bayu Wicaksono',
-                'bendahara' => 'Nurmala',
+                'ketua_rt' => 'Sebastian Blake',
+                'sekretaris' => 'Bradley Blake',
+                'bendahara' => 'Sylvia Blake',
                 'kontak' => '0815-6622-0404',
                 'jumlah_kk' => 38,
                 'jumlah_warga' => 120,
-                'alamat_pos' => 'Jl. Mawar No. 22, RT 004 / RW 013',
+                'alamat_pos' => 'Jl. Cisaranten Kulon No. 21, RT 004 / RW 013, Sukamiskin',
                 'status_laporan' => 'Belum dilaporkan',
                 'administrasi' => 'Belum Dilaporkan',
                 'keuangan' => 'Belum Dilaporkan',
@@ -1942,13 +1954,13 @@ class DashboardController extends Controller
                 'rt' => 5,
                 'nomor' => '005',
                 'nama' => 'RT 005',
-                'ketua_rt' => 'Joko Susilo',
-                'sekretaris' => 'Budi Santoso',
-                'bendahara' => 'Endang Sulastri',
+                'ketua_rt' => 'Noah Anderson',
+                'sekretaris' => 'James Anderson',
+                'bendahara' => 'Isabella Anderson',
                 'kontak' => '0813-4455-0505',
                 'jumlah_kk' => 50,
                 'jumlah_warga' => 165,
-                'alamat_pos' => 'Jl. Melati No. 5, RT 005 / RW 013',
+                'alamat_pos' => 'Jl. Puri Asri No. 14, RT 005 / RW 013, Sukamiskin',
                 'status_laporan' => 'Lengkap',
                 'administrasi' => 'Lengkap (Verifikasi 100%)',
                 'keuangan' => 'Lengkap (Saldo Rp 18.100.000)',
@@ -1966,13 +1978,13 @@ class DashboardController extends Controller
                 'rt' => 6,
                 'nomor' => '006',
                 'nama' => 'RT 006',
-                'ketua_rt' => 'Rahmat Hidayat',
-                'sekretaris' => 'Fajar Nugraha',
+                'ketua_rt' => 'Adrian Parker',
+                'sekretaris' => 'Derrick Parker',
                 'bendahara' => 'Anisa Rahmawati',
                 'kontak' => '0812-3344-0606',
                 'jumlah_kk' => 40,
                 'jumlah_warga' => 130,
-                'alamat_pos' => 'Jl. Flamboyan No. 19, RT 006 / RW 013',
+                'alamat_pos' => 'Jl. Bina Asih No. 19, RT 006 / RW 013, Sukamiskin',
                 'status_laporan' => 'Perlu diperiksa',
                 'administrasi' => 'Perlu Diperiksa (Verifikasi Fisik)',
                 'keuangan' => 'Lengkap (Saldo Rp 11.750.000)',
@@ -1990,13 +2002,13 @@ class DashboardController extends Controller
                 'rt' => 7,
                 'nomor' => '007',
                 'nama' => 'RT 007',
-                'ketua_rt' => 'Eko Prasetyo',
+                'ketua_rt' => 'Oliver James',
                 'sekretaris' => 'Wahyudi',
                 'bendahara' => 'Tri Wahyuni',
                 'kontak' => '0817-2233-0707',
                 'jumlah_kk' => 36,
                 'jumlah_warga' => 115,
-                'alamat_pos' => 'Jl. Dahlia No. 30, RT 007 / RW 013',
+                'alamat_pos' => 'Jl. Terusan Jakarta No. 30, RT 007 / RW 013, Sukamiskin',
                 'status_laporan' => 'Perlu tindak lanjut',
                 'administrasi' => 'Perlu Tindak Lanjut',
                 'keuangan' => 'Perlu Klarifikasi Bukti',
@@ -2014,13 +2026,13 @@ class DashboardController extends Controller
                 'rt' => 8,
                 'nomor' => '008',
                 'nama' => 'RT 008',
-                'ketua_rt' => 'Ir. Dedi Kurniawan',
+                'ketua_rt' => 'Nathaniel Reed',
                 'sekretaris' => 'Hasan Basri',
                 'bendahara' => 'Maya Anggraini',
                 'kontak' => '0811-9988-0808',
                 'jumlah_kk' => 44,
                 'jumlah_warga' => 140,
-                'alamat_pos' => 'Jl. Cempaka No. 45, RT 008 / RW 013',
+                'alamat_pos' => 'Jl. Sukamiskin Raya No. 45, RT 008 / RW 013, Sukamiskin',
                 'status_laporan' => 'Perlu tindak lanjut',
                 'administrasi' => 'Perlu Tindak Lanjut',
                 'keuangan' => 'Lengkap (Saldo Rp 15.500.000)',
@@ -2056,83 +2068,22 @@ class DashboardController extends Controller
 
     public function getPengaduanData()
     {
-        if (Storage::disk('local')->exists('pengaduan.json')) {
-            $data = json_decode(Storage::disk('local')->get('pengaduan.json'), true);
-            if (is_array($data) && count($data)) {
-                return $data;
-            }
-        }
-
-        $defaultComplaints = [
-            [
-                'id' => 1,
-                'kategori' => 'Fasilitas & Lampu Jalan',
-                'rt' => 'RT 005',
-                'lokasi' => 'Depan Gang 3 No. 14, RT 005',
-                'deskripsi' => 'Lampu PJU utama mati sejak 3 hari lalu. Jalan menjadi gelap dan rawan saat malam hari.',
-                'pelapor' => 'Ahmad Suhendar',
-                'phone' => '0812-4411-2233',
-                'status' => 'Diproses',
-                'foto' => null,
-                'catatan_tindak_lanjut' => 'Sudah diteruskan ke seksi sarana RW, pengadaan bohlam LED 50W dijadwalkan pasang sore ini.',
-                'created_at' => '10 Nov 2026, 09:15 WIB'
-            ],
-            [
-                'id' => 2,
-                'kategori' => 'Kebersihan & Sampah',
-                'rt' => 'RT 003',
-                'lokasi' => 'Pojok Lapangan Serbaguna RT 003',
-                'deskripsi' => 'Tumpukan dahan pohon sisa pemangkasan belum diangkut truk kebersihan dinas lingkungan hidup.',
-                'pelapor' => 'Ibu Ratna Susanti',
-                'phone' => '0813-7722-1144',
-                'status' => 'Diproses',
-                'foto' => null,
-                'catatan_tindak_lanjut' => 'Koordinasi dengan petugas gerobak sampah RW untuk pengangkutan bertahap hari Rabu.',
-                'created_at' => '09 Nov 2026, 14:30 WIB'
-            ],
-            [
-                'id' => 3,
-                'kategori' => 'Keamanan & Ketertiban',
-                'rt' => 'RT 008',
-                'lokasi' => 'Portal Gerbang Masuk RT 008',
-                'deskripsi' => 'Portal gerbang masuk masih terbuka lewat pukul 23.30 WIB dan tidak terlihat petugas jaga di pos ronda.',
-                'pelapor' => 'Kurniawan Pratama',
-                'phone' => '0811-9988-7711',
-                'status' => 'Perlu Tindak Lanjut',
-                'foto' => null,
-                'catatan_tindak_lanjut' => 'Pengurus RW memanggil koordinator siskamling RT 008 untuk penegakan SOP jam malam.',
-                'created_at' => '08 Nov 2026, 23:45 WIB'
-            ],
-            [
-                'id' => 4,
-                'kategori' => 'Drainase & Saluran Air',
-                'rt' => 'RT 006',
-                'lokasi' => 'Saluran drainase depan Balai Pertemuan RT 006',
-                'deskripsi' => 'Air saluran drainase tersumbat endapan lumpur dan sampah plastik, menimbulkan bau tidak sedap.',
-                'pelapor' => 'Bambang Irawan',
-                'phone' => '0815-3322-1100',
-                'status' => 'Selesai',
-                'foto' => null,
-                'catatan_tindak_lanjut' => 'Kerja bakti pembersihan gorong-gorong telah dilaksanakan pada hari Minggu 08 Nov 2026. Aliran air kembali lancar.',
-                'created_at' => '06 Nov 2026, 11:20 WIB'
-            ],
-            [
-                'id' => 5,
-                'kategori' => 'Sosial & Ketertiban Umum',
-                'rt' => 'RT 002',
-                'lokasi' => 'Jl. Kenanga Blok C',
-                'deskripsi' => 'Parkir mobil di bahu jalan sempit menghalangi mobil ambulans dan kendaraan warga yang melintas.',
-                'pelapor' => 'Siti Nurjanah',
-                'phone' => '0818-7766-5544',
-                'status' => 'Selesai',
-                'foto' => null,
-                'catatan_tindak_lanjut' => 'Ketua RT 002 telah memberikan teguran persuasif kepada pemilik kendaraan dan disepakati parkir di lahan komunal.',
-                'created_at' => '04 Nov 2026, 16:10 WIB'
-            ]
-        ];
-
-        Storage::disk('local')->put('pengaduan.json', json_encode($defaultComplaints, JSON_PRETTY_PRINT));
-        return $defaultComplaints;
+        return Pengaduan::with(['pelapor', 'petugas'])->latest()->get()->map(function($p) {
+            return [
+                'id' => $p->id,
+                'kategori' => $p->kategori,
+                'rt' => 'RT ' . str_pad($p->rt_number, 3, '0', STR_PAD_LEFT),
+                'lokasi' => $p->lokasi,
+                'deskripsi' => $p->deskripsi,
+                'pelapor' => $p->pelapor_name,
+                'avatar' => $p->pelapor_avatar_url,
+                'phone' => $p->pelapor_phone ?? '-',
+                'status' => $p->status,
+                'foto' => $p->foto ? (str_starts_with($p->foto, 'http') ? $p->foto : asset('storage/' . $p->foto)) : null,
+                'catatan_tindak_lanjut' => $p->catatan_tindak_lanjut,
+                'created_at' => $p->created_at ? $p->created_at->translatedFormat('d M Y, H:i') . ' WIB' : 'Hari ini',
+            ];
+        })->toArray();
     }
 
     public function getAgendaRwData()
@@ -2174,23 +2125,27 @@ class DashboardController extends Controller
     public function getAktivitasLingkungan()
     {
         $cctvCount = \App\Models\Cctv::where('aktif', true)->count();
+        $rondaHariIni = JadwalRonda::with(['coordinator1', 'coordinator2'])
+            ->where('hari', 'like', '%Rabu%')
+            ->first();
 
         return [
             'ronda_malam_ini' => [
-                'pos' => 'Pos Utama RW 013 & RT 005 - 006',
-                'petugas' => '8 Personel Linmas & Giliran Warga',
+                'pos' => $rondaHariIni ? $rondaHariIni->pos_ronda : 'Pos Jaga Terpadu RT 005 - Jl. Puri Asri',
+                'petugas' => $rondaHariIni ? $rondaHariIni->anggota_label : '8 Petugas Linmas & Warga',
                 'jam' => '22.00 - 04.30 WIB',
-                'koordinator' => 'Pak Hendra (0815-6622-0404)'
+                'koordinator' => $rondaHariIni ? $rondaHariIni->koordinator_text : 'Noah Anderson & Adrian Parker',
+                'avatar' => $rondaHariIni ? $rondaHariIni->koordinator_avatar_url : null,
             ],
             'bank_sampah' => [
                 'jadwal' => 'Setiap Rabu, 10.00 - 13.00 WIB',
-                'lokasi' => 'Pusat Bank Sampah RT 003',
-                'koleksi_terakhir' => '185 kg Sampah Terpilah'
+                'lokasi' => 'Pusat Bank Sampah Komunal RT 003, Jl. Golf Raya No. 15',
+                'koleksi_terakhir' => '580 kg Sampah Terpilah'
             ],
             'posyandu_berikutnya' => [
                 'jadwal' => 'Sabtu, 08.00 WIB',
-                'lokasi' => 'Balai Warga RT 001',
-                'fokus' => 'Imunisasi Dasar & Timbang Balita'
+                'lokasi' => 'Balai Warga RT 001, Jl. Pacuan Kuda No. 12',
+                'fokus' => 'Imunisasi Dasar & Timbang Balita UPTD Puskesmas Arcamanik'
             ],
             'cctv_aktif' => $cctvCount > 0 ? $cctvCount : 4
         ];

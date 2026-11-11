@@ -71,7 +71,7 @@
 <header>
     <div class="logo">
         <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M8 30 32 10l24 20" fill="none" stroke="#1456A0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 27v20h36V27" fill="none" stroke="#2878D0" stroke-width="3.5" stroke-linejoin="round"/><circle cx="26" cy="30" r="3.5" fill="#1456A0"/><path d="M21 44v-6a5 5 0 0 1 10 0v6" fill="#1456A0"/><circle cx="38" cy="32" r="3" fill="#2878D0"/><path d="M34 44v-5a4 4 0 0 1 8 0v5" fill="#2878D0"/><path d="M10 52c8-8 18-8 22-2 4-6 14-6 22 2-10 4-34 4-44 0Z" fill="#16865D"/></svg>
-        <div><strong>Warkas Machi</strong><small>RW 013 &bull; Kelurahan Machi</small></div>
+        <div><strong>Warkas Machi</strong><small>RW 013 &bull; Sukamiskin, Arcamanik, Bandung</small></div>
     </div>
     <nav class="nav">
         <a href="{{ route('login') }}" class="btn btn-outline" id="navLogin"><i class="fas fa-right-to-bracket"></i> Masuk</a>
@@ -103,7 +103,7 @@
     </figure>
 </main>
 
-<footer>&copy; {{ date('Y') }} Warkas Machi &bull; RW 013 Kelurahan Machi</footer>
+<footer>&copy; {{ date('Y') }} Warkas Machi &bull; RW 013 Kelurahan Sukamiskin, Kec. Arcamanik, Kota Bandung 40293</footer>
 
 <script>
     (function () {

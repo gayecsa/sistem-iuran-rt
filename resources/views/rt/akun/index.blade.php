@@ -12,14 +12,14 @@
                 <span class="badge" style="background: var(--wm-primary); color: #fff; font-size: 0.75rem; border-radius: 6px; padding: 4px 8px;">
                     PUSAT KENDALI RW
                 </span>
-                <span class="text-muted small">RW 013 &bull; Kelurahan Machi</span>
+                <span class="text-muted small">RW 013 &bull; Kelurahan Sukamiskin, Kec. Arcamanik, Kota Bandung</span>
             </div>
             <h3 class="fw-bold mb-1 text-dark mt-1">
                 <i data-lucide="key-round" class="text-primary me-2" style="width: 28px; height: 28px; vertical-align: middle;"></i>
                 Manajemen Akun RT
             </h3>
             <p class="text-muted small mb-0">
-                RW 013 – Kelurahan Machi &bull; Pengelolaan terpusat kredensial login, aktivasi akses, dan audit login Ketua RT 001 sampai RT 008.
+                RW 013 – Kelurahan Sukamiskin, Kec. Arcamanik, Kota Bandung 40293 &bull; Pengelolaan terpusat kredensial login, aktivasi akses, dan audit login Ketua RT 001 sampai RT 008.
             </p>
         </div>
         <div class="d-flex align-items-center gap-2 flex-wrap">
@@ -402,7 +402,7 @@
                     <h5 class="fw-bold mb-0 text-dark">Prinsip Keamanan Sistem</h5>
                 </div>
                 <p class="small text-muted mb-3">
-                    Kebijakan otorisasi data hierarki RW 013 &bull; Kelurahan Machi:
+                    Kebijakan otorisasi data hierarki RW 013 &bull; Kelurahan Sukamiskin, Kec. Arcamanik, Kota Bandung:
                 </p>
                 <div class="list-group list-group-flush small">
                     <div class="list-group-item px-0 py-2 border-0 d-flex gap-2">
@@ -462,13 +462,13 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Nomor RW (Terkunci)</label>
-                            <input type="text" class="form-control bg-light" value="RW 013 (Kelurahan Machi)" readonly>
+                            <input type="text" class="form-control bg-light" value="RW 013 (Kelurahan Sukamiskin, Bandung)" readonly>
                         </div>
 
                         <!-- Nama Lengkap Ketua RT -->
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Nama Lengkap Ketua RT <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control" placeholder="Contoh: Bpk. Bambang Suprayitno" required>
+                            <input type="text" name="name" class="form-control" placeholder="Contoh: Ethan Williams" required>
                         </div>
 
                         <!-- Email Login -->

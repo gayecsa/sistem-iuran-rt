@@ -184,11 +184,12 @@ class AuthController extends Controller
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
             'rt_number' => 'nullable|string|max:10',
             'rw_number' => 'nullable|string|max:10',
-            'house_number' => 'nullable|string|max:10',
-            'phone' => 'nullable|string|max:15',
+            'house_number' => 'nullable|string|max:20',
+            'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
             'status_rumah' => 'nullable|string|max:50',
             'profile_photo' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+            'foto_profil' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
             'nik' => 'nullable|string|max:20|unique:users,nik,' . $user->id,
             'no_kk' => 'nullable|string|max:20|unique:users,no_kk,' . $user->id,
             'current_password' => 'nullable|string',
@@ -210,8 +211,8 @@ class AuthController extends Controller
         $data = [
             'name' => $request->name,
             'email' => $request->email,
-            'rt_number' => $request->rt_number ?? '001',
-            'rw_number' => $request->rw_number ?? '013',
+            'rt_number' => $request->rt_number ?? ($user->rt_number ?? '001'),
+            'rw_number' => $request->rw_number ?? ($user->rw_number ?? '013'),
             'house_number' => $request->house_number,
             'phone' => $request->phone,
             'address' => $request->address,
@@ -224,14 +225,18 @@ class AuthController extends Controller
             $data['password'] = Hash::make($request->password);
         }
 
-        if ($request->hasFile('profile_photo')) {
+        $photoFile = $request->file('profile_photo') ?? $request->file('foto_profil');
+        if ($photoFile) {
             if ($user->profile_photo && Storage::disk('public')->exists($user->profile_photo)) {
                 Storage::disk('public')->delete($user->profile_photo);
             }
+            if ($user->foto_profil && Storage::disk('public')->exists($user->foto_profil)) {
+                Storage::disk('public')->delete($user->foto_profil);
+            }
 
-            $photo = $request->file('profile_photo');
-            $path = $photo->storeAs('profile_photos', time() . '_' . $user->id . '.' . $photo->extension(), 'public');
+            $path = $photoFile->storeAs('foto-profil', time() . '_' . $user->id . '.' . $photoFile->extension(), 'public');
             $data['profile_photo'] = $path;
+            $data['foto_profil'] = $path;
         }
 
         $user->update($data);

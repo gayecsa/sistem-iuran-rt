@@ -68,7 +68,10 @@
                             <span class="badge bg-light text-dark border">{{ $adu['kategori'] }}</span>
                             <span class="text-muted small ms-2"><i class="far fa-clock me-1"></i>{{ $adu['created_at'] }}</span>
                             <h6 class="fw-bold text-dark mb-0 mt-2">{{ $adu['lokasi'] }}</h6>
-                            <small class="text-muted">Pelapor: <strong>{{ $adu['pelapor'] }}</strong> ({{ $adu['phone'] ?? '-' }})</small>
+                            <small class="text-muted d-flex align-items-center gap-1 mt-1">
+                                <img src="{{ $adu['avatar'] ?? asset('images/avatar-default.svg') }}" alt="Avatar" class="rounded-circle border" style="width: 22px; height: 22px; object-fit: cover;">
+                                Pelapor: <strong>{{ $adu['pelapor'] }}</strong> ({{ $adu['phone'] ?? '-' }})
+                            </small>
                         </div>
                         <div class="d-flex align-items-center gap-2">
                             @if($adu['status'] === 'Selesai')
@@ -79,9 +82,9 @@
                                 <span class="status-badge status-tindak-lanjut"><i data-lucide="alert-triangle" style="width: 14px; height: 14px;"></i> Menunggu Verifikasi</span>
                             @endif
 
-                            @if(in_array(strtolower(auth()->user()->role ?? ''), ['admin', 'bendahara']))
+                            @if(in_array(strtolower(auth()->user()->role ?? ''), ['admin', 'bendahara', 'rw', 'rt']))
                                 <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modalUpdatePengaduan{{ $adu['id'] }}">
-                                    <i data-lucide="edit" style="width: 13px; height: 13px;"></i> Tindak Lanjut RW
+                                    <i data-lucide="edit" style="width: 13px; height: 13px;"></i> Tindak Lanjut
                                 </button>
                             @endif
                         </div>
@@ -103,8 +106,8 @@
                     </div>
                 </div>
 
-                <!-- Modal Update Status Tindak Lanjut Pengaduan (Khusus Admin/Ketua RW) -->
-                @if(in_array(strtolower(auth()->user()->role ?? ''), ['admin', 'bendahara']))
+                <!-- Modal Update Status Tindak Lanjut Pengaduan (Khusus Pengurus RW / RT) -->
+                @if(in_array(strtolower(auth()->user()->role ?? ''), ['admin', 'bendahara', 'rw', 'rt']))
                     <div class="modal fade" id="modalUpdatePengaduan{{ $adu['id'] }}" tabindex="-1" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content rounded-4 border-0 shadow">

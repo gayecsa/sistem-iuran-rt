@@ -33,7 +33,7 @@
                             @if(isset($umkm->foto) && $umkm->foto)
                                 <div class="mt-2">
                                     <small class="text-muted d-block mb-1">Foto saat ini:</small>
-                                    <img src="{{ asset('storage/' . $umkm->foto) }}" alt="Foto UMKM" class="rounded shadow-sm object-fit-cover" style="width: 100px; height: 100px;">
+                                    <img src="{{ $umkm->foto_url }}" alt="Foto UMKM" class="rounded shadow-sm object-fit-cover" style="width: 100px; height: 100px;" onerror="this.onerror=null; this.src='{{ $umkm->category_placeholder_image }}';">
                                 </div>
                             @endif
                         </div>

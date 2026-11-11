@@ -26,7 +26,7 @@
                     </div>
                     <p class="text-muted mb-0 small mt-1">
                         <i data-lucide="map-pin" style="width: 14px; height: 14px; vertical-align: middle; color: var(--wm-green);"></i>
-                        Rukun Warga 013 &bull; Kelurahan Machi &bull; Pusat Komando & Pelayanan Terpadu
+                        Rukun Warga 013 &bull; Kelurahan Sukamiskin, Kec. Arcamanik, Kota Bandung 40293 &bull; Pusat Komando & Pelayanan Terpadu
                     </p>
                 </div>
             </div>
@@ -431,7 +431,7 @@
                     <h6 class="fw-bold mb-1">{{ $aktivitas_lingkungan['ronda_malam_ini']['pos'] ?? 'Pos Utama RW 013' }}</h6>
                     <small class="text-light opacity-75 d-block mb-2">{{ $aktivitas_lingkungan['ronda_malam_ini']['petugas'] ?? '8 Personel Linmas & Warga' }}</small>
                     <div class="d-flex justify-content-between align-items-center pt-2 border-top border-white border-opacity-25 small">
-                        <span>Koordinator: {{ $aktivitas_lingkungan['ronda_malam_ini']['koordinator'] ?? 'Pak Hendra' }}</span>
+                        <span>Koordinator: {{ $aktivitas_lingkungan['ronda_malam_ini']['koordinator'] ?? 'Koordinator Siskamling RW' }}</span>
                         <a href="{{ route('ronda.index') }}" class="text-white text-decoration-none fw-bold">Jadwal Ronda &rarr;</a>
                     </div>
                 </div>

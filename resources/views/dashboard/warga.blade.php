@@ -23,7 +23,7 @@
                     </div>
                     <p class="text-muted mb-0 small mt-1">
                         <i data-lucide="home" style="width: 14px; height: 14px; vertical-align: middle; color: var(--wm-green);"></i>
-                        Kelurahan Machi &bull; Layanan Terpadu Iuran, Administrasi Surat, Pengaduan, & Kegiatan Lingkungan
+                        Kelurahan Sukamiskin, Kec. Arcamanik, Kota Bandung 40293 &bull; Layanan Terpadu Iuran, Administrasi Surat, Pengaduan, & Kegiatan Warga
                     </p>
                 </div>
             </div>

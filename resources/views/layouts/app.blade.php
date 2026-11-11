@@ -124,13 +124,49 @@
                     </a>
                 </li>
 
-                <li class="wm-nav-header">LAYANAN MASYARAKAT</li>
+                {{-- ==========================================================
+                     MODUL DATA KEPENDUDUKAN TERPADU RW 013
+                     ========================================================== --}}
+                <li class="wm-nav-header">DATA KEPENDUDUKAN</li>
                 <li class="wm-nav-item">
-                    <a href="{{ route('warga.index') }}" class="wm-nav-link {{ request()->routeIs('warga.*') ? 'active' : '' }}" title="Data Seluruh Warga RW">
+                    <a href="{{ route('warga.index') }}" class="wm-nav-link {{ request()->routeIs('warga.index') || request()->routeIs('warga.create') || request()->routeIs('warga.show') || request()->routeIs('warga.edit') ? 'active' : '' }}" title="Database Warga RW 013">
                         <span class="wm-nav-icon"><i data-lucide="users"></i></span>
-                        <span class="wm-nav-text">Data Warga (Semua)</span>
+                        <span class="wm-nav-text">Database Warga</span>
                     </a>
                 </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('kependudukan.keluarga') }}" class="wm-nav-link {{ request()->routeIs('kependudukan.keluarga') ? 'active' : '' }}" title="Data Keluarga & Kartu Keluarga">
+                        <span class="wm-nav-icon"><i data-lucide="home"></i></span>
+                        <span class="wm-nav-text">Data Keluarga</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('kependudukan.verifikasi') }}" class="wm-nav-link {{ request()->routeIs('kependudukan.verifikasi') ? 'active' : '' }}" title="Pusat Verifikasi Warga Berjenjang">
+                        <span class="wm-nav-icon"><i data-lucide="user-check"></i></span>
+                        <span class="wm-nav-text">Verifikasi Warga</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('arsip-kk.index') }}" class="wm-nav-link {{ request()->routeIs('arsip-kk.*') ? 'active' : '' }}" title="Arsip KK Resmi Dukcapil">
+                        <span class="wm-nav-icon"><i data-lucide="folder-check"></i></span>
+                        <span class="wm-nav-text">Arsip KK Resmi</span>
+                        <span class="wm-nav-badge" style="background:#1456A0;">Dukcapil</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('kependudukan.riwayat') }}" class="wm-nav-link {{ request()->routeIs('kependudukan.riwayat') ? 'active' : '' }}" title="Riwayat Perubahan Data & Mutasi">
+                        <span class="wm-nav-icon"><i data-lucide="history"></i></span>
+                        <span class="wm-nav-text">Riwayat Perubahan Data</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('kependudukan.laporan') }}" class="wm-nav-link {{ request()->routeIs('kependudukan.laporan') ? 'active' : '' }}" title="Laporan Kependudukan & Demografi">
+                        <span class="wm-nav-icon"><i data-lucide="bar-chart-3"></i></span>
+                        <span class="wm-nav-text">Laporan Kependudukan</span>
+                    </a>
+                </li>
+
+                <li class="wm-nav-header">LAYANAN MASYARAKAT</li>
                 <li class="wm-nav-item">
                     <a href="{{ route('posyandu') }}" class="wm-nav-link {{ request()->routeIs('posyandu*') ? 'active' : '' }}" title="Posyandu & Kesehatan">
                         <span class="wm-nav-icon"><i data-lucide="heart-pulse"></i></span>
@@ -167,29 +203,77 @@
 
                 <li class="wm-nav-header">KEUANGAN RW</li>
                 <li class="wm-nav-item">
-                    <a href="{{ route('iuran.index') }}" class="wm-nav-link {{ request()->routeIs('iuran.*') ? 'active' : '' }}" title="Iuran Warga">
+                    <a href="{{ route('keuangan.dashboard') }}" class="wm-nav-link {{ request()->routeIs('keuangan.dashboard') || request()->routeIs('keuangan.index') ? 'active' : '' }}" title="Dashboard Keuangan RW">
+                        <span class="wm-nav-icon"><i data-lucide="layout-dashboard"></i></span>
+                        <span class="wm-nav-text">Dashboard Keuangan</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('keuangan.buku_kas.index', ['jenis' => 'kas_rw']) }}" class="wm-nav-link {{ request()->routeIs('keuangan.buku_kas.*') && request('jenis') === 'kas_rw' ? 'active' : '' }}" title="Kas RW">
+                        <span class="wm-nav-icon"><i data-lucide="landmark"></i></span>
+                        <span class="wm-nav-text">Kas RW</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('keuangan.buku_kas.index', ['jenis' => 'kas_rt']) }}" class="wm-nav-link {{ request()->routeIs('keuangan.buku_kas.*') && request('jenis') === 'kas_rt' ? 'active' : '' }}" title="Kas RT (001 - 008)">
+                        <span class="wm-nav-icon"><i data-lucide="users"></i></span>
+                        <span class="wm-nav-text">Kas RT (001 - 008)</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('keuangan.buku_kas.index', ['jenis' => 'kas_sampah']) }}" class="wm-nav-link {{ request()->routeIs('keuangan.buku_kas.*') && request('jenis') === 'kas_sampah' ? 'active' : '' }}" title="Kas Sampah">
+                        <span class="wm-nav-icon"><i data-lucide="trash-2"></i></span>
+                        <span class="wm-nav-text">Kas Sampah</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('keuangan.buku_kas.index', ['jenis' => 'dana_kegiatan']) }}" class="wm-nav-link {{ request()->routeIs('keuangan.buku_kas.*') && request('jenis') === 'dana_kegiatan' ? 'active' : '' }}" title="Dana Kegiatan">
+                        <span class="wm-nav-icon"><i data-lucide="calendar-check"></i></span>
+                        <span class="wm-nav-text">Dana Kegiatan</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('tagihan.index') }}" class="wm-nav-link {{ request()->routeIs('tagihan.*') ? 'active' : '' }}" title="Tagihan & Iuran">
                         <span class="wm-nav-icon"><i data-lucide="receipt"></i></span>
-                        <span class="wm-nav-text">Iuran Warga</span>
+                        <span class="wm-nav-text">Tagihan & Iuran</span>
                     </a>
                 </li>
                 <li class="wm-nav-item">
-                    <a href="{{ route('kas-rw.index') }}" class="wm-nav-link {{ request()->routeIs('kas-rw.*') || request()->routeIs('kas-rt.*') ? 'active' : '' }}" title="Kas RW">
-                        <span class="wm-nav-icon"><i data-lucide="wallet-cards"></i></span>
-                        <span class="wm-nav-text">Kas RW (Transparan)</span>
+                    <a href="{{ route('keuangan.transaksi.index') }}" class="wm-nav-link {{ request()->routeIs('keuangan.transaksi.*') ? 'active' : '' }}" title="Transaksi">
+                        <span class="wm-nav-icon"><i data-lucide="history"></i></span>
+                        <span class="wm-nav-text">Transaksi</span>
                     </a>
                 </li>
                 <li class="wm-nav-item">
-                    <a href="{{ route('laporan.keuangan') }}" class="wm-nav-link {{ request()->routeIs('laporan.keuangan') || request()->routeIs('keuangan.detail') ? 'active' : '' }}" title="Laporan Keuangan">
+                    <a href="{{ route('keuangan.laporan.index') }}" class="wm-nav-link {{ request()->routeIs('keuangan.laporan.*') ? 'active' : '' }}" title="Laporan Keuangan">
                         <span class="wm-nav-icon"><i data-lucide="pie-chart"></i></span>
                         <span class="wm-nav-text">Laporan Keuangan</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('keuangan.pengaturan') }}" class="wm-nav-link {{ request()->routeIs('keuangan.pengaturan*') ? 'active' : '' }}" title="Pengaturan Iuran">
+                        <span class="wm-nav-icon"><i data-lucide="sliders"></i></span>
+                        <span class="wm-nav-text">Pengaturan Iuran</span>
                     </a>
                 </li>
 
                 <li class="wm-nav-header">ADMINISTRASI RW</li>
                 <li class="wm-nav-item">
-                    <a href="{{ route('surat.index') }}" class="wm-nav-link {{ request()->routeIs('surat.*') ? 'active' : '' }}" title="Surat RW">
+                    <a href="{{ route('rw.surat.index') }}" class="wm-nav-link {{ request()->routeIs('rw.surat.*') ? 'active' : '' }}" title="Persetujuan Surat Masuk">
                         <span class="wm-nav-icon"><i data-lucide="file-badge-2"></i></span>
-                        <span class="wm-nav-text">Surat & Administrasi</span>
+                        <span class="wm-nav-text">Persetujuan Surat</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('rw.surat_master.index') }}" class="wm-nav-link {{ request()->routeIs('rw.surat_master.*') ? 'active' : '' }}" title="Manajemen 18 Jenis & Template Surat">
+                        <span class="wm-nav-icon"><i data-lucide="sliders"></i></span>
+                        <span class="wm-nav-text">Master Jenis & Template</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('surat.index') }}" class="wm-nav-link {{ request()->routeIs('surat.index') || request()->routeIs('surat.create') || request()->routeIs('surat.show') ? 'active' : '' }}" title="Katalog Layanan Surat Warga">
+                        <span class="wm-nav-icon"><i data-lucide="layout-grid"></i></span>
+                        <span class="wm-nav-text">Katalog Layanan Surat</span>
                     </a>
                 </li>
                 <li class="wm-nav-item">
@@ -256,9 +340,21 @@
                     </a>
                 </li>
                 <li class="wm-nav-item">
-                    <a href="{{ route('rt.keluarga') }}" class="wm-nav-link {{ request()->routeIs('rt.keluarga') ? 'active' : '' }}" title="Data Keluarga & Kepala Keluarga">
+                    <a href="{{ route('kependudukan.keluarga') }}" class="wm-nav-link {{ request()->routeIs('kependudukan.keluarga') ? 'active' : '' }}" title="Data Keluarga & Kepala Keluarga">
                         <span class="wm-nav-icon"><i data-lucide="home"></i></span>
                         <span class="wm-nav-text">Data Keluarga (KK)</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('kependudukan.verifikasi') }}" class="wm-nav-link {{ request()->routeIs('kependudukan.verifikasi') ? 'active' : '' }}" title="Verifikasi Warga RT">
+                        <span class="wm-nav-icon"><i data-lucide="user-check"></i></span>
+                        <span class="wm-nav-text">Verifikasi Warga</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('arsip-kk.index') }}" class="wm-nav-link {{ request()->routeIs('arsip-kk.*') ? 'active' : '' }}" title="Arsip KK Resmi RT">
+                        <span class="wm-nav-icon"><i data-lucide="folder-check"></i></span>
+                        <span class="wm-nav-text">Arsip KK Resmi</span>
                     </a>
                 </li>
                 <li class="wm-nav-item">
@@ -276,9 +372,15 @@
 
                 <li class="wm-nav-header">PELAYANAN WARGA</li>
                 <li class="wm-nav-item">
-                    <a href="{{ route('surat.index') }}" class="wm-nav-link {{ request()->routeIs('surat.*') ? 'active' : '' }}" title="Surat Pengantar RT">
-                        <span class="wm-nav-icon"><i data-lucide="file-signature"></i></span>
-                        <span class="wm-nav-text">Surat Pengantar</span>
+                    <a href="{{ route('rt.surat.index') }}" class="wm-nav-link {{ request()->routeIs('rt.surat.*') ? 'active' : '' }}" title="Verifikasi Surat RT">
+                        <span class="wm-nav-icon"><i data-lucide="file-check-2"></i></span>
+                        <span class="wm-nav-text">Verifikasi Surat</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('surat.index') }}" class="wm-nav-link {{ request()->routeIs('surat.index') || request()->routeIs('surat.create') || request()->routeIs('surat.show') ? 'active' : '' }}" title="Daftar Pengajuan Surat">
+                        <span class="wm-nav-icon"><i data-lucide="file-text"></i></span>
+                        <span class="wm-nav-text">Daftar Pengajuan</span>
                     </a>
                 </li>
                 <li class="wm-nav-item">
@@ -316,21 +418,39 @@
 
                 <li class="wm-nav-header">KEUANGAN RT</li>
                 <li class="wm-nav-item">
-                    <a href="{{ route('iuran.index') }}" class="wm-nav-link {{ request()->routeIs('iuran.*') ? 'active' : '' }}" title="Iuran Warga RT">
-                        <span class="wm-nav-icon"><i data-lucide="receipt"></i></span>
-                        <span class="wm-nav-text">Iuran Warga RT</span>
+                    <a href="{{ route('keuangan.dashboard') }}" class="wm-nav-link {{ request()->routeIs('keuangan.dashboard') || request()->routeIs('keuangan.index') ? 'active' : '' }}" title="Dashboard Keuangan RT">
+                        <span class="wm-nav-icon"><i data-lucide="layout-dashboard"></i></span>
+                        <span class="wm-nav-text">Dashboard Keuangan RT</span>
                     </a>
                 </li>
                 <li class="wm-nav-item">
-                    <a href="{{ route('kas-rt.index') }}" class="wm-nav-link {{ request()->routeIs('kas-rt.*') ? 'active' : '' }}" title="Buku Kas RT">
+                    <a href="{{ route('keuangan.buku_kas.index', ['jenis' => 'kas_rt']) }}" class="wm-nav-link {{ request()->routeIs('keuangan.buku_kas.*') && request('jenis') === 'kas_rt' ? 'active' : '' }}" title="Buku Kas RT">
                         <span class="wm-nav-icon"><i data-lucide="wallet"></i></span>
-                        <span class="wm-nav-text">Kas {{ $currentUser->clean_rt_label }}</span>
+                        <span class="wm-nav-text">Buku Kas {{ $currentUser->clean_rt_label }}</span>
                     </a>
                 </li>
                 <li class="wm-nav-item">
-                    <a href="{{ route('laporan.keuangan') }}" class="wm-nav-link {{ request()->routeIs('laporan.keuangan') ? 'active' : '' }}" title="Laporan Keuangan RT">
+                    <a href="{{ route('keuangan.buku_kas.index', ['jenis' => 'kas_sampah']) }}" class="wm-nav-link {{ request()->routeIs('keuangan.buku_kas.*') && request('jenis') === 'kas_sampah' ? 'active' : '' }}" title="Kas Sampah">
+                        <span class="wm-nav-icon"><i data-lucide="trash-2"></i></span>
+                        <span class="wm-nav-text">Kas Sampah {{ $currentUser->clean_rt_label }}</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('tagihan.index') }}" class="wm-nav-link {{ request()->routeIs('tagihan.*') ? 'active' : '' }}" title="Tagihan Iuran Warga">
+                        <span class="wm-nav-icon"><i data-lucide="receipt"></i></span>
+                        <span class="wm-nav-text">Tagihan Iuran Warga</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('keuangan.transaksi.create') }}" class="wm-nav-link {{ request()->routeIs('keuangan.transaksi.create') ? 'active' : '' }}" title="Catat Transaksi">
+                        <span class="wm-nav-icon"><i data-lucide="plus-circle"></i></span>
+                        <span class="wm-nav-text">Catat Transaksi</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('keuangan.laporan.index') }}" class="wm-nav-link {{ request()->routeIs('keuangan.laporan.*') ? 'active' : '' }}" title="Laporan Keuangan RT">
                         <span class="wm-nav-icon"><i data-lucide="pie-chart"></i></span>
-                        <span class="wm-nav-text">Laporan Keuangan</span>
+                        <span class="wm-nav-text">Laporan Keuangan RT</span>
                     </a>
                 </li>
 
@@ -387,23 +507,37 @@
                     </a>
                 </li>
 
-                <li class="wm-nav-header">LAYANAN SAYA</li>
+                <li class="wm-nav-header">KEUANGAN SAYA</li>
                 <li class="wm-nav-item">
-                    <a href="{{ route('iuran.index') }}" class="wm-nav-link {{ request()->routeIs('iuran.*') ? 'active' : '' }}" title="Tagihan & Iuran Saya">
+                    <a href="{{ route('keuangan.dashboard') }}" class="wm-nav-link {{ request()->routeIs('keuangan.dashboard') || request()->routeIs('keuangan.index') ? 'active' : '' }}" title="Tagihan Iuran Keluarga">
                         <span class="wm-nav-icon"><i data-lucide="receipt"></i></span>
-                        <span class="wm-nav-text">Tagihan & Iuran</span>
+                        <span class="wm-nav-text">Tagihan Iuran Keluarga</span>
                     </a>
                 </li>
                 <li class="wm-nav-item">
-                    <a href="{{ route('pembayaran.index') }}" class="wm-nav-link {{ request()->routeIs('pembayaran.*') ? 'active' : '' }}" title="Riwayat Pembayaran">
+                    <a href="{{ route('tagihan.index') }}" class="wm-nav-link {{ request()->routeIs('tagihan.index') ? 'active' : '' }}" title="Riwayat Pembayaran">
+                        <span class="wm-nav-icon"><i data-lucide="history"></i></span>
+                        <span class="wm-nav-text">Riwayat Pembayaran</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('keuangan.dashboard') }}#bayar" class="wm-nav-link" title="Bayar Iuran / Konfirmasi">
                         <span class="wm-nav-icon"><i data-lucide="credit-card"></i></span>
-                        <span class="wm-nav-text">Riwayat Bayar</span>
+                        <span class="wm-nav-text">Bayar Iuran / Konfirmasi</span>
                     </a>
                 </li>
                 <li class="wm-nav-item">
-                    <a href="{{ route('surat.create') }}" class="wm-nav-link {{ request()->routeIs('surat.*') ? 'active' : '' }}" title="Pengajuan Surat Pengantar">
+                    <a href="{{ route('tagihan.index', ['status' => 'Lunas']) }}" class="wm-nav-link" title="Bukti Pembayaran / Kuitansi">
+                        <span class="wm-nav-icon"><i data-lucide="file-check"></i></span>
+                        <span class="wm-nav-text">Bukti Pembayaran / Kuitansi</span>
+                    </a>
+                </li>
+
+                <li class="wm-nav-header">LAYANAN MASYARAKAT</li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('surat.index') }}" class="wm-nav-link {{ request()->routeIs('surat.*') ? 'active' : '' }}" title="Layanan Penerbitan Surat">
                         <span class="wm-nav-icon"><i data-lucide="file-signature"></i></span>
-                        <span class="wm-nav-text">Surat Pengantar</span>
+                        <span class="wm-nav-text">Layanan Surat</span>
                     </a>
                 </li>
                 <li class="wm-nav-item">
@@ -497,7 +631,7 @@
 
             <!-- Brand Sapaan & Wilayah -->
             <div class="wm-topbar-title">
-                <h6>RW 013 Kelurahan Machi</h6>
+                <h6>RW 013 &bull; Kelurahan Sukamiskin, Kec. Arcamanik, Kota Bandung 40293</h6>
                 <small class="d-none d-sm-inline">Sistem Koordinasi & Pelayanan Terpadu Warga</small>
             </div>
         </div>
@@ -652,8 +786,8 @@
 
         <!-- Footer RW 013 -->
         <footer class="text-center py-4 mt-5 text-muted small" style="border-top: 1px solid var(--wm-border);">
-            <p class="mb-1 fw-semibold">&copy; {{ date('Y') }} Warkas Machi &bull; Sistem Manajemen & Pelayanan Terpadu RW 013 Kelurahan Machi</p>
-            <p class="mb-0 text-secondary" style="font-size: 0.74rem;">Mewujudkan Lingkungan Rukun, Tertib, Transparan, dan Sejahtera.</p>
+            <p class="mb-1 fw-semibold">&copy; {{ date('Y') }} Warkas Machi &bull; Sistem Koordinasi & Pelayanan Terpadu RW 013, Kelurahan Sukamiskin, Kec. Arcamanik, Kota Bandung 40293</p>
+            <p class="mb-0 text-secondary" style="font-size: 0.74rem;">Mewujudkan Lingkungan Rukun, Tertib, Transparan, dan Sejahtera di Bandung Raya.</p>
         </footer>
     </main>
 

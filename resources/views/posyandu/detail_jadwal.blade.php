@@ -38,36 +38,36 @@
                                      data-minggu="Minggu 1"
                                      data-waktu="Sabtu, 08:00 - 11:00 WIB"
                                      data-fokus="Pemeriksaan Balita, Penimbangan, & Imunisasi Dasar"
-                                     data-dokter="dr. Amanda Sp.A & Bidan Ratna, S.ST"
-                                     data-lokasi="Posyandu Sejahtera (Balai Warga RT 001)"
+                                     data-dokter="dr. Amanda Sp.A & Bidan Puskesmas Arcamanik"
+                                     data-lokasi="Posyandu Melati 13 Unit RT 001 (Jl. Pacuan Kuda No. 12)"
                                      data-detail="Penimbangan berat badan, pengukuran tinggi badan, imunisasi rutin (BCG, DPT, Polio, Campak), pemberian Vitamin A gratis, serta konsultasi gizi balita.">
                                      <td><span class="fw-bold text-primary">Minggu 1</span></td>
                                      <td>Sabtu, 08:00 - 11:00 WIB</td>
                                      <td>Pemeriksaan Balita, Penimbangan, & Imunisasi Dasar</td>
                                      <td><span class="badge bg-primary-subtle text-primary border"><i class="fas fa-user-md me-1"></i> dr. Amanda Sp.A</span></td>
-                                     <td><small class="text-secondary"><i class="fas fa-map-marker-alt text-danger me-1"></i> Posyandu Sejahtera (Balai RT 001)</small></td>
+                                     <td><small class="text-secondary"><i class="fas fa-map-marker-alt text-danger me-1"></i> Posyandu Melati 13 (RT 001)</small></td>
                                      <td class="text-center"><button class="btn btn-sm btn-outline-primary rounded-circle"><i class="fas fa-chevron-right"></i></button></td>
                                  </tr>
                                  <tr class="jadwal-row" style="cursor: pointer;" 
                                      data-minggu="Minggu 2"
                                      data-waktu="Sabtu, 08:00 - 11:00 WIB"
                                      data-fokus="Pemeriksaan Ibu Hamil & Konsultasi Persalinan"
-                                     data-dokter="dr. Farhan Sp.OG & Bidan Melati, S.Tr.Keb"
-                                     data-lokasi="Posyandu Kasih Ibu (Pos Kesehatan RT 003)"
+                                     data-dokter="dr. Amanda Sp.A & Bidan Puskesmas Arcamanik"
+                                     data-lokasi="Posyandu Melati 13 Unit RT 003 (Jl. Golf Raya No. 15)"
                                      data-detail="Pemeriksaan kesehatan rutin ibu hamil, pengukuran tekanan darah dan LILA, pemberian suplemen zat besi/asam folat, pemeriksaan USG dasar, serta konsultasi kesiapan persalinan.">
                                      <td><span class="fw-bold text-success">Minggu 2</span></td>
                                      <td>Sabtu, 08:00 - 11:00 WIB</td>
                                      <td>Pemeriksaan Ibu Hamil & Konsultasi Persalinan</td>
-                                     <td><span class="badge bg-success-subtle text-success border"><i class="fas fa-user-md me-1"></i> dr. Farhan Sp.OG</span></td>
-                                     <td><small class="text-secondary"><i class="fas fa-map-marker-alt text-danger me-1"></i> Posyandu Kasih Ibu (RT 003)</small></td>
+                                     <td><span class="badge bg-success-subtle text-success border"><i class="fas fa-user-md me-1"></i> dr. Amanda Sp.A</span></td>
+                                     <td><small class="text-secondary"><i class="fas fa-map-marker-alt text-danger me-1"></i> Posyandu Melati 13 (RT 003)</small></td>
                                      <td class="text-center"><button class="btn btn-sm btn-outline-success rounded-circle"><i class="fas fa-chevron-right"></i></button></td>
                                  </tr>
                                  <tr class="jadwal-row" style="cursor: pointer;" 
                                      data-minggu="Minggu 3"
                                      data-waktu="Sabtu, 08:00 - 11:00 WIB"
                                      data-fokus="Pemberian Makanan Tambahan (PMT) & Cek Kesehatan Lansia"
-                                     data-dokter="dr. Setyo Utomo (Dokter Umum) & Tim Ahli Gizi"
-                                     data-lokasi="Posyandu Tunas Bangsa (Pos Sekretariat RW 013)"
+                                     data-dokter="dr. Amanda Sp.A & Tim Medis UPTD Puskesmas Arcamanik"
+                                     data-lokasi="Posyandu Melati 13 Unit RT 005 (Jl. Puri Asri No. 14)"
                                      data-detail="Pembagian paket PMT bergizi untuk balita, pemeriksaan kesehatan lansia (cek gula darah, kolesterol, asam urat), penimbangan, dan penyuluhan gizi seimbang.">
                                      <td><span class="fw-bold text-warning">Minggu 3</span></td>
                                      <td>Sabtu, 08:00 - 11:00 WIB</td>

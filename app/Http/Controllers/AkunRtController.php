@@ -148,7 +148,7 @@ class AkunRtController extends Controller
                 'rt_number' => $cleanRt,
                 'rw_number' => '013',
                 'phone' => $request->phone,
-                'address' => $request->address ?: "RT {$cleanRt} / RW 013, Kelurahan Machi",
+                'address' => $request->address ?: "RT {$cleanRt} / RW 013, Kelurahan Sukamiskin, Kec. Arcamanik, Kota Bandung 40293",
                 'house_number' => $request->house_number,
                 'status_rumah' => 'milik_sendiri',
                 'is_active' => true,
