@@ -11,17 +11,42 @@ class WargaController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth', 'role:admin,bendahara']);
+        $this->middleware(['auth', 'role:admin,bendahara,rt,rw,super_admin']);
     }
 
     public function index(Request $request)
     {
-        // Membangun query dasar sesuai aslinya
+        $user = auth()->user();
+
+        // Membangun query dasar warga
         $query = User::withSum(['pembayaran as total_pemasukan' => function ($q) {
                 $q->where('status', 'lunas');
             }], 'jumlah_bayar')
             ->withSum('kasRt as total_pengeluaran', 'pengeluaran')
             ->where('role', 'warga');
+
+        // PEMBATASAN AKSES HIERARKI RT & RW:
+        // Ketua RT HANYA melihat warga wilayah RT-nya sendiri
+        if ($user->isRt()) {
+            $rtNum = $user->clean_rt_number;
+            $query->where(function ($q) use ($rtNum) {
+                $q->where('rt_number', $rtNum)
+                  ->orWhere('rt_number', str_pad($rtNum, 3, '0', STR_PAD_LEFT))
+                  ->orWhere('rt_number', 'RT ' . str_pad($rtNum, 3, '0', STR_PAD_LEFT))
+                  ->orWhere('address', 'like', "%RT 00{$rtNum}%")
+                  ->orWhere('address', 'like', "%RT {$rtNum}%");
+            });
+        } elseif ($request->filled('rt') && $request->rt !== 'all') {
+            // Pengurus RW dapat memfilter tampilan per RT
+            $filterRt = intval($request->rt);
+            $query->where(function ($q) use ($filterRt) {
+                $q->where('rt_number', $filterRt)
+                  ->orWhere('rt_number', str_pad($filterRt, 3, '0', STR_PAD_LEFT))
+                  ->orWhere('rt_number', 'RT ' . str_pad($filterRt, 3, '0', STR_PAD_LEFT))
+                  ->orWhere('address', 'like', "%RT 00{$filterRt}%")
+                  ->orWhere('address', 'like', "%RT {$filterRt}%");
+            });
+        }
 
         // Menambahkan logika pencarian
         if ($request->filled('search')) {
@@ -37,7 +62,7 @@ class WargaController extends Controller
         // Eksekusi query dengan sorting dan paginasi
         $warga = $query->orderBy('house_number')->paginate(100);
         
-        // Membawa parameter search ke link paginasi agar tidak reset saat pindah halaman
+        // Membawa parameter search & filter ke link paginasi
         $warga->appends($request->all());
 
         return view('warga.index', compact('warga'));
@@ -52,6 +77,7 @@ class WargaController extends Controller
     public function store(Request $request)
     {
         $this->authorizeAdminOrBendahara();
+        $currentUser = auth()->user();
 
         $request->validate([
             'name' => 'required|string|max:255',
@@ -69,12 +95,15 @@ class WargaController extends Controller
             'tanggal_lahir' => 'nullable|date',
         ]);
 
+        // Jika Ketua RT yang menambahkan, paksakan rt_number milik RT-nya sendiri
+        $rtNumber = $currentUser->isRt() ? $currentUser->clean_rt_label : ($request->rt_number ?? 'RT 001');
+
         User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 'warga',
-            'rt_number' => $request->rt_number ?? 'RT 001',
+            'rt_number' => $rtNumber,
             'rw_number' => $request->rw_number ?? 'RW 013',
             'house_number' => $request->house_number,
             'phone' => $request->phone,
@@ -92,13 +121,14 @@ class WargaController extends Controller
 
     public function edit(User $warga)
     {
-        $this->authorizeAdminOrBendahara();
+        $this->authorizeAdminOrBendahara($warga);
         return view('warga.edit', compact('warga'));
     }
 
     public function update(Request $request, User $warga)
     {
-        $this->authorizeAdminOrBendahara();
+        $this->authorizeAdminOrBendahara($warga);
+        $currentUser = auth()->user();
 
         $request->validate([
             'name' => 'required|string|max:255',
@@ -113,7 +143,14 @@ class WargaController extends Controller
             'tanggal_lahir' => 'nullable|date',
         ]);
 
-        $warga->update($request->only(['name', 'phone', 'address', 'status_rumah', 'nik', 'no_kk', 'gender', 'rt_number', 'rw_number', 'tanggal_lahir']));
+        $updateData = $request->only(['name', 'phone', 'address', 'status_rumah', 'nik', 'no_kk', 'gender', 'rw_number', 'tanggal_lahir']);
+        
+        // RT tidak boleh memindahkan warga ke RT lain
+        if (!$currentUser->isRt() && $request->filled('rt_number')) {
+            $updateData['rt_number'] = $request->rt_number;
+        }
+
+        $warga->update($updateData);
 
         if ($request->filled('password')) {
             $warga->update(['password' => Hash::make($request->password)]);
@@ -125,7 +162,7 @@ class WargaController extends Controller
 
     public function destroy(User $warga)
     {
-        $this->authorizeAdminOrBendahara();
+        $this->authorizeAdminOrBendahara($warga);
 
         $warga->delete();
         return redirect()->route('warga.index')
@@ -134,7 +171,7 @@ class WargaController extends Controller
 
     public function toggleActive(User $warga)
     {
-        $this->authorizeAdminOrBendahara();
+        $this->authorizeAdminOrBendahara($warga);
 
         $warga->update(['is_active' => ! $warga->is_active]);
 
@@ -142,9 +179,19 @@ class WargaController extends Controller
             ->with('success', 'Status warga berhasil diperbarui!');
     }
 
-    protected function authorizeAdminOrBendahara()
+    protected function authorizeAdminOrBendahara(User $warga = null)
     {
-        abort_unless(in_array(auth()->user()->role, ['admin', 'bendahara']), 403);
+        $currentUser = auth()->user();
+        abort_unless($currentUser && (in_array(strtolower($currentUser->role), ['admin', 'bendahara', 'rw', 'super_admin']) || $currentUser->isRt()), 403, 'Akses ditolak.');
+
+        // Keamanan data antar-RT: Ketua RT dilarang mengelola warga dari RT lain
+        if ($currentUser->isRt() && $warga) {
+            $userRt = $currentUser->clean_rt_number;
+            $wargaRt = $warga->clean_rt_number;
+            if ($userRt !== $wargaRt) {
+                abort(403, "Akses ditolak: Anda hanya memiliki kewenangan mengelola warga di {$currentUser->clean_rt_label}.");
+            }
+        }
     }
 
     public function getKeluargaDetail($no_kk)

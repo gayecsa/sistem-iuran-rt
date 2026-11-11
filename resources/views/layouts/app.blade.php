@@ -1,593 +1,724 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Warkas Machi</title>
+    <title>{{ $title ?? 'Warkas Machi' }} | Sistem Manajemen RW 013</title>
     
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Font Awesome (Fallback & Compatibility) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Animate.css -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
-    <style>
-        :root {
-            --soft-pink: #f8d4e4;
-            --soft-blue: #c7e3ff;
-            --deep-pink: #f5a6c5;
-            --deep-blue: #7db7ff;
-            --surface: rgba(255, 255, 255, 0.92);
-            --surface-strong: rgba(255, 255, 255, 1);
-            --text-strong: #27314a;
-            --shadow: 0 25px 60px rgba(46, 61, 94, 0.12);
-        }
-        
-        body {
-            background: linear-gradient(135deg, #f9d8e5 0%, #d3e8ff 45%, #a7d7ff 100%);
-            min-height: 100vh;
-            font-family: 'Poppins', sans-serif;
-            color: var(--text-strong);
-        }
-        
-        .navbar {
-            background: rgba(255,255,255,0.96) !important;
-            backdrop-filter: blur(15px);
-            box-shadow: 0 15px 35px rgba(45, 62, 88, 0.12);
-        }
-        
-        .card {
-            border: none;
-            border-radius: 22px;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            background: var(--surface);
-        }
-        
-        .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 28px 70px rgba(46, 61, 94, 0.15);
-        }
-        
-        .btn {
-            border-radius: 999px;
-            transition: all 0.25s ease;
-        }
-        
-        .btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 12px 30px rgba(46, 61, 94, 0.12);
-        }
-        
-        .dashboard-shell {
-            min-height: calc(100vh - 110px);
-        }
-        
-        .hero-banner {
-            background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(255, 243, 252, 0.9));
-        }
-        
-        .sideboard-panel {
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(251, 240, 252, 0.98));
-            border: 1px solid rgba(255,255,255,0.7);
-        }
-        
-        .metric-card {
-            border-radius: 20px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 230, 245, 0.95));
-            border: 1px solid rgba(255,255,255,0.8);
-            box-shadow: 0 12px 30px rgba(46, 61, 94, 0.08);
-        }
-        
-        .metric-card strong {
-            color: #2a3a59;
-        }
-        
-        .soft-gradient {
-            background: linear-gradient(135deg, var(--soft-pink), var(--soft-blue));
-            color: #1f324f;
-        }
-        
-        .gradient-pill {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.55rem 0.9rem;
-            border-radius: 999px;
-            font-weight: 600;
-            background: linear-gradient(135deg, #f9bfce, #a9d7ff);
-            color: #2a3a59;
-            box-shadow: 0 10px 24px rgba(46, 61, 94, 0.08);
-        }
-        
-        .icon-circle {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: #ffffff;
-            box-shadow: 0 16px 40px rgba(46, 61, 94, 0.08);
-            color: var(--deep-pink);
-        }
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
-        .brand-logo {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(125, 183, 255, 0.16);
-            box-shadow: 0 10px 24px rgba(46, 61, 94, 0.08);
-        }
+    <!-- Custom Theme: Navy Blue Sidebar (#123766), Primary Blue (#1456A0), Welfare Green (#16865D) -->
+    <link rel="stylesheet" href="{{ asset('css/warkas-theme.css') }}?v={{ time() }}">
 
-        .brand-logo svg {
-            width: 20px;
-            height: 20px;
-        }
-
-        .brand-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            background: rgba(125, 183, 255, 0.16);
-            box-shadow: 0 18px 40px rgba(46, 61, 94, 0.08);
-        }
-
-        .brand-icon svg {
-            width: 40px;
-            height: 40px;
-        }
-
-        .profile-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 0.65rem;
-        }
-        
-        .bg-pink {
-            background-color: var(--deep-pink) !important;
-        }
-        
-        .text-pink {
-            color: var(--deep-pink) !important;
-        }
-        
-        .btn-soft {
-            background: rgba(255, 255, 255, 0.92);
-            color: var(--text-strong);
-            border: 1px solid rgba(255,255,255,0.9);
-        }
-        
-        .btn-soft:hover {
-            background: rgba(255, 255, 255, 1);
-        }
-        
-        .sideboard-nav .nav-link {
-            border-radius: 15px;
-            margin-bottom: 12px;
-            color: #4b4c6d;
-            background: rgba(255,255,255,0.9);
-            border: 1px solid rgba(255,255,255,0.85);
-        }
-        
-        .sideboard-nav .nav-link.active,
-        .sideboard-nav .nav-link:hover {
-            background: linear-gradient(135deg, #ffd4e6, #c8e7ff);
-            color: #1b2843;
-        }
-        
-        .chart-card {
-            min-height: 320px;
-            background: linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(233, 240, 255, 0.95));
-        }
-        
-        .recent-list .list-group-item {
-            border-radius: 18px;
-            border: 1px solid rgba(255,255,255,0.85);
-            margin-bottom: 12px;
-            background: rgba(255,255,255,0.92);
-        }
-        
-        .recent-list .list-group-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .service-card {
-            border: 1px solid rgba(255,255,255,0.85);
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(237, 250, 242, 0.96));
-        }
-
-        /* Floating Speed Dial Contact Widget */
-        .floating-contact-container {
-            position: fixed;
-            right: 1.5rem;
-            bottom: 1.5rem;
-            z-index: 1050;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 0.65rem;
-        }
-
-        .contact-bubble-item {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.6rem;
-            padding: 0.55rem 1rem;
-            border-radius: 999px;
-            color: #ffffff !important;
-            font-weight: 600;
-            font-size: 0.88rem;
-            text-decoration: none;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
-            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-            backdrop-filter: blur(10px);
-        }
-
-        .whatsapp-bubble {
-            background: #25d366;
-            box-shadow: 0 12px 28px rgba(37, 211, 102, 0.35);
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .whatsapp-bubble:hover {
-            background: #20bd5a;
-            transform: translateY(-2px);
-        }
-
-        .telegram-bubble {
-            background: #0088cc;
-            box-shadow: 0 12px 28px rgba(0, 136, 204, 0.35);
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(25px) scale(0.75);
-            pointer-events: none;
-        }
-
-        .telegram-bubble:hover {
-            background: #0077b5;
-            transform: translateY(-3px) scale(1.03);
-        }
-
-        .floating-contact-container.expanded .telegram-bubble {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0) scale(1);
-            pointer-events: auto;
-        }
-
-        .floating-contact-container.expanded .whatsapp-bubble {
-            transform: translateY(-2px);
-        }
-
-        .bubble-icon-box {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.22);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1rem;
-        }
-
-        .bubble-toggle-arrow {
-            background: rgba(255, 255, 255, 0.25);
-            border: none;
-            color: #ffffff;
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            margin-left: 0.2rem;
-            transition: transform 0.3s ease, background 0.2s ease;
-        }
-
-        .bubble-toggle-arrow:hover {
-            background: rgba(255, 255, 255, 0.4);
-        }
-
-        .floating-contact-container.expanded #arrowToggleIcon {
-            transform: rotate(180deg);
-        }
-                min-width: 140px;
-                padding: 0.45rem 0.7rem;
+    <script>
+        // Inisialisasi tema sebelum render untuk mencegah flash
+        (function () {
+            var saved = localStorage.getItem('wm-theme') || localStorage.getItem('warkas_theme');
+            if (!saved) {
+                saved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
             }
-
-            .whatsapp-float .whatsapp-text {
-                display: none;
+            document.documentElement.setAttribute('data-theme', saved);
+            if (saved === 'dark') {
+                document.addEventListener('DOMContentLoaded', function () {
+                    document.body.classList.add('dark-mode');
+                });
             }
-        }
-        
-        .footer {
-            background: rgba(255,255,255,0.85);
-            color: #4d5673;
-            text-align: center;
-            padding: 20px;
-            margin-top: 40px;
-            border-top: 1px solid rgba(255,255,255,0.9);
-        }
-
-        /* Dark Mode CSS Rules - Pitch Dark OLED Charcoal */
-        body.dark-mode {
-            background: #090c15 !important;
-            color: #f8fafc !important;
-        }
-
-        body.dark-mode .cover-container {
-            background: #090c15 !important;
-        }
-
-        body.dark-mode .card,
-        body.dark-mode .cover-card,
-        body.dark-mode .navbar,
-        body.dark-mode .footer,
-        body.dark-mode .dropdown-menu {
-            background: #111726 !important;
-            color: #f8fafc !important;
-            border-color: rgba(255, 255, 255, 0.08) !important;
-            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.7) !important;
-        }
-
-        body.dark-mode .hero-banner,
-        body.dark-mode .sideboard-panel {
-            background: #111726 !important;
-            border-color: rgba(255, 255, 255, 0.08) !important;
-        }
-
-        body.dark-mode .navbar-brand,
-        body.dark-mode .nav-link {
-            color: #f8fafc !important;
-        }
-
-        body.dark-mode .feature-box,
-        body.dark-mode .info-footer-box {
-            background: #1a2337 !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        }
-
-        body.dark-mode .feature-box h6,
-        body.dark-mode .feature-box p,
-        body.dark-mode .feature-box .text-dark,
-        body.dark-mode .feature-box .text-muted {
-            color: #f8fafc !important;
-        }
-
-        body.dark-mode .text-dark,
-        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, 
-        body.dark-mode h4, body.dark-mode h5, body.dark-mode h6 {
-            color: #f8fafc !important;
-        }
-
-        body.dark-mode .text-muted, 
-        body.dark-mode .text-secondary {
-            color: #94a3b8 !important;
-        }
-
-        body.dark-mode .bg-light {
-            background: #182032 !important;
-            color: #f8fafc !important;
-        }
-
-        body.dark-mode .bg-white {
-            background: #111726 !important;
-            color: #f8fafc !important;
-        }
-
-        body.dark-mode .border {
-            border-color: rgba(255, 255, 255, 0.12) !important;
-        }
-
-        body.dark-mode .form-control,
-        body.dark-mode .form-select,
-        body.dark-mode .input-group-text {
-            background-color: #161e2e !important;
-            color: #ffffff !important;
-            border-color: #2d394e !important;
-        }
-
-        body.dark-mode .form-control::placeholder {
-            color: #64748b !important;
-        }
-
-        body.dark-mode .btn-outline-secondary {
-            background-color: #161e2e !important;
-            color: #94a3b8 !important;
-            border-color: #2d394e !important;
-        }
-
-        body.dark-mode .table {
-            color: #f8fafc !important;
-            border-color: rgba(255, 255, 255, 0.08) !important;
-        }
-
-        body.dark-mode .table th,
-        body.dark-mode .table td {
-            background-color: transparent !important;
-            color: #f8fafc !important;
-        }
-
-        body.dark-mode .modal-content {
-            background-color: #111726 !important;
-            color: #f8fafc !important;
-        }
-
-        body.dark-mode .list-group-item {
-            background-color: #182032 !important;
-            color: #f8fafc !important;
-        }
-
-        body.dark-mode .btn-light {
-            background-color: #1a2337 !important;
-            color: #f8fafc !important;
-            border-color: #2d394e !important;
-        }
-    </style>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/warkas-theme.css') }}?v=1">
+            // Check sidebar state
+            if (localStorage.getItem('wm-sidebar-collapsed') === 'true' && window.innerWidth >= 992) {
+                document.addEventListener('DOMContentLoaded', function () {
+                    document.body.classList.add('sidebar-collapsed');
+                });
+            }
+        })();
+    </script>
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
-        <div class="container">
-            <a class="navbar-brand fw-bold d-flex align-items-center" href="{{ route('dashboard') }}">
-                <span class="brand-logo me-2">
-                    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M8 30 32 10l24 20" fill="none" stroke="#1456A0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 27v20h36V27" fill="none" stroke="#2878D0" stroke-width="3.5" stroke-linejoin="round"/><circle cx="26" cy="30" r="3.5" fill="#1456A0"/><path d="M21 44v-6a5 5 0 0 1 10 0v6" fill="#1456A0"/><circle cx="38" cy="32" r="3" fill="#2878D0"/><path d="M34 44v-5a4 4 0 0 1 8 0v5" fill="#2878D0"/><path d="M10 52c8-8 18-8 22-2 4-6 14-6 22 2-10 4-34 4-44 0Z" fill="#16865D"/></svg>
-                </span>
-                <span>Warkas Machi<small>RW 013 &bull; Kelurahan Machi</small></span>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center flex-row gap-2">
-                    @auth
-                        @if(in_array(Auth::user()->role, ['admin', 'bendahara']))
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('warga.index') }}">
-                                    <i class="fas fa-users me-1"></i>Data Warga
-                                </a>
-                            </li>
-                        @endif
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                                <img src="{{ Auth::user()->profile_photo ? asset('storage/' . Auth::user()->profile_photo) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=EAF3FF&color=1456A0' }}"
-                                    alt="Avatar" class="profile-avatar">
-                                <span>
-                                    {{ Auth::user()->name }}
-                                    <small class="text-muted">({{ ucfirst(Auth::user()->role) }})</small>
-                                </span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center" href="{{ route('profile.edit') }}">
-                                        <i class="fas fa-user me-2"></i>Profil
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item">
-                                            <i class="fas fa-sign-out-alt me-2"></i>Logout
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </li>
-                    @endauth
+<body class="{{ request()->cookie('theme') === 'dark' ? 'dark-mode' : '' }}">
 
-                    <!-- Tombol Toggle Dark/Light Mode di Pojok Atas Kanan -->
-                    <li class="nav-item ms-2">
-                        <button id="themeToggleBtn" onclick="toggleTheme()" class="btn btn-sm btn-light rounded-circle shadow-sm border p-0 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;" title="Ubah Mode Terang / Gelap">
-                            <i class="fas fa-moon text-secondary" id="themeToggleIcon"></i>
-                        </button>
+    {{-- Backdrop untuk Mobile Drawer --}}
+    <div class="wm-sidebar-backdrop" id="sidebarBackdrop" onclick="toggleMobileSidebar()"></div>
+
+    {{-- ======================================================================
+         SIDEBAR NAVIGASI VERTIKAL DI SEBELAH KIRI (NAVY BLUE #123766)
+         ====================================================================== --}}
+    <aside class="wm-sidebar" id="sidebarMenu" aria-label="Navigasi Utama">
+        <!-- Sidebar Brand Header -->
+        <div class="wm-sidebar-brand">
+            <a href="{{ route('dashboard') }}" class="wm-brand-link" title="Warkas Machi RW 013">
+                <div class="wm-brand-icon">
+                    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M8 30 32 10l24 20" stroke="#FFFFFF" stroke-width="4"/>
+                        <path d="M14 27v20h36V27" stroke="#7DB7FF" stroke-width="3.5"/>
+                        <circle cx="26" cy="30" r="3.5" fill="#FFFFFF"/>
+                        <path d="M21 44v-6a5 5 0 0 1 10 0v6" fill="#FFFFFF"/>
+                        <circle cx="38" cy="32" r="3" fill="#A7F3D0"/>
+                        <path d="M34 44v-5a4 4 0 0 1 8 0v5" fill="#A7F3D0"/>
+                        <path d="M10 52c8-8 18-8 22-2 4-6 14-6 22 2-10 4-34 4-44 0Z" fill="#10B981"/>
+                    </svg>
+                </div>
+                <div class="wm-brand-info">
+                    <span class="wm-brand-name">Warkas Machi</span>
+                    <span class="wm-brand-sub">SISTEM MANAJEMEN RW 013</span>
+                </div>
+            </a>
+            <button type="button" class="wm-sidebar-toggle-btn d-none d-lg-flex" id="sidebarCollapseBtn" onclick="toggleSidebarCollapse()" title="Kecilkan/Perluas Menu">
+                <i data-lucide="chevrons-left" id="collapseIcon"></i>
+            </button>
+            <button type="button" class="wm-sidebar-toggle-btn d-lg-none" onclick="toggleMobileSidebar()" title="Tutup Menu">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+
+        <!-- Sidebar Navigation Groups (Role Separated) -->
+        <ul class="wm-sidebar-nav">
+            @php
+                $currentUser = auth()->user();
+                $isRw = $currentUser && ($currentUser->isRw() || in_array($currentUser->role, ['admin', 'bendahara', 'super_admin']));
+                $isRt = $currentUser && ($currentUser->isRt() || $currentUser->role === 'rt');
+            @endphp
+
+            @if($isRw)
+                {{-- ==========================================================
+                     SIDEBAR KHUSUS KETUA RW & PENGURUS RW 013
+                     ========================================================== --}}
+                <li class="wm-nav-header">DASHBOARD RW</li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('dashboard.rw') }}" class="wm-nav-link {{ request()->routeIs('dashboard*') && !request()->routeIs('dashboard.rt') && !request()->routeIs('dashboard.warga') ? 'active' : '' }}" title="Dashboard Utama RW">
+                        <span class="wm-nav-icon"><i data-lucide="layout-dashboard"></i></span>
+                        <span class="wm-nav-text">Ringkasan RW 013</span>
+                    </a>
+                </li>
+
+                <li class="wm-nav-header">MONITORING & KOORDINASI RT</li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('data-rt.index') }}" class="wm-nav-link {{ request()->routeIs('data-rt.*') ? 'active' : '' }}" title="Data 8 RT">
+                        <span class="wm-nav-icon"><i data-lucide="building-2"></i></span>
+                        <span class="wm-nav-text">Data RT (RT 001-008)</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('monitoring-rt.index') }}" class="wm-nav-link {{ request()->routeIs('monitoring-rt.*') ? 'active' : '' }}" title="Audit & Monitoring RT">
+                        <span class="wm-nav-icon"><i data-lucide="clipboard-check"></i></span>
+                        <span class="wm-nav-text">Audit & Monitoring RT</span>
+                        <span class="wm-nav-badge" style="background:#2878D0;">Audit</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('laporan-rt.index') }}" class="wm-nav-link {{ request()->routeIs('laporan-rt.*') ? 'active' : '' }}" title="Laporan Seluruh RT">
+                        <span class="wm-nav-icon"><i data-lucide="file-check"></i></span>
+                        <span class="wm-nav-text">Laporan Masuk RT</span>
+                    </a>
+                </li>
+
+                <li class="wm-nav-header">LAYANAN MASYARAKAT</li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('warga.index') }}" class="wm-nav-link {{ request()->routeIs('warga.*') ? 'active' : '' }}" title="Data Seluruh Warga RW">
+                        <span class="wm-nav-icon"><i data-lucide="users"></i></span>
+                        <span class="wm-nav-text">Data Warga (Semua)</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('posyandu') }}" class="wm-nav-link {{ request()->routeIs('posyandu*') ? 'active' : '' }}" title="Posyandu & Kesehatan">
+                        <span class="wm-nav-icon"><i data-lucide="heart-pulse"></i></span>
+                        <span class="wm-nav-text">Posyandu & Kesehatan</span>
+                        <span class="wm-nav-badge">Sabtu</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('bank-sampah') }}" class="wm-nav-link {{ request()->routeIs('bank-sampah') ? 'active' : '' }}" title="Bank Sampah">
+                        <span class="wm-nav-icon"><i data-lucide="recycle"></i></span>
+                        <span class="wm-nav-text">Bank Sampah</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('ronda.index') }}" class="wm-nav-link {{ request()->routeIs('ronda.*') || request()->routeIs('cctv.*') ? 'active' : '' }}" title="Ronda & Keamanan">
+                        <span class="wm-nav-icon"><i data-lucide="shield-check"></i></span>
+                        <span class="wm-nav-text">Ronda & Keamanan</span>
+                        <span class="wm-nav-badge" style="background:#16865D;">Live</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('umkm.index') }}" class="wm-nav-link {{ request()->routeIs('umkm.*') ? 'active' : '' }}" title="UMKM Warga">
+                        <span class="wm-nav-icon"><i data-lucide="store"></i></span>
+                        <span class="wm-nav-text">UMKM Warga</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('pengaduan.index') }}" class="wm-nav-link {{ request()->routeIs('pengaduan.*') ? 'active' : '' }}" title="Pengaduan Warga">
+                        <span class="wm-nav-icon"><i data-lucide="message-square-warning"></i></span>
+                        <span class="wm-nav-text">Pengaduan Warga</span>
+                        <span class="wm-nav-badge bg-warning text-dark">Layanan</span>
+                    </a>
+                </li>
+
+                <li class="wm-nav-header">KEUANGAN RW</li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('iuran.index') }}" class="wm-nav-link {{ request()->routeIs('iuran.*') ? 'active' : '' }}" title="Iuran Warga">
+                        <span class="wm-nav-icon"><i data-lucide="receipt"></i></span>
+                        <span class="wm-nav-text">Iuran Warga</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('kas-rw.index') }}" class="wm-nav-link {{ request()->routeIs('kas-rw.*') || request()->routeIs('kas-rt.*') ? 'active' : '' }}" title="Kas RW">
+                        <span class="wm-nav-icon"><i data-lucide="wallet-cards"></i></span>
+                        <span class="wm-nav-text">Kas RW (Transparan)</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('laporan.keuangan') }}" class="wm-nav-link {{ request()->routeIs('laporan.keuangan') || request()->routeIs('keuangan.detail') ? 'active' : '' }}" title="Laporan Keuangan">
+                        <span class="wm-nav-icon"><i data-lucide="pie-chart"></i></span>
+                        <span class="wm-nav-text">Laporan Keuangan</span>
+                    </a>
+                </li>
+
+                <li class="wm-nav-header">ADMINISTRASI RW</li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('surat.index') }}" class="wm-nav-link {{ request()->routeIs('surat.*') ? 'active' : '' }}" title="Surat RW">
+                        <span class="wm-nav-icon"><i data-lucide="file-badge-2"></i></span>
+                        <span class="wm-nav-text">Surat & Administrasi</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('agenda-rw.index') }}" class="wm-nav-link {{ request()->routeIs('agenda-rw.*') ? 'active' : '' }}" title="Agenda & Rapat RW">
+                        <span class="wm-nav-icon"><i data-lucide="calendar-days"></i></span>
+                        <span class="wm-nav-text">Agenda & Rapat RW</span>
+                    </a>
+                </li>
+
+                <li class="wm-nav-header">INFORMASI WILAYAH</li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('peta.index') }}" class="wm-nav-link {{ request()->routeIs('peta.*') ? 'active' : '' }}" title="Peta Wilayah">
+                        <span class="wm-nav-icon"><i data-lucide="map-pinned"></i></span>
+                        <span class="wm-nav-text">Peta Wilayah</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('pengumuman.index') }}" class="wm-nav-link {{ request()->routeIs('pengumuman.*') ? 'active' : '' }}" title="Pengumuman">
+                        <span class="wm-nav-icon"><i data-lucide="megaphone"></i></span>
+                        <span class="wm-nav-text">Pengumuman</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('wisata.index') }}" class="wm-nav-link {{ request()->routeIs('wisata.*') ? 'active' : '' }}" title="Wisata & Fasilitas">
+                        <span class="wm-nav-icon"><i data-lucide="trees"></i></span>
+                        <span class="wm-nav-text">Wisata & Fasilitas</span>
+                    </a>
+                </li>
+
+                <li class="wm-nav-header">KELOLA PENGGUNA</li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('profile.edit') }}" class="wm-nav-link {{ request()->routeIs('profile.*') ? 'active' : '' }}" title="Manajemen Pengguna">
+                        <span class="wm-nav-icon"><i data-lucide="user-cog"></i></span>
+                        <span class="wm-nav-text">Manajemen Pengguna</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('rt.akun.index') }}" class="wm-nav-link {{ request()->routeIs('rt.akun.*') ? 'active' : '' }}" title="Manajemen Akun RT">
+                        <span class="wm-nav-icon"><i data-lucide="key-round"></i></span>
+                        <span class="wm-nav-text">Manajemen Akun RT</span>
+                        <span class="wm-nav-badge" style="background:#16865D;">8 RT</span>
+                    </a>
+                </li>
+
+            @elseif($isRt)
+                {{-- ==========================================================
+                     SIDEBAR KHUSUS KETUA RT (RT 001 S/D RT 008)
+                     ========================================================== --}}
+                <li class="wm-nav-header text-uppercase" style="color: #A7F3D0 !important; font-weight:700;">
+                    <i data-lucide="shield" style="width:12px;height:12px;margin-right:4px;"></i> {{ $currentUser->clean_rt_label }} / RW 013
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('dashboard.rt') }}" class="wm-nav-link {{ request()->routeIs('dashboard.rt') ? 'active' : '' }}" title="Ringkasan RT">
+                        <span class="wm-nav-icon"><i data-lucide="layout-dashboard"></i></span>
+                        <span class="wm-nav-text">Ringkasan {{ $currentUser->clean_rt_label }}</span>
+                    </a>
+                </li>
+
+                <li class="wm-nav-header">MANAJEMEN WARGA</li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('warga.index') }}" class="wm-nav-link {{ request()->routeIs('warga.index') || request()->routeIs('warga.create') || request()->routeIs('warga.edit') ? 'active' : '' }}" title="Data Warga RT Sendiri">
+                        <span class="wm-nav-icon"><i data-lucide="users"></i></span>
+                        <span class="wm-nav-text">Warga {{ $currentUser->clean_rt_label }}</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('rt.keluarga') }}" class="wm-nav-link {{ request()->routeIs('rt.keluarga') ? 'active' : '' }}" title="Data Keluarga & Kepala Keluarga">
+                        <span class="wm-nav-icon"><i data-lucide="home"></i></span>
+                        <span class="wm-nav-text">Data Keluarga (KK)</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('rt.pendatang') }}" class="wm-nav-link {{ request()->routeIs('rt.pendatang') ? 'active' : '' }}" title="Data Pendatang / Kontrak">
+                        <span class="wm-nav-icon"><i data-lucide="user-check"></i></span>
+                        <span class="wm-nav-text">Data Pendatang</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('rt.mutasi') }}" class="wm-nav-link {{ request()->routeIs('rt.mutasi') ? 'active' : '' }}" title="Mutasi Warga">
+                        <span class="wm-nav-icon"><i data-lucide="arrow-left-right"></i></span>
+                        <span class="wm-nav-text">Mutasi Warga</span>
+                    </a>
+                </li>
+
+                <li class="wm-nav-header">PELAYANAN WARGA</li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('surat.index') }}" class="wm-nav-link {{ request()->routeIs('surat.*') ? 'active' : '' }}" title="Surat Pengantar RT">
+                        <span class="wm-nav-icon"><i data-lucide="file-signature"></i></span>
+                        <span class="wm-nav-text">Surat Pengantar</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('pengaduan.index') }}" class="wm-nav-link {{ request()->routeIs('pengaduan.*') ? 'active' : '' }}" title="Pengaduan Warga RT">
+                        <span class="wm-nav-icon"><i data-lucide="message-square-warning"></i></span>
+                        <span class="wm-nav-text">Pengaduan Warga</span>
+                    </a>
+                </li>
+
+                <li class="wm-nav-header">KEGIATAN RT</li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('posyandu') }}" class="wm-nav-link {{ request()->routeIs('posyandu*') ? 'active' : '' }}" title="Posyandu & Balita">
+                        <span class="wm-nav-icon"><i data-lucide="heart-pulse"></i></span>
+                        <span class="wm-nav-text">Posyandu RT</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('bank-sampah') }}" class="wm-nav-link {{ request()->routeIs('bank-sampah*') ? 'active' : '' }}" title="Bank Sampah RT">
+                        <span class="wm-nav-icon"><i data-lucide="recycle"></i></span>
+                        <span class="wm-nav-text">Bank Sampah</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('ronda.index') }}" class="wm-nav-link {{ request()->routeIs('ronda.*') ? 'active' : '' }}" title="Jadwal Ronda & Keamanan">
+                        <span class="wm-nav-icon"><i data-lucide="shield-alert"></i></span>
+                        <span class="wm-nav-text">Ronda & Keamanan</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('umkm.index') }}" class="wm-nav-link {{ request()->routeIs('umkm.*') ? 'active' : '' }}" title="UMKM Warga">
+                        <span class="wm-nav-icon"><i data-lucide="store"></i></span>
+                        <span class="wm-nav-text">UMKM Warga</span>
+                    </a>
+                </li>
+
+                <li class="wm-nav-header">KEUANGAN RT</li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('iuran.index') }}" class="wm-nav-link {{ request()->routeIs('iuran.*') ? 'active' : '' }}" title="Iuran Warga RT">
+                        <span class="wm-nav-icon"><i data-lucide="receipt"></i></span>
+                        <span class="wm-nav-text">Iuran Warga RT</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('kas-rt.index') }}" class="wm-nav-link {{ request()->routeIs('kas-rt.*') ? 'active' : '' }}" title="Buku Kas RT">
+                        <span class="wm-nav-icon"><i data-lucide="wallet"></i></span>
+                        <span class="wm-nav-text">Kas {{ $currentUser->clean_rt_label }}</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('laporan.keuangan') }}" class="wm-nav-link {{ request()->routeIs('laporan.keuangan') ? 'active' : '' }}" title="Laporan Keuangan RT">
+                        <span class="wm-nav-icon"><i data-lucide="pie-chart"></i></span>
+                        <span class="wm-nav-text">Laporan Keuangan</span>
+                    </a>
+                </li>
+
+                <li class="wm-nav-header">ADMINISTRASI & KOORDINASI RW</li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('rt.laporan') }}" class="wm-nav-link {{ request()->routeIs('rt.laporan*') ? 'active' : '' }}" title="Laporan Bulanan ke RW">
+                        <span class="wm-nav-icon"><i data-lucide="send"></i></span>
+                        <span class="wm-nav-text">Laporan Bulanan RT</span>
+                        <span class="wm-nav-badge" style="background:#16865D;">Ke RW</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('rt.evaluasi') }}" class="wm-nav-link {{ request()->routeIs('rt.evaluasi') ? 'active' : '' }}" title="Catatan Evaluasi RW">
+                        <span class="wm-nav-icon"><i data-lucide="clipboard-pen"></i></span>
+                        <span class="wm-nav-text">Catatan Evaluasi RW</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('rt.arsip') }}" class="wm-nav-link {{ request()->routeIs('rt.arsip') ? 'active' : '' }}" title="Arsip & Dokumen RT">
+                        <span class="wm-nav-icon"><i data-lucide="archive"></i></span>
+                        <span class="wm-nav-text">Arsip & SK RT</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('pengumuman.index') }}" class="wm-nav-link {{ request()->routeIs('pengumuman.*') ? 'active' : '' }}" title="Pengumuman RW">
+                        <span class="wm-nav-icon"><i data-lucide="megaphone"></i></span>
+                        <span class="wm-nav-text">Pengumuman RW</span>
+                    </a>
+                </li>
+
+                <li class="wm-nav-header">PENGATURAN RT</li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('rt.profil') }}" class="wm-nav-link {{ request()->routeIs('rt.profil') ? 'active' : '' }}" title="Profil RT & Pengurus">
+                        <span class="wm-nav-icon"><i data-lucide="landmark"></i></span>
+                        <span class="wm-nav-text">Profil & Pos RT</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('profile.edit') }}" class="wm-nav-link {{ request()->routeIs('profile.*') ? 'active' : '' }}" title="Profil Akun">
+                        <span class="wm-nav-icon"><i data-lucide="user-cog"></i></span>
+                        <span class="wm-nav-text">Profil Akun</span>
+                    </a>
+                </li>
+
+            @else
+                {{-- ==========================================================
+                     SIDEBAR KHUSUS WARGA RW 013
+                     ========================================================== --}}
+                <li class="wm-nav-header">DASHBOARD WARGA</li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('dashboard.warga') }}" class="wm-nav-link {{ request()->routeIs('dashboard.warga') || request()->routeIs('dashboard') ? 'active' : '' }}" title="Dashboard Warga">
+                        <span class="wm-nav-icon"><i data-lucide="home"></i></span>
+                        <span class="wm-nav-text">Dashboard Warga</span>
+                    </a>
+                </li>
+
+                <li class="wm-nav-header">LAYANAN SAYA</li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('iuran.index') }}" class="wm-nav-link {{ request()->routeIs('iuran.*') ? 'active' : '' }}" title="Tagihan & Iuran Saya">
+                        <span class="wm-nav-icon"><i data-lucide="receipt"></i></span>
+                        <span class="wm-nav-text">Tagihan & Iuran</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('pembayaran.index') }}" class="wm-nav-link {{ request()->routeIs('pembayaran.*') ? 'active' : '' }}" title="Riwayat Pembayaran">
+                        <span class="wm-nav-icon"><i data-lucide="credit-card"></i></span>
+                        <span class="wm-nav-text">Riwayat Bayar</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('surat.create') }}" class="wm-nav-link {{ request()->routeIs('surat.*') ? 'active' : '' }}" title="Pengajuan Surat Pengantar">
+                        <span class="wm-nav-icon"><i data-lucide="file-signature"></i></span>
+                        <span class="wm-nav-text">Surat Pengantar</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('pengaduan.index') }}" class="wm-nav-link {{ request()->routeIs('pengaduan.*') ? 'active' : '' }}" title="Pengaduan Saya">
+                        <span class="wm-nav-icon"><i data-lucide="message-square-warning"></i></span>
+                        <span class="wm-nav-text">Pengaduan Warga</span>
+                    </a>
+                </li>
+
+                <li class="wm-nav-header">INFORMASI LINGKUNGAN</li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('posyandu') }}" class="wm-nav-link {{ request()->routeIs('posyandu*') ? 'active' : '' }}" title="Jadwal Posyandu">
+                        <span class="wm-nav-icon"><i data-lucide="heart-pulse"></i></span>
+                        <span class="wm-nav-text">Posyandu & Kesehatan</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('bank-sampah') }}" class="wm-nav-link {{ request()->routeIs('bank-sampah*') ? 'active' : '' }}" title="Jadwal Bank Sampah">
+                        <span class="wm-nav-icon"><i data-lucide="recycle"></i></span>
+                        <span class="wm-nav-text">Bank Sampah</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('ronda.index') }}" class="wm-nav-link {{ request()->routeIs('ronda.*') ? 'active' : '' }}" title="Jadwal Ronda Malam">
+                        <span class="wm-nav-icon"><i data-lucide="shield-check"></i></span>
+                        <span class="wm-nav-text">Ronda & Keamanan</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('umkm.index') }}" class="wm-nav-link {{ request()->routeIs('umkm.*') ? 'active' : '' }}" title="UMKM Lingkungan">
+                        <span class="wm-nav-icon"><i data-lucide="store"></i></span>
+                        <span class="wm-nav-text">UMKM Warga</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('pengumuman.index') }}" class="wm-nav-link {{ request()->routeIs('pengumuman.*') ? 'active' : '' }}" title="Pengumuman Lingkungan">
+                        <span class="wm-nav-icon"><i data-lucide="megaphone"></i></span>
+                        <span class="wm-nav-text">Pengumuman RW</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('peta.index') }}" class="wm-nav-link {{ request()->routeIs('peta.*') ? 'active' : '' }}" title="Peta Wilayah RW 013">
+                        <span class="wm-nav-icon"><i data-lucide="map-pinned"></i></span>
+                        <span class="wm-nav-text">Peta Wilayah</span>
+                    </a>
+                </li>
+
+                <li class="wm-nav-header">PENGATURAN</li>
+                <li class="wm-nav-item">
+                    <a href="{{ route('profile.edit') }}" class="wm-nav-link {{ request()->routeIs('profile.*') ? 'active' : '' }}" title="Profil Akun Saya">
+                        <span class="wm-nav-icon"><i data-lucide="user-cog"></i></span>
+                        <span class="wm-nav-text">Profil Saya</span>
+                    </a>
+                </li>
+            @endif
+        </ul>
+
+        <!-- Sidebar User Footer Card -->
+        @auth
+            <div class="wm-sidebar-footer">
+                <img src="{{ Auth::user()->profile_photo ? asset('storage/' . Auth::user()->profile_photo) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=1456A0&color=FFFFFF' }}"
+                     alt="Avatar" class="wm-user-avatar">
+                <div class="wm-user-info">
+                    <p class="wm-user-name" title="{{ Auth::user()->name }}">{{ Auth::user()->name }}</p>
+                    <span class="wm-user-role">
+                        {{ Auth::user()->role_badge_label ?? 'Warga RW 013' }}
+                    </span>
+                </div>
+                <form method="POST" action="{{ route('logout') }}" class="m-0">
+                    @csrf
+                    <button type="submit" class="wm-logout-btn" title="Keluar dari Sistem">
+                        <i data-lucide="log-out"></i>
+                    </button>
+                </form>
+            </div>
+        @endauth
+    </aside>
+
+    {{-- ======================================================================
+         TOPBAR HEADER (FIXED TOP)
+         ====================================================================== --}}
+    <header class="wm-topbar">
+        <div class="wm-topbar-left">
+            <!-- Mobile Hamburger & Desktop Collapse -->
+            <button type="button" class="wm-hamburger d-lg-none" onclick="toggleMobileSidebar()" aria-label="Buka Menu">
+                <i data-lucide="menu"></i>
+            </button>
+            <button type="button" class="wm-hamburger d-none d-lg-flex" onclick="toggleSidebarCollapse()" aria-label="Kecilkan Menu">
+                <i data-lucide="menu"></i>
+            </button>
+
+            <!-- Brand Sapaan & Wilayah -->
+            <div class="wm-topbar-title">
+                <h6>RW 013 Kelurahan Machi</h6>
+                <small class="d-none d-sm-inline">Sistem Koordinasi & Pelayanan Terpadu Warga</small>
+            </div>
+        </div>
+
+        <div class="wm-topbar-right">
+            <!-- Informasi Tanggal Hari Ini -->
+            <div class="wm-pill-badge d-none d-md-inline-flex" id="currentDatePill">
+                <i data-lucide="calendar" style="width: 15px; height: 15px; color: var(--wm-primary);"></i>
+                <span id="liveDateText">{{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}</span>
+            </div>
+
+            <!-- Status Wilayah RW 013 -->
+            <div class="wm-pill-badge success d-none d-sm-inline-flex">
+                <span class="wm-pulse-dot"></span>
+                <span>Kondusif & Aman</span>
+            </div>
+
+            <!-- Tombol Notifikasi -->
+            <div class="dropdown">
+                <button type="button" class="wm-topbar-action-btn" data-bs-toggle="dropdown" aria-expanded="false" title="Pemberitahuan">
+                    <i data-lucide="bell" style="width: 18px; height: 18px;"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle" style="transform: translate(-30%, 30%) !important;"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2" style="width: 310px; border-radius: 16px;">
+                    <li class="px-2 py-1 border-bottom d-flex justify-content-between align-items-center">
+                        <strong class="small text-dark">Pemberitahuan RW 013</strong>
+                        <span class="badge bg-primary rounded-pill">3 Baru</span>
+                    </li>
+                    <li>
+                        <a class="dropdown-item py-2 px-2 rounded-3 mt-1 d-flex gap-2 align-items-start" href="{{ route('pengaduan.index') }}">
+                            <div class="badge bg-warning text-dark mt-1 p-2 rounded-circle"><i class="fas fa-exclamation"></i></div>
+                            <div style="font-size: 0.8rem;">
+                                <div class="fw-bold text-dark">Pengaduan Masuk (RT 005)</div>
+                                <div class="text-muted">Lampu PJU gang 3 mati sejak 3 hari lalu.</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item py-2 px-2 rounded-3 d-flex gap-2 align-items-start" href="{{ route('monitoring-rt.index') }}">
+                            <div class="badge bg-info text-white mt-1 p-2 rounded-circle"><i class="fas fa-file-alt"></i></div>
+                            <div style="font-size: 0.8rem;">
+                                <div class="fw-bold text-dark">Laporan RT 003 Diterima</div>
+                                <div class="text-muted">Kelengkapan administrasi 100% diverifikasi.</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item py-2 px-2 rounded-3 d-flex gap-2 align-items-start" href="{{ route('posyandu') }}">
+                            <div class="badge bg-success text-white mt-1 p-2 rounded-circle"><i class="fas fa-heartbeat"></i></div>
+                            <div style="font-size: 0.8rem;">
+                                <div class="fw-bold text-dark">Jadwal Posyandu Balita</div>
+                                <div class="text-muted">Sabtu besok di Balai RT 001 jam 08.00 WIB.</div>
+                            </div>
+                        </a>
                     </li>
                 </ul>
             </div>
+
+            <!-- Tombol Dark / Light Mode Toggle -->
+            <button type="button" class="wm-topbar-action-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Ubah Mode Gelap / Terang">
+                <i data-lucide="moon" id="themeToggleIcon" style="width: 18px; height: 18px;"></i>
+            </button>
+
+            <!-- Profil Dropdown -->
+            @auth
+                <div class="dropdown">
+                    <button class="btn btn-link p-0 text-decoration-none dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="{{ Auth::user()->profile_photo ? asset('storage/' . Auth::user()->profile_photo) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=1456A0&color=FFFFFF' }}"
+                             alt="Avatar" class="rounded-circle border" style="width: 38px; height: 38px; object-fit: cover;">
+                        <span class="d-none d-xl-inline text-dark fw-bold small text-start lh-1">
+                            {{ Auth::user()->name }}
+                            <small class="d-block text-muted" style="font-size: 0.7rem;">{{ ucfirst(Auth::user()->role) }}</small>
+                        </span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2" style="border-radius: 16px; min-width: 200px;">
+                        <li class="px-3 py-2 border-bottom">
+                            <div class="fw-bold text-dark">{{ Auth::user()->name }}</div>
+                            <small class="text-muted">{{ Auth::user()->email }}</small>
+                        </li>
+                        <li><a class="dropdown-item py-2 rounded-2 mt-1" href="{{ route('profile.edit') }}"><i class="fas fa-user me-2 text-primary"></i>Profil Saya</a></li>
+                        <li><a class="dropdown-item py-2 rounded-2" href="{{ route('profile.edit') }}"><i class="fas fa-key me-2 text-warning"></i>Ubah Password</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form method="POST" action="{{ route('logout') }}" class="m-0">
+                                @csrf
+                                <button type="submit" class="dropdown-item py-2 text-danger rounded-2">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            @endauth
         </div>
-    </nav>
-    
-    <div class="container mt-5 pt-4">
+    </header>
+
+    {{-- ======================================================================
+         AREA KONTEN UTAMA (PADDING DINAMIS MENYESUAIKAN SIDEBAR)
+         ====================================================================== --}}
+    <main class="wm-main-content">
+        <!-- Flash Message Alerts -->
         @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show animate__animated animate__fadeInDown" role="alert">
-                <i class="fas fa-check-circle me-2"></i>
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm animate__animated animate__fadeInDown mb-4" role="alert" style="background:#E3F5EC;color:#16865D;border-radius:14px;">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fas fa-check-circle fa-lg"></i>
+                    <div>{{ session('success') }}</div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
 
         @if(session('error'))
-            <div class="alert alert-danger alert-dismissible fade show animate__animated animate__fadeInDown" role="alert">
-                <i class="fas fa-exclamation-circle me-2"></i>
-                {{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm animate__animated animate__fadeInDown mb-4" role="alert" style="background:#FEE2E2;color:#DC2626;border-radius:14px;">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fas fa-exclamation-triangle fa-lg"></i>
+                    <div>{{ session('error') }}</div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
-        
+
         @if($errors->any())
-            <div class="alert alert-danger alert-dismissible fade show animate__animated animate__fadeInDown" role="alert">
-                <i class="fas fa-exclamation-circle me-2"></i>
-                Terdapat kesalahan pada input Anda.
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm animate__animated animate__fadeInDown mb-4" role="alert" style="background:#FEE2E2;color:#DC2626;border-radius:14px;">
+                <div class="d-flex align-items-start gap-2">
+                    <i class="fas fa-times-circle fa-lg mt-1"></i>
+                    <div>
+                        <strong>Terdapat kesalahan pada input:</strong>
+                        <ul class="mb-0 mt-1 ps-3">
+                            @foreach($errors->all() as $err)
+                                <li>{{ $err }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
-        
+
+        <!-- Global Multi-step Back Button for subpages -->
         @auth
             @unless(request()->routeIs('dashboard'))
-                <div class="mb-3" style="position:relative;z-index:10;">
-                    <a href="{{ route('nav.back') }}" id="globalBackBtn" class="btn btn-light rounded-pill px-3 shadow-sm border fw-semibold">
-                        <i class="fas fa-arrow-left me-1"></i> Back
+                <div class="mb-3">
+                    <a href="{{ route('nav.back') }}" id="globalBackBtn" class="wm-btn-outline" style="padding: 7px 14px; font-size: 0.85rem;">
+                        <i data-lucide="arrow-left" style="width: 16px; height: 16px;"></i> Kembali
                     </a>
                 </div>
             @endunless
         @endauth
 
+        <!-- Dynamic Page Content -->
         @yield('content')
-    </div>
-    
-    <div class="footer">
-        <div class="container">
-            <p class="mb-0">&copy; 2024 Warkas Machi. All rights reserved.</p>
-        </div>
-    </div>
-    
-    <!-- Floating Contact Speed Dial (WhatsApp & Telegram) -->
+
+        <!-- Footer RW 013 -->
+        <footer class="text-center py-4 mt-5 text-muted small" style="border-top: 1px solid var(--wm-border);">
+            <p class="mb-1 fw-semibold">&copy; {{ date('Y') }} Warkas Machi &bull; Sistem Manajemen & Pelayanan Terpadu RW 013 Kelurahan Machi</p>
+            <p class="mb-0 text-secondary" style="font-size: 0.74rem;">Mewujudkan Lingkungan Rukun, Tertib, Transparan, dan Sejahtera.</p>
+        </footer>
+    </main>
+
+    {{-- ======================================================================
+         FLOATING SPEED DIAL CONTACT WIDGET (WHATSAPP & TELEGRAM) - DIPERTAHANKAN
+         ====================================================================== --}}
     <div class="floating-contact-container" id="floatingContactContainer">
-        <!-- Bubble Telegram - Muncul di atas WhatsApp saat diklik -->
-        <a href="https://t.me/icrvye" target="_blank" rel="noopener noreferrer" class="contact-bubble-item telegram-bubble" id="telegramBubble">
+        <!-- Bubble Telegram -->
+        <a href="https://t.me/icrvye" target="_blank" rel="noopener noreferrer" class="contact-bubble-item telegram-bubble" id="telegramBubble" title="Hubungi via Telegram">
             <span class="bubble-icon-box">
                 <i class="fab fa-telegram-plane"></i>
             </span>
-            <span class="bubble-label-text">Telegram</span>
+            <span class="bubble-label-text">Telegram RW</span>
         </a>
 
-        <!-- Bubble WhatsApp (Utama) -->
-        <div class="contact-bubble-item whatsapp-bubble" id="whatsappBubble" onclick="toggleContactBubbles(event)">
-            <a href="https://wa.me/6281234567890" target="_blank" rel="noopener noreferrer" class="whatsapp-link-area text-white text-decoration-none d-flex align-items-center gap-2" onclick="event.stopPropagation();">
+        <!-- Bubble WhatsApp -->
+        <div class="contact-bubble-item whatsapp-bubble" id="whatsappBubble" onclick="toggleContactBubbles(event)" title="Pusat Bantuan WhatsApp">
+            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $admin_contact_phone ?? '6281234567890') }}" target="_blank" rel="noopener noreferrer" class="whatsapp-link-area text-white text-decoration-none d-flex align-items-center gap-2" onclick="event.stopPropagation();">
                 <span class="bubble-icon-box">
                     <i class="fab fa-whatsapp"></i>
                 </span>
-                <span class="bubble-label-text">WhatsApp</span>
+                <span class="bubble-label-text">WhatsApp RW</span>
             </a>
-            <button type="button" class="bubble-toggle-arrow" title="Buka Kontak Telegram">
+            <button type="button" class="bubble-toggle-arrow" title="Tampilkan Pilihan Kontak">
                 <i class="fas fa-chevron-up" id="arrowToggleIcon"></i>
             </button>
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
+    <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <script>
-        // Auto hide alert after 3 seconds
-        setTimeout(function() {
-            $('.alert').fadeOut('slow');
-        }, 3000);
 
+    <script>
+        // Inisialisasi Lucide Icons
+        document.addEventListener('DOMContentLoaded', function () {
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        });
+
+        // Toggle Sidebar Desktop (Collapse / Expand)
+        function toggleSidebarCollapse() {
+            document.body.classList.toggle('sidebar-collapsed');
+            const isCollapsed = document.body.classList.contains('sidebar-collapsed');
+            localStorage.setItem('wm-sidebar-collapsed', isCollapsed ? 'true' : 'false');
+            
+            const icon = document.getElementById('collapseIcon');
+            if (icon) {
+                icon.setAttribute('data-lucide', isCollapsed ? 'chevrons-right' : 'chevrons-left');
+                if (window.lucide) lucide.createIcons();
+            }
+        }
+
+        // Toggle Sidebar Mobile Drawer
+        function toggleMobileSidebar() {
+            document.body.classList.toggle('sidebar-mobile-open');
+        }
+
+        // Floating Contacts Speed Dial
         function toggleContactBubbles(e) {
             if (e) e.stopPropagation();
             const container = document.getElementById('floatingContactContainer');
-            container.classList.toggle('expanded');
+            if (container) container.classList.toggle('expanded');
         }
 
         document.addEventListener('click', function(e) {
@@ -597,42 +728,27 @@
             }
         });
 
-        // Global Password Visibility Toggle (Show / Hide Password)
-        function togglePasswordVisibility(inputId, iconId) {
-            const input = document.getElementById(inputId);
-            const icon = document.getElementById(iconId);
-            if (!input || !icon) return;
-
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.className = 'fas fa-eye-slash text-primary';
-            } else {
-                input.type = 'password';
-                icon.className = 'fas fa-eye';
-            }
-        }
-
-        // Functions Theme Toggle (Dark / Light Mode)
+        // Theme Toggle (Dark / Light Mode)
         function applyTheme(theme) {
+            const root = document.documentElement;
             const icon = document.getElementById('themeToggleIcon');
             if (theme === 'dark') {
+                root.setAttribute('data-theme', 'dark');
                 document.body.classList.add('dark-mode');
-                if (icon) {
-                    icon.className = 'fas fa-sun text-warning';
-                }
+                if (icon) icon.setAttribute('data-lucide', 'sun');
             } else {
+                root.setAttribute('data-theme', 'light');
                 document.body.classList.remove('dark-mode');
-                if (icon) {
-                    icon.className = 'fas fa-moon text-secondary';
-                }
+                if (icon) icon.setAttribute('data-lucide', 'moon');
             }
+            if (window.lucide) lucide.createIcons();
         }
 
         function toggleTheme() {
-            const isDark = document.body.classList.contains('dark-mode');
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark' || document.body.classList.contains('dark-mode');
             const newTheme = isDark ? 'light' : 'dark';
-            localStorage.setItem('warkas_theme', newTheme);
             localStorage.setItem('wm-theme', newTheme);
+            localStorage.setItem('warkas_theme', newTheme);
             applyTheme(newTheme);
         }
 
@@ -640,8 +756,16 @@
             const savedTheme = localStorage.getItem('wm-theme') || localStorage.getItem('warkas_theme') || 'light';
             applyTheme(savedTheme);
         });
+
+        // Auto close alert after 4 seconds
+        setTimeout(function() {
+            document.querySelectorAll('.alert-dismissible').forEach(function(el) {
+                var alert = bootstrap.Alert.getOrCreateInstance(el);
+                if (alert) alert.close();
+            });
+        }, 4000);
     </script>
-    
+
     @stack('scripts')
 </body>
 </html>

@@ -91,16 +91,36 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
         
         if (Auth::attempt($credentials, $request->remember)) {
-            $request->session()->regenerate();
-            
             $user = Auth::user();
+
+            if (isset($user->is_active) && !$user->is_active) {
+                Auth::logout();
+                if ($request->hasSession()) {
+                    $request->session()->invalidate();
+                    $request->session()->regenerateToken();
+                }
+                return back()->withErrors([
+                    'email' => 'Akun Anda berstatus nonaktif. Silakan hubungi Sekretariat RW 013 untuk aktivasi kembali.',
+                ])->withInput();
+            }
+
+            // Catat waktu login terakhir
+            try {
+                $user->forceFill(['last_login_at' => \Carbon\Carbon::now()])->saveQuietly();
+            } catch (\Throwable $e) {
+                // Ignore if column error
+            }
+
+            if ($request->hasSession()) {
+                $request->session()->regenerate();
+            }
             
-            if($user->role == 'admin') {
-                return redirect()->route('dashboard')->with('success', 'Selamat datang Admin!');
-            } elseif($user->role == 'bendahara') {
-                return redirect()->route('dashboard')->with('success', 'Selamat datang Bendahara!');
+            if ($user->isRw() || $user->role === 'admin' || $user->role === 'bendahara') {
+                return redirect()->route('dashboard.rw')->with('success', 'Selamat datang ' . $user->role_badge_label . '!');
+            } elseif ($user->isRt() || $user->role === 'rt') {
+                return redirect()->route('dashboard.rt')->with('success', 'Selamat datang ' . $user->role_badge_label . '!');
             } else {
-                return redirect()->route('dashboard')->with('success', 'Selamat datang Warga!');
+                return redirect()->route('dashboard.warga')->with('success', 'Selamat datang di Layanan Warga RW 013!');
             }
         }
         

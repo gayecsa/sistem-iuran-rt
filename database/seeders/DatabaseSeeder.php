@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
             PengumumanSeeder::class,
             KasRtSeeder::class,
             UmkmSeeder::class,
+            AkunRtSeeder::class,
         ]);
     }
 }

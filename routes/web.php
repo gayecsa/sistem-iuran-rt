@@ -12,6 +12,7 @@ use App\Http\Controllers\KasController;
 use App\Http\Controllers\PengumumanController;
 use App\Http\Controllers\UmkmController; // <-- Tambahan Import UmkmController
 use App\Http\Controllers\CctvController;
+use App\Http\Controllers\AkunRtController;
 
 // Guest routes
 Route::middleware('guest')->group(function () {
@@ -42,6 +43,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile', [AuthController::class, 'updateProfile'])->name('profile.update');
     Route::post('/profile/make-admin', [AuthController::class, 'makeAdmin'])->name('profile.makeAdmin');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/rw', [DashboardController::class, 'dashboardRw'])->name('dashboard.rw')->middleware('role:rw,admin,bendahara');
+    Route::get('/dashboard/rt', [DashboardController::class, 'dashboardRt'])->name('dashboard.rt')->middleware('role:rt,rw,admin');
+    Route::get('/dashboard/warga', [DashboardController::class, 'dashboardWarga'])->name('dashboard.warga');
     
     // Pindah ke sini: Agar semua warga yang login bisa upload & ganti foto profil
     Route::post('/profile/upload-foto', [DashboardController::class, 'uploadFoto'])->name('profile.upload-foto');
@@ -76,6 +80,35 @@ Route::middleware('auth')->group(function () {
     Route::get('/wisata', [DashboardController::class, 'wisata'])->name('wisata.index');
     // ------------------------------------
     
+    // --- LAYANAN MASYARAKAT & SISTEM MANAJEMEN RW 013 ---
+    Route::get('/bank-sampah', [DashboardController::class, 'bankSampah'])->name('bank-sampah');
+    Route::get('/ronda', [DashboardController::class, 'ronda'])->name('ronda.index');
+    Route::get('/pengaduan', [DashboardController::class, 'pengaduan'])->name('pengaduan.index');
+    Route::post('/pengaduan', [DashboardController::class, 'storePengaduan'])->name('pengaduan.store');
+    Route::patch('/pengaduan/{id}/status', [DashboardController::class, 'updateStatusPengaduan'])->name('pengaduan.status');
+
+    // --- MANAJEMEN RT/RW ---
+    Route::get('/data-rt', [DashboardController::class, 'dataRt'])->name('data-rt.index');
+    Route::get('/monitoring-rt', [DashboardController::class, 'monitoringRt'])->name('monitoring-rt.index');
+    Route::get('/monitoring-rt/{rt}', [DashboardController::class, 'detailMonitoringRt'])->name('monitoring-rt.show');
+    Route::post('/monitoring-rt/{rt}/evaluasi', [DashboardController::class, 'saveEvaluasiRt'])->name('monitoring-rt.evaluasi');
+    Route::get('/laporan-rt', [DashboardController::class, 'laporanRt'])->name('laporan-rt.index');
+    Route::get('/agenda-rw', [DashboardController::class, 'agendaRw'])->name('agenda-rw.index');
+
+    // --- MANAJEMEN AKUN KETUA RT (KHUSUS RW & ADMIN) ---
+    Route::middleware('role:rw,admin,super_admin')->group(function () {
+        Route::get('/manajemen-akun-rt', [AkunRtController::class, 'index'])->name('rt.akun.index');
+        Route::post('/manajemen-akun-rt', [AkunRtController::class, 'store'])->name('rt.akun.store');
+        Route::put('/manajemen-akun-rt/{id}', [AkunRtController::class, 'update'])->name('rt.akun.update');
+        Route::patch('/manajemen-akun-rt/{id}/toggle-active', [AkunRtController::class, 'toggleActive'])->name('rt.akun.toggle');
+        Route::post('/manajemen-akun-rt/{id}/reset-password', [AkunRtController::class, 'resetPassword'])->name('rt.akun.reset_password');
+        Route::post('/manajemen-akun-rt/generate-initial', [AkunRtController::class, 'generateInitial'])->name('rt.akun.generate');
+    });
+
+    // --- KEUANGAN RW ---
+    Route::get('/kas-rw', [DashboardController::class, 'kasRw'])->name('kas-rw.index');
+    // ----------------------------------------------------
+
     // --- PERBAIKAN ROUTE SURAT ---
     Route::get('/surat', [DashboardController::class, 'surat'])->name('surat.index');
     Route::get('/surat/create', [DashboardController::class, 'createSurat'])->name('surat.create');
@@ -94,8 +127,21 @@ Route::middleware('auth')->group(function () {
     Route::resource('pembayaran', PembayaranController::class);
     Route::post('/pembayaran/{id}/verifikasi', [PembayaranController::class, 'verifikasi'])->name('pembayaran.verifikasi');
     
-    // Warga routes (Khusus admin & bendahara saja)
-    Route::middleware('role:admin,bendahara')->group(function () {
+    // --- KOORDINASI RT & PELAPORAN KE RW ---
+    Route::middleware('role:rt,rw,admin')->group(function () {
+        Route::get('/rt/keluarga', [DashboardController::class, 'rtKeluarga'])->name('rt.keluarga');
+        Route::get('/rt/pendatang', [DashboardController::class, 'rtPendatang'])->name('rt.pendatang');
+        Route::get('/rt/mutasi', [DashboardController::class, 'rtMutasi'])->name('rt.mutasi');
+        Route::get('/rt/laporan', [DashboardController::class, 'rtLaporan'])->name('rt.laporan');
+        Route::get('/rt/laporan/kirim', [DashboardController::class, 'rtLaporanCreate'])->name('rt.laporan.create');
+        Route::post('/rt/laporan/kirim', [DashboardController::class, 'rtLaporanStore'])->name('rt.laporan.store');
+        Route::get('/rt/evaluasi', [DashboardController::class, 'rtEvaluasi'])->name('rt.evaluasi');
+        Route::get('/rt/arsip', [DashboardController::class, 'rtArsip'])->name('rt.arsip');
+        Route::get('/rt/profil', [DashboardController::class, 'rtProfil'])->name('rt.profil');
+    });
+
+    // Warga & Kas routes (Pengurus RW, Bendahara, dan Ketua RT sesuai hak akses)
+    Route::middleware('role:admin,bendahara,rt,rw,super_admin')->group(function () {
         Route::post('/posyandu/detail-balita/{id}/perkembangan', [DashboardController::class, 'storePerkembanganBalita'])->name('posyandu.store_perkembangan');
         Route::get('/warga/keluarga/{no_kk}', [WargaController::class, 'getKeluargaDetail'])->name('warga.keluarga_detail');
         Route::post('/warga/keluarga/{no_kk}/anggota', [WargaController::class, 'storeAnggotaKeluarga'])->name('warga.store_anggota');

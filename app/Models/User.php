@@ -35,6 +35,7 @@ class User extends Authenticatable
         'no_kk',
         'gender',
         'tanggal_lahir',
+        'last_login_at',
     ];
 
     /**
@@ -55,6 +56,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'is_active' => 'boolean',
+        'last_login_at' => 'datetime',
     ];
 
     public function pembayaran()
@@ -70,5 +72,57 @@ class User extends Authenticatable
     public function perkembanganBalita()
     {
         return $this->hasMany(PerkembanganBalita::class, 'user_id');
+    }
+
+    // ======================================================================
+    // HELPER & SCOPE HIERARKI RW & RT WARKAS MACHI
+    // ======================================================================
+
+    public function isRw(): bool
+    {
+        return in_array(strtolower($this->role ?? ''), ['admin', 'rw', 'super_admin']);
+    }
+
+    public function isRt(): bool
+    {
+        return strtolower($this->role ?? '') === 'rt';
+    }
+
+    public function isWarga(): bool
+    {
+        return strtolower($this->role ?? '') === 'warga';
+    }
+
+    public function isBendahara(): bool
+    {
+        return strtolower($this->role ?? '') === 'bendahara';
+    }
+
+    public function getCleanRtNumberAttribute(): int
+    {
+        $rt = intval($this->rt_number);
+        if ($rt === 0 && preg_match('/RT\s*(\d+)/i', $this->address ?? '', $m)) {
+            $rt = intval($m[1]);
+        }
+        return $rt > 0 ? $rt : 1;
+    }
+
+    public function getCleanRtLabelAttribute(): string
+    {
+        return 'RT ' . str_pad($this->clean_rt_number, 3, '0', STR_PAD_LEFT);
+    }
+
+    public function getRoleBadgeLabelAttribute(): string
+    {
+        if ($this->isRw()) {
+            return 'Ketua RW 013 / Admin';
+        }
+        if ($this->isRt()) {
+            return 'Ketua ' . $this->clean_rt_label . ' (RW 013)';
+        }
+        if ($this->isBendahara()) {
+            return 'Bendahara RW 013';
+        }
+        return 'Warga ' . $this->clean_rt_label;
     }
 }
