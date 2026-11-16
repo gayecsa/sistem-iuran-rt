@@ -401,11 +401,12 @@ class KeuanganController extends Controller
         $isRw = in_array($user->role, ['rw', 'admin', 'super_admin']);
         $rtStr = str_pad(preg_replace('/[^0-9]/', '', $user->rt_number ?: '1'), 3, '0', STR_PAD_LEFT);
 
-        $query = BukuKas::query();
+        // Base query seluruh rekening yang dapat diakses pengguna
+        $baseQuery = BukuKas::query();
 
         if (!$isRw) {
             // Role RT hanya bisa melihat Kas RT mereka dan Kas Sampah
-            $query->where(function($q) use ($rtStr) {
+            $baseQuery->where(function($q) use ($rtStr) {
                 $q->where(function($sub) use ($rtStr) {
                     $sub->where('jenis_kas', 'kas_rt')
                         ->where(function($rtq) use ($rtStr) {
@@ -415,13 +416,92 @@ class KeuanganController extends Controller
             });
         }
 
-        if ($request->filled('jenis')) {
-            $query->where('jenis_kas', $request->jenis);
+        $allBukuKas = $baseQuery->orderBy('jenis_kas', 'asc')->orderBy('kode_kas', 'asc')->get();
+        $visibleIds = $allBukuKas->pluck('id')->toArray();
+
+        // Rekap Jumlah per Kategori Kas untuk tab navigasi
+        $kategoriCounts = [
+            'all' => $allBukuKas->count(),
+            'kas_rw' => $allBukuKas->where('jenis_kas', 'kas_rw')->count(),
+            'kas_rt' => $allBukuKas->where('jenis_kas', 'kas_rt')->count(),
+            'kas_sampah' => $allBukuKas->where('jenis_kas', 'kas_sampah')->count(),
+            'dana_kegiatan' => $allBukuKas->where('jenis_kas', 'dana_kegiatan')->count(),
+        ];
+
+        // Filter Periode untuk Statistik Pemasukan & Pengeluaran
+        $periode = $request->get('periode', 'bulan_ini');
+        $now = Carbon::now();
+        $startDate = null;
+        $endDate = null;
+        $periodeLabel = '';
+
+        if ($periode === 'bulan_lalu') {
+            $startDate = $now->copy()->subMonth()->startOfMonth()->toDateString();
+            $endDate = $now->copy()->subMonth()->endOfMonth()->toDateString();
+            $periodeLabel = $now->copy()->subMonth()->translatedFormat('F Y');
+        } elseif ($periode === 'tahun_ini') {
+            $startDate = $now->copy()->startOfYear()->toDateString();
+            $endDate = $now->copy()->endOfYear()->toDateString();
+            $periodeLabel = 'Tahun ' . $now->year;
+        } elseif ($periode === 'custom' && $request->filled('start_date') && $request->filled('end_date')) {
+            $startDate = $request->start_date;
+            $endDate = $request->end_date;
+            $periodeLabel = Carbon::parse($startDate)->format('d/m/Y') . ' - ' . Carbon::parse($endDate)->format('d/m/Y');
+        } else {
+            // Default: bulan_ini
+            $periode = 'bulan_ini';
+            $startDate = $now->copy()->startOfMonth()->toDateString();
+            $endDate = $now->copy()->endOfMonth()->toDateString();
+            $periodeLabel = $now->translatedFormat('F Y');
         }
 
-        $bukuKas = $query->orderBy('jenis_kas', 'asc')->orderBy('kode_kas', 'asc')->get();
+        // 4 Kartu Statistik Keuangan Utama (Data Riil Database)
+        // 1. Total Saldo Seluruh Kas (Saldo berjalan akumulasi)
+        $totalSaldo = (float) $allBukuKas->sum('saldo_sekarang');
 
-        return view('keuangan.buku_kas.index', compact('bukuKas', 'isRw', 'rtStr'));
+        // 2. Total Pemasukan dalam periode terpilih
+        $totalPemasukan = (float) TransaksiKeuangan::whereIn('buku_kas_id', $visibleIds)
+            ->where('status', 'selesai')
+            ->whereIn('jenis_transaksi', ['pemasukan', 'transfer_masuk'])
+            ->whereBetween('tanggal_transaksi', [$startDate, $endDate])
+            ->sum('nominal');
+
+        // 3. Total Pengeluaran dalam periode terpilih
+        $totalPengeluaran = (float) TransaksiKeuangan::whereIn('buku_kas_id', $visibleIds)
+            ->where('status', 'selesai')
+            ->whereIn('jenis_transaksi', ['pengeluaran', 'transfer_keluar'])
+            ->whereBetween('tanggal_transaksi', [$startDate, $endDate])
+            ->sum('nominal');
+
+        // 4. Jumlah Rekening Aktif
+        $totalRekeningAktif = $allBukuKas->where('is_active', true)->count();
+        $totalRekening = $allBukuKas->count();
+
+        // Rekening yang ditampilkan berdasarkan filter kategori
+        $selectedJenis = $request->get('jenis', 'all');
+        $bukuKas = $allBukuKas;
+        if ($selectedJenis && $selectedJenis !== 'all') {
+            $bukuKas = $allBukuKas->where('jenis_kas', $selectedJenis);
+        }
+
+        return view('keuangan.buku_kas.index', compact(
+            'bukuKas',
+            'allBukuKas',
+            'isRw',
+            'rtStr',
+            'user',
+            'totalSaldo',
+            'totalPemasukan',
+            'totalPengeluaran',
+            'totalRekeningAktif',
+            'totalRekening',
+            'kategoriCounts',
+            'periode',
+            'periodeLabel',
+            'startDate',
+            'endDate',
+            'selectedJenis'
+        ));
     }
 
     /**
@@ -480,10 +560,18 @@ class KeuanganController extends Controller
             ->whereIn('jenis_transaksi', ['pengeluaran', 'transfer_keluar'])
             ->sum('nominal');
 
+        // Hak kelola rekening transaksi aktif (Pemisahan kewenangan operasional vs monitoring)
+        $canManageThisKas = false;
+        if ($isRw && in_array($bukuKas->jenis_kas, ['kas_rw', 'kas_sampah', 'dana_kegiatan'])) {
+            $canManageThisKas = true;
+        } elseif (!$isRw && $bukuKas->jenis_kas === 'kas_rt' && ($bukuKas->clean_rt == $rtStr || $bukuKas->rt_number == ltrim($rtStr, '0'))) {
+            $canManageThisKas = true;
+        }
+
         $kategoriList = KategoriTransaksi::where('jenis_kas', $bukuKas->jenis_kas)->get();
         $targetBukuTransfer = BukuKas::where('id', '!=', $bukuKas->id)->where('is_active', true)->get();
 
-        return view('keuangan.buku_kas.show', compact('bukuKas', 'transaksis', 'totalMasuk', 'totalKeluar', 'kategoriList', 'targetBukuTransfer', 'isRw'));
+        return view('keuangan.buku_kas.show', compact('bukuKas', 'transaksis', 'totalMasuk', 'totalKeluar', 'kategoriList', 'targetBukuTransfer', 'isRw', 'canManageThisKas'));
     }
 
     /**
@@ -554,11 +642,17 @@ class KeuanganController extends Controller
         $rtStr = str_pad(preg_replace('/[^0-9]/', '', $user->rt_number ?: '1'), 3, '0', STR_PAD_LEFT);
 
         if ($isRw) {
-            $bukuKasList = BukuKas::where('is_active', true)->get();
+            // Pengurus RW mengelola Kas Induk RW, Kas Sampah, dan Dana Kegiatan (Kas RT murni dikelola masing-masing RT)
+            $bukuKasList = BukuKas::where('is_active', true)->whereIn('jenis_kas', ['kas_rw', 'kas_sampah', 'dana_kegiatan'])->get();
         } else {
             $bukuKasList = BukuKas::where('is_active', true)
                 ->where(function($q) use ($rtStr) {
-                    $q->where('rt_number', $rtStr)->orWhere('jenis_kas', 'kas_sampah');
+                    $q->where(function($sub) use ($rtStr) {
+                        $sub->where('jenis_kas', 'kas_rt')
+                            ->where(function($rtq) use ($rtStr) {
+                                $rtq->where('rt_number', $rtStr)->orWhere('rt_number', ltrim($rtStr, '0'));
+                            });
+                    })->orWhere('jenis_kas', 'kas_sampah');
                 })->get();
         }
 
@@ -591,8 +685,19 @@ class KeuanganController extends Controller
 
         $bukuKas = BukuKas::findOrFail($request->buku_kas_id);
 
-        if (!$isRw && $bukuKas->jenis_kas === 'kas_rt' && $bukuKas->clean_rt != $rtStr) {
-            abort(403, 'Anda tidak berwenang mencatat transaksi pada kas RT lain.');
+        // Keamanan Hak Akses Keuangan Berjenjang
+        if ($isRw && $bukuKas->jenis_kas === 'kas_rt') {
+            abort(403, 'Pengurus RW hanya memiliki hak monitoring pada Kas RT dan tidak berwenang mencatat transaksi pada kas operasional RT.');
+        }
+
+        if (!$isRw && $bukuKas->jenis_kas === 'kas_rt') {
+            if ($bukuKas->clean_rt != $rtStr && $bukuKas->rt_number != ltrim($rtStr, '0')) {
+                abort(403, 'Anda tidak berwenang mencatat transaksi pada kas RT lain.');
+            }
+        }
+
+        if (!$isRw && in_array($bukuKas->jenis_kas, ['kas_rw', 'dana_kegiatan'])) {
+            abort(403, 'Akses pencatatan kas ini khusus Pengurus RW 013.');
         }
 
         $buktiPath = null;
@@ -984,5 +1089,297 @@ class KeuanganController extends Controller
             DB::rollBack();
             return back()->with('error', 'Gagal memperbarui tarif: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * MONITORING KEUANGAN RW 013 (Sentral, Read-Only, Komprehensif)
+     * Rute: /rw/monitoring-keuangan (rw.keuangan.monitoring)
+     */
+    public function monitoringRw(Request $request)
+    {
+        $user = Auth::user();
+        if (!in_array($user->role, ['rw', 'admin', 'super_admin'])) {
+            abort(403, 'Akses terbatas hanya untuk Ketua RW / Administrator RW 013.');
+        }
+
+        $selectedTahun = (int) $request->input('tahun', Carbon::now()->year);
+        $selectedBulan = (int) $request->input('bulan', Carbon::now()->month);
+        $periodeStr = sprintf('%04d-%02d', $selectedTahun, $selectedBulan);
+
+        // --- 1. RINGKASAN KEUANGAN ---
+        $kasRw = BukuKas::where('jenis_kas', 'kas_rw')->first();
+        $kasSampah = BukuKas::where('jenis_kas', 'kas_sampah')->first();
+        $kasRtList = BukuKas::where('jenis_kas', 'kas_rt')->orderBy('rt_number', 'asc')->get();
+        $danaKegiatanList = BukuKas::where('jenis_kas', 'dana_kegiatan')->where('is_active', true)->get();
+
+        $saldoKasRw = $kasRw->saldo_sekarang ?? 0;
+        $saldoKasSampah = $kasSampah->saldo_sekarang ?? 0;
+        $saldoKasRtTotal = $kasRtList->sum('saldo_sekarang');
+        $saldoDanaKegiatanTotal = $danaKegiatanList->sum('saldo_sekarang');
+        $totalSaldoSeluruhKas = $saldoKasRw + $saldoKasSampah + $saldoKasRtTotal + $saldoDanaKegiatanTotal;
+
+        // Arus Kas Bulan Terpilih (Seluruh Kas)
+        $pemasukanBulanIni = TransaksiKeuangan::where('status', 'selesai')
+            ->whereIn('jenis_transaksi', ['pemasukan', 'transfer_masuk'])
+            ->whereYear('tanggal_transaksi', $selectedTahun)
+            ->whereMonth('tanggal_transaksi', $selectedBulan)
+            ->sum('nominal');
+
+        $pengeluaranBulanIni = TransaksiKeuangan::where('status', 'selesai')
+            ->whereIn('jenis_transaksi', ['pengeluaran', 'transfer_keluar'])
+            ->whereYear('tanggal_transaksi', $selectedTahun)
+            ->whereMonth('tanggal_transaksi', $selectedBulan)
+            ->sum('nominal');
+
+        $jumlahTransaksiBulanIni = TransaksiKeuangan::where('status', 'selesai')
+            ->whereYear('tanggal_transaksi', $selectedTahun)
+            ->whereMonth('tanggal_transaksi', $selectedBulan)
+            ->count();
+
+        // --- 2. MONITORING KAS RT (RT 001 - RT 008) ---
+        $monitoringKasRt = [];
+        for ($i = 1; $i <= 8; $i++) {
+            $rtStr = str_pad($i, 3, '0', STR_PAD_LEFT);
+            $bukuKasRt = $kasRtList->first(function($item) use ($i, $rtStr) {
+                return $item->rt_number == $i || $item->rt_number == $rtStr;
+            });
+
+            $picRt = User::where('role', 'rt')->where(function($q) use ($i, $rtStr) {
+                $q->where('rt_number', $rtStr)->orWhere('rt_number', (string)$i)->orWhere('rt_number', $i);
+            })->first();
+
+            $saldoRt = $bukuKasRt->saldo_sekarang ?? 0;
+
+            $masukRt = $bukuKasRt ? TransaksiKeuangan::where('buku_kas_id', $bukuKasRt->id)
+                ->where('status', 'selesai')
+                ->whereIn('jenis_transaksi', ['pemasukan', 'transfer_masuk'])
+                ->whereYear('tanggal_transaksi', $selectedTahun)
+                ->whereMonth('tanggal_transaksi', $selectedBulan)
+                ->sum('nominal') : 0;
+
+            $keluarRt = $bukuKasRt ? TransaksiKeuangan::where('buku_kas_id', $bukuKasRt->id)
+                ->where('status', 'selesai')
+                ->whereIn('jenis_transaksi', ['pengeluaran', 'transfer_keluar'])
+                ->whereYear('tanggal_transaksi', $selectedTahun)
+                ->whereMonth('tanggal_transaksi', $selectedBulan)
+                ->sum('nominal') : 0;
+
+            $txTerakhir = $bukuKasRt ? TransaksiKeuangan::where('buku_kas_id', $bukuKasRt->id)
+                ->orderBy('tanggal_transaksi', 'desc')
+                ->orderBy('id', 'desc')
+                ->first() : null;
+
+            // Kondisi keuangan: Aman (> 2jt), Waspada (500rb - 2jt), Perlu Perhatian (< 500rb)
+            if ($saldoRt >= 2000000) {
+                $kondisi = ['label' => 'Aman & Sehat', 'badge' => 'bg-success-subtle text-success border-success-subtle', 'color' => '#10B981'];
+            } elseif ($saldoRt >= 500000) {
+                $kondisi = ['label' => 'Cukup / Waspada', 'badge' => 'bg-warning-subtle text-warning-emphasis border-warning-subtle', 'color' => '#F59E0B'];
+            } else {
+                $kondisi = ['label' => 'Perlu Perhatian / Minim', 'badge' => 'bg-danger-subtle text-danger border-danger-subtle', 'color' => '#EF4444'];
+            }
+
+            // Kepatuhan pencatatan: Cek apakah ada pencatatan bulan ini
+            $countBulanIni = $bukuKasRt ? TransaksiKeuangan::where('buku_kas_id', $bukuKasRt->id)
+                ->whereYear('tanggal_transaksi', $selectedTahun)
+                ->whereMonth('tanggal_transaksi', $selectedBulan)
+                ->count() : 0;
+
+            $kepatuhan = $countBulanIni >= 3 ? 'Sangat Tertib' : ($countBulanIni >= 1 ? 'Cukup Tertib' : 'Belum Ada Entri');
+
+            $monitoringKasRt[] = [
+                'rt_num' => $i,
+                'rt_name' => 'RT ' . $rtStr,
+                'buku_kas' => $bukuKasRt,
+                'pic_name' => $picRt->name ?? 'Ketua RT ' . $rtStr,
+                'pic_phone' => $picRt->phone ?? '-',
+                'saldo' => $saldoRt,
+                'pemasukan' => $masukRt,
+                'pengeluaran' => $keluarRt,
+                'tx_terakhir' => $txTerakhir,
+                'kondisi' => $kondisi,
+                'kepatuhan' => $kepatuhan,
+                'count_tx' => $countBulanIni,
+            ];
+        }
+
+        // --- 3. MONITORING IURAN WARGA ---
+        $tagihans = TagihanKeluarga::where('periode', $periodeStr)->get();
+        $totalTagihanIuran = $tagihans->sum('total_tagihan');
+        $totalIuranTerbayar = $tagihans->sum('total_dibayar');
+        $totalIuranTunggakan = $tagihans->whereIn('status', ['Belum Dibayar', 'Terlambat', 'Dibayar Sebagian'])->sum('sisa_tagihan');
+        $totalKkTerdaftar = KartuKeluarga::count();
+        $totalKkLunas = $tagihans->where('status', 'Lunas')->count();
+        $persenIuran = $totalTagihanIuran > 0 ? round(($totalIuranTerbayar / $totalTagihanIuran) * 100, 1) : 0;
+
+        $rekapIuranRt = [];
+        for ($i = 1; $i <= 8; $i++) {
+            $rtStr = str_pad($i, 3, '0', STR_PAD_LEFT);
+            $kkRt = KartuKeluarga::where('rt', $rtStr)->orWhere('rt', (string)$i)->count();
+            $tagihanPerRt = $tagihans->filter(function($t) use ($rtStr, $i) {
+                return $t->rt_number == $rtStr || $t->rt_number == $i;
+            });
+            $targetRt = $tagihanPerRt->sum('total_tagihan');
+            $bayarRt = $tagihanPerRt->sum('total_dibayar');
+            $sisaRt = $tagihanPerRt->sum('sisa_tagihan');
+            $lunasCount = $tagihanPerRt->where('status', 'Lunas')->count();
+            $persenBayarRt = $targetRt > 0 ? round(($bayarRt / $targetRt) * 100, 1) : 0;
+
+            $rekapIuranRt[] = [
+                'rt_name' => 'RT ' . $rtStr,
+                'total_kk' => $kkRt,
+                'lunas_kk' => $lunasCount,
+                'target' => $targetRt,
+                'terbayar' => $bayarRt,
+                'tunggakan' => $sisaRt,
+                'persentase' => $persenBayarRt,
+            ];
+        }
+
+        // --- 4. MONITORING BANK SAMPAH ---
+        $bankSampahUnitList = \App\Models\BankSampah::orderBy('rt_number', 'asc')->get();
+        $totalKgBankSampahBulanIni = \App\Models\BankSampahTransaksi::where('status', 'selesai')
+            ->whereYear('tanggal_pengajuan', $selectedTahun)
+            ->whereMonth('tanggal_pengajuan', $selectedBulan)
+            ->sum('total_berat_kg');
+        if ($totalKgBankSampahBulanIni == 0) {
+            $totalKgBankSampahBulanIni = \App\Models\BankSampah::sum('total_sampah_terkumpul_kg');
+        }
+
+        $nilaiTransaksiSampahBulanIni = \App\Models\BankSampahTransaksi::where('status', 'selesai')
+            ->whereYear('tanggal_pengajuan', $selectedTahun)
+            ->whereMonth('tanggal_pengajuan', $selectedBulan)
+            ->sum('total_rupiah');
+
+        $rekapBankSampahRt = [];
+        foreach ($bankSampahUnitList as $bsUnit) {
+            $rekapBankSampahRt[] = [
+                'nama_unit' => $bsUnit->nama_unit,
+                'rt_name' => 'RT ' . str_pad($bsUnit->rt_number, 3, '0', STR_PAD_LEFT),
+                'petugas' => $bsUnit->petugas_name,
+                'total_kg' => $bsUnit->total_sampah_terkumpul_kg,
+                'lokasi' => $bsUnit->lokasi_drop_point,
+            ];
+        }
+
+        $setoranSampahTerbaru = \App\Models\BankSampahTransaksi::with(['user', 'bankSampah'])
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        // --- 5. MONITORING DANA KEGIATAN ---
+        $monitoringDanaKegiatan = [];
+        foreach ($danaKegiatanList as $dk) {
+            $realisasi = TransaksiKeuangan::where('buku_kas_id', $dk->id)
+                ->where('status', 'selesai')
+                ->whereIn('jenis_transaksi', ['pengeluaran', 'transfer_keluar'])
+                ->sum('nominal');
+
+            $anggaranRencana = $dk->target_saldo > 0 ? $dk->target_saldo : ($dk->saldo_sekarang + $realisasi);
+            if ($anggaranRencana <= 0) $anggaranRencana = $realisasi + $dk->saldo_sekarang;
+            if ($anggaranRencana <= 0) $anggaranRencana = 5000000;
+
+            $sisaAnggaran = $dk->saldo_sekarang;
+            $persenSerap = $anggaranRencana > 0 ? round(($realisasi / $anggaranRencana) * 100, 1) : 0;
+            $picKegiatan = $dk->pengelola->name ?? 'Pengurus RW 013';
+            $statusKegiatan = $dk->status_badge['label'] ?? ($dk->is_active ? 'Sedang Berjalan' : 'Selesai');
+
+            $monitoringDanaKegiatan[] = [
+                'id' => $dk->id,
+                'nama_pos' => $dk->nama_kas,
+                'nomor_rekening' => $dk->nomor_rekening,
+                'anggaran_awal' => $anggaranRencana,
+                'realisasi' => $realisasi,
+                'sisa_anggaran' => $sisaAnggaran,
+                'persen_serap' => $persenSerap,
+                'status' => $statusKegiatan,
+                'pic' => $picKegiatan,
+            ];
+        }
+
+        // --- 6. AKTIVITAS KEUANGAN TERBARU (FILTERABLE, READ-ONLY) ---
+        $trxQuery = TransaksiKeuangan::with(['bukuKas', 'petugas']);
+
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $trxQuery->where(function($q) use ($s) {
+                $q->where('nomor_transaksi', 'like', "%{$s}%")
+                  ->orWhere('penyetor_penerima', 'like', "%{$s}%")
+                  ->orWhere('kategori', 'like', "%{$s}%")
+                  ->orWhere('keterangan', 'like', "%{$s}%");
+            });
+        }
+        if ($request->filled('jenis_kas_id')) {
+            $trxQuery->where('buku_kas_id', $request->jenis_kas_id);
+        }
+        if ($request->filled('jenis_transaksi')) {
+            $trxQuery->where('jenis_transaksi', $request->jenis_transaksi);
+        }
+        if ($request->filled('rt_filter')) {
+            $rtFilt = $request->rt_filter;
+            $kasRtIds = BukuKas::where('rt_number', $rtFilt)->pluck('id');
+            $trxQuery->whereIn('buku_kas_id', $kasRtIds);
+        }
+
+        if ($request->filled('filter_periode') && $request->filter_periode !== 'semua') {
+            $pDate = Carbon::parse($request->filter_periode . '-01');
+            $trxQuery->whereYear('tanggal_transaksi', $pDate->year)
+                     ->whereMonth('tanggal_transaksi', $pDate->month);
+        }
+
+        $recentTransactions = $trxQuery->orderBy('tanggal_transaksi', 'desc')
+            ->orderBy('id', 'desc')
+            ->paginate(15)
+            ->withQueryString();
+
+        $allBukuKas = BukuKas::where('is_active', true)->orderBy('nama_kas', 'asc')->get();
+
+        // Sistem Navigasi Tab Horizontal Monitoring Keuangan RW
+        $activeTab = $request->input('tab', 'kas_rt');
+        if (!in_array($activeTab, ['kas_rt', 'bank_sampah', 'dana_kegiatan', 'aktivitas'])) {
+            $activeTab = 'kas_rt';
+        }
+
+        // Indikator perhatian Ketua RW untuk badge tab
+        $rtPerluPerhatianCount = collect($monitoringKasRt)->filter(function($item) {
+            return ($item['saldo'] < 500000) || ($item['count_tx'] == 0);
+        })->count();
+
+        $kegiatanPerluAtensiCount = collect($monitoringDanaKegiatan)->filter(function($item) {
+            return $item['persen_serap'] >= 90 || $item['sisa_anggaran'] <= 500000;
+        })->count();
+
+        return view('keuangan.monitoring_rw', compact(
+            'selectedTahun',
+            'selectedBulan',
+            'periodeStr',
+            'kasRw',
+            'kasSampah',
+            'saldoKasRw',
+            'saldoKasSampah',
+            'saldoKasRtTotal',
+            'saldoDanaKegiatanTotal',
+            'totalSaldoSeluruhKas',
+            'pemasukanBulanIni',
+            'pengeluaranBulanIni',
+            'jumlahTransaksiBulanIni',
+            'monitoringKasRt',
+            'totalTagihanIuran',
+            'totalIuranTerbayar',
+            'totalIuranTunggakan',
+            'totalKkTerdaftar',
+            'totalKkLunas',
+            'persenIuran',
+            'rekapIuranRt',
+            'totalKgBankSampahBulanIni',
+            'nilaiTransaksiSampahBulanIni',
+            'rekapBankSampahRt',
+            'setoranSampahTerbaru',
+            'monitoringDanaKegiatan',
+            'recentTransactions',
+            'allBukuKas',
+            'activeTab',
+            'rtPerluPerhatianCount',
+            'kegiatanPerluAtensiCount'
+        ));
     }
 }

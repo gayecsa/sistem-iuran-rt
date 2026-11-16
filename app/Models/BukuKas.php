@@ -71,4 +71,53 @@ class BukuKas extends Model
         if (!$this->rt_number) return null;
         return str_pad(preg_replace('/[^0-9]/', '', $this->rt_number), 3, '0', STR_PAD_LEFT);
     }
+
+    /**
+     * Tampilan Rekening Bank yang Disamarkan Sebagian (Keamanan & Privasi)
+     * Contoh: Bank BCA •••• 4921
+     */
+    public function getMaskedRekeningAttribute()
+    {
+        if (!$this->no_rekening) {
+            return 'Kas Tunai (Fisik/Brankas)';
+        }
+
+        $bank = $this->nama_bank ?: 'Bank';
+        $cleanDigits = preg_replace('/[^0-9]/', '', $this->no_rekening);
+        
+        if (strlen($cleanDigits) >= 4) {
+            $lastFour = substr($cleanDigits, -4);
+            return "{$bank} •••• {$lastFour}";
+        }
+
+        return "{$bank} " . substr($this->no_rekening, 0, 3) . '••••';
+    }
+
+    /**
+     * Label Kategori Kas yang Rapi & Informatif
+     */
+    public function getJenisLabelAttribute()
+    {
+        return match($this->jenis_kas) {
+            'kas_rw' => 'Kas Induk RW 013',
+            'kas_rt' => 'Kas Operasional RT ' . ($this->clean_rt ?: '001'),
+            'kas_sampah' => 'Kas Sampah & Kebersihan',
+            'dana_kegiatan' => 'Dana Kegiatan Khusus',
+            default => strtoupper(str_replace('_', ' ', $this->jenis_kas)),
+        };
+    }
+
+    /**
+     * Ikon Lucide yang Sesuai dengan Jenis Rekening
+     */
+    public function getJenisIconAttribute()
+    {
+        return match($this->jenis_kas) {
+            'kas_rw' => 'landmark',
+            'kas_rt' => 'home',
+            'kas_sampah' => 'recycle',
+            'dana_kegiatan' => 'sparkles',
+            default => 'wallet',
+        };
+    }
 }

@@ -184,8 +184,8 @@
             <div class="col-6 text-center">
                 <p class="mb-1 text-muted small">Mengetahui,</p>
                 <p class="fw-bold mb-5 text-dark">Ketua RW 013 Sukamiskin Arcamanik</p>
-                <p class="fw-bold text-dark mb-0 text-decoration-underline">GAYECA / PENGURUS RW 013</p>
-                <small class="text-muted">NIP/ID RW: RW013-BDG-2026</small>
+                <p class="fw-bold text-dark mb-0 text-decoration-underline">( {{ \App\Models\User::where('role', 'rw')->value('name') ?? (Auth::user()->role === 'rw' ? Auth::user()->name : 'Ketua RW 013') }} )</p>
+                <small class="text-muted">Ketua RW 013</small>
             </div>
             <div class="col-6 text-center">
                 <p class="mb-1 text-muted small">Bandung, {{ Carbon\Carbon::now()->translatedFormat('d F Y') }}</p>

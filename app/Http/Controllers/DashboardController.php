@@ -1045,11 +1045,138 @@ class DashboardController extends Controller
     public function monitoringRt(Request $request)
     {
         $user = Auth::user();
-        $filterRt = $request->query('rt');
+        if (!in_array($user->role, ['rw', 'admin', 'super_admin'])) {
+            abort(403, 'Akses terbatas untuk Pengurus RW 013.');
+        }
+
+        $activeTab = $request->query('tab', 'overview');
+        $filterRt = $request->query('rt', 'all');
         $filterPeriode = $request->query('periode', 'November 2026');
+        $filterTahun = (int) $request->query('tahun', Carbon::now()->year);
+        $evalRt = $request->query('eval_rt'); // for pre-opening RT evaluation modal
+
+        // 1. Data 8 RT Monitoring
         $rtMonitoringList = $this->getRtMonitoringData($filterRt, $filterPeriode);
 
-        return view('monitoring.index', compact('user', 'rtMonitoringList', 'filterRt', 'filterPeriode'));
+        // Enrich with live database statistics
+        $totalSaldo8Rt = 0;
+        foreach ($rtMonitoringList as &$rtItem) {
+            $rtN = $rtItem['rt'];
+            $rtStr = str_pad($rtN, 3, '0', STR_PAD_LEFT);
+
+            $kkCount = \App\Models\KartuKeluarga::where('rt', $rtStr)->orWhere('rt', (string)$rtN)->count();
+            if ($kkCount > 0) $rtItem['jumlah_kk'] = $kkCount;
+
+            $wargaCount = \App\Models\User::where('rt_number', $rtStr)->orWhere('rt_number', (string)$rtN)->orWhere('rt_number', $rtN)->count();
+            if ($wargaCount > 0) $rtItem['jumlah_warga'] = $wargaCount;
+
+            $bukuKas = \App\Models\BukuKas::where('jenis_kas', 'kas_rt')
+                ->where(function($q) use ($rtN, $rtStr) {
+                    $q->where('rt_number', $rtN)->orWhere('rt_number', $rtStr);
+                })->first();
+
+            if ($bukuKas) {
+                $rtItem['saldo_kas_real'] = $bukuKas->saldo_sekarang;
+                $totalSaldo8Rt += $bukuKas->saldo_sekarang;
+
+                $lastTx = \App\Models\TransaksiKeuangan::where('buku_kas_id', $bukuKas->id)
+                    ->orderBy('tanggal_transaksi', 'desc')
+                    ->first();
+                $rtItem['tx_terakhir'] = $lastTx ? $lastTx->tanggal_transaksi->format('d/m/Y') : '-';
+
+                $rtItem['pemasukan_bulan_ini'] = \App\Models\TransaksiKeuangan::where('buku_kas_id', $bukuKas->id)
+                    ->where('status', 'selesai')
+                    ->whereIn('jenis_transaksi', ['pemasukan', 'transfer_masuk'])
+                    ->whereMonth('tanggal_transaksi', Carbon::now()->month)
+                    ->sum('nominal');
+
+                $rtItem['pengeluaran_bulan_ini'] = \App\Models\TransaksiKeuangan::where('buku_kas_id', $bukuKas->id)
+                    ->where('status', 'selesai')
+                    ->whereIn('jenis_transaksi', ['pengeluaran', 'transfer_keluar'])
+                    ->whereMonth('tanggal_transaksi', Carbon::now()->month)
+                    ->sum('nominal');
+            } else {
+                $rtItem['saldo_kas_real'] = 0;
+                $rtItem['tx_terakhir'] = '-';
+                $rtItem['pemasukan_bulan_ini'] = 0;
+                $rtItem['pengeluaran_bulan_ini'] = 0;
+            }
+        }
+        unset($rtItem);
+
+        // Ringkasan KPI
+        $allRt = $this->getRtMonitoringData('all', $filterPeriode);
+        $totalRt = 8;
+        $rtLengkapCount = collect($allRt)->where('status_laporan', 'Lengkap')->count();
+        $rtPerluPeriksaCount = collect($allRt)->where('status_laporan', 'Perlu diperiksa')->count();
+        $rtTindakLanjutCount = collect($allRt)->where('status_laporan', 'Perlu tindak lanjut')->count();
+        $rtBelumLaporCount = collect($allRt)->where('status_laporan', 'Belum dilaporkan')->count();
+
+        // 2. Data Laporan Bulanan RT (Tab B)
+        $laporanRaw = $this->getLaporanRtList();
+        $laporanList = $laporanRaw;
+        if ($filterRt && $filterRt !== 'all') {
+            $laporanList = array_values(array_filter($laporanList, function($lap) use ($filterRt) {
+                return $lap['rt_number'] == $filterRt || $lap['rt_label'] == 'RT ' . str_pad($filterRt, 3, '0', STR_PAD_LEFT);
+            }));
+        }
+
+        // 3. Data Keuangan 8 RT (Tab C)
+        $kasRtList = \App\Models\BukuKas::where('jenis_kas', 'kas_rt')->orderBy('rt_number', 'asc')->get();
+        $recentTransactions = \App\Models\TransaksiKeuangan::with(['bukuKas', 'petugas'])
+            ->whereHas('bukuKas', function($q) {
+                $q->where('jenis_kas', 'kas_rt');
+            })
+            ->when($filterRt && $filterRt !== 'all', function($q) use ($filterRt) {
+                $q->whereHas('bukuKas', function($b) use ($filterRt) {
+                    $b->where('rt_number', $filterRt)->orWhere('rt_number', str_pad($filterRt, 3, '0', STR_PAD_LEFT));
+                });
+            })
+            ->orderBy('tanggal_transaksi', 'desc')
+            ->limit(15)
+            ->get();
+
+        // 4. Data Evaluasi RT & Riwayat Tindak Lanjut (Tab D & E)
+        $evaluasiRtList = \App\Models\AuditEvaluasiRt::where('tahun', $filterTahun)
+            ->orderBy('rt_number', 'asc')
+            ->get();
+
+        // Aggregate unified history
+        $timelineHistory = [];
+        foreach ($laporanRaw as $lap) {
+            if (isset($lap['history']) && is_array($lap['history'])) {
+                foreach ($lap['history'] as $h) {
+                    $timelineHistory[] = [
+                        'rt_label' => $lap['rt_label'] ?? ('RT ' . $lap['rt_number']),
+                        'tanggal' => $h['tanggal'] ?? '-',
+                        'aktor' => $h['aktor'] ?? 'Sistem',
+                        'aksi' => $h['aksi'] ?? '-',
+                        'status' => $lap['status'] ?? 'Diproses'
+                    ];
+                }
+            }
+        }
+
+        return view('monitoring.index', compact(
+            'user',
+            'activeTab',
+            'filterRt',
+            'filterPeriode',
+            'filterTahun',
+            'evalRt',
+            'rtMonitoringList',
+            'totalRt',
+            'rtLengkapCount',
+            'rtPerluPeriksaCount',
+            'rtTindakLanjutCount',
+            'rtBelumLaporCount',
+            'totalSaldo8Rt',
+            'laporanList',
+            'kasRtList',
+            'recentTransactions',
+            'evaluasiRtList',
+            'timelineHistory'
+        ));
     }
 
     public function detailMonitoringRt($rt)
@@ -1084,6 +1211,7 @@ class DashboardController extends Controller
             'evaluasi_rw' => $request->evaluasi_rw,
             'rekomendasi' => $request->rekomendasi,
             'status_laporan' => $request->status_laporan,
+            'skor' => $request->input('skor', 85),
             'updated_at' => Carbon::now()->translatedFormat('d F Y, H:i') . ' WIB'
         ];
         session(['rt_evaluations' => $savedEvaluations]);
@@ -1109,7 +1237,37 @@ class DashboardController extends Controller
         }
         $this->saveLaporanRtList($laporanList);
 
-        return back()->with('success', "Catatan evaluasi untuk RT {$rt} berhasil disimpan!");
+        // Also persist to audit_evaluasi_rts table in MySQL
+        try {
+            $rtStr = str_pad($rt, 3, '0', STR_PAD_LEFT);
+            \App\Models\AuditEvaluasiRt::updateOrCreate(
+                [
+                    'rt_number' => $rtStr,
+                    'tahun' => (int) $request->input('tahun', Carbon::now()->year),
+                    'periode' => $request->input('periode', 'November 2026'),
+                ],
+                [
+                    'evaluator_id' => Auth::id(),
+                    'skor_kepatuhan' => (float) $request->input('skor', 85),
+                    'status_pertanggungjawaban' => match($request->status_laporan) {
+                        'Lengkap' => 'sangat_baik',
+                        'Perlu diperiksa' => 'cukup',
+                        'Perlu tindak lanjut' => 'perlu_pembinaan',
+                        default => 'baik',
+                    },
+                    'catatan_evaluasi' => $request->evaluasi_rw,
+                    'rekomendasi_rw' => $request->rekomendasi,
+                    'tenggat_perbaikan' => $request->input('tenggat_perbaikan'),
+                    'tanggal_evaluasi' => Carbon::now()->toDateString(),
+                ]
+            );
+        } catch (\Exception $e) {
+            // ignore if database table temporarily differs
+        }
+
+        $redirectTab = $request->input('tab', 'overview');
+        return redirect()->route('monitoring-rt.index', ['tab' => $redirectTab, 'rt' => $request->input('filter_rt', 'all')])
+            ->with('success', "Catatan evaluasi untuk RT {$rt} berhasil disimpan dan diperbarui!");
     }
 
     public function getLaporanRtList()
@@ -1812,9 +1970,7 @@ class DashboardController extends Controller
 
     public function laporanRt()
     {
-        $user = Auth::user();
-        $rtList = $this->getRtMonitoringData();
-        return view('laporan.rt', compact('user', 'rtList'));
+        return redirect()->route('monitoring-rt.index', ['tab' => 'laporan']);
     }
 
     public function agendaRw()

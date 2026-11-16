@@ -2,31 +2,31 @@
 
 @section('content')
 <div class="container-fluid p-0">
-    <!-- Top Hero Banner Warkas Machi -->
+    <!-- 1. BANNER PROGRAM BANK SAMPAH TERPADU RW 013 -->
     <div class="wm-card mb-4 overflow-hidden position-relative" style="background: linear-gradient(135deg, #0F5132 0%, #123766 100%); color: #fff; border: none; border-radius: 16px;">
         <div class="p-4 p-md-5 position-relative" style="z-index: 2;">
             <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
                 <div style="max-width: 720px;">
                     <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
-                        <span class="badge bg-emerald-500 text-white fw-bold px-3 py-1 rounded-pill" style="background: #10B981 !important;">
-                            <i data-lucide="leaf" style="width: 14px; height: 14px; vertical-align: middle;"></i> LINGKUNGAN BERSIH & EKONOMI SIRKULAR
+                        <span class="badge bg-light text-success fw-bold px-3 py-1 rounded-pill" style="color: #0F5132 !important; font-size: 11px; letter-spacing: 0.5px;">
+                            <i data-lucide="leaf" style="width: 14px; height: 14px; vertical-align: middle;"></i> LINGKUNGAN HIJAU & SEJAHTERA
                         </span>
-                        <span class="badge bg-white text-dark fw-bold px-3 py-1 rounded-pill opacity-90">
+                        <span class="badge bg-white text-dark fw-bold px-3 py-1 rounded-pill opacity-90" style="font-size: 11px;">
                             RW 013 Sukamiskin Arcamanik
                         </span>
                     </div>
-                    <h2 class="fw-bold mb-2 text-white" style="letter-spacing: -0.5px;">Bank Sampah Terpadu RW 013</h2>
+                    <h2 class="fw-bold mb-2 text-white" style="letter-spacing: -0.5px;">Program Bank Sampah Terpadu RW 013</h2>
                     <p class="mb-0 text-white text-opacity-75 lead fs-6">
-                        Pengelolaan sampah anorganik terpilah (Plastik, Kertas, Logam, Minyak Jelantah) terintegrasi dengan rekening tabungan digital warga dan kas lingkungan 8 RT.
+                        Pengelolaan sampah terpilah (Plastik, Kertas, Logam, Minyak Jelantah) untuk tabungan warga dan kas lingkungan 8 RT.
                     </p>
                 </div>
                 <div class="d-flex align-items-center gap-2 flex-wrap">
-                    <button type="button" class="btn btn-light rounded-pill px-4 py-2 fw-bold text-success shadow-sm" data-bs-toggle="modal" data-bs-target="#modalSetorSampah">
-                        <i data-lucide="plus-circle" class="me-1" style="width: 18px; height: 18px; vertical-align: middle;"></i> Setor Sampah Sekarang
-                    </button>
-                    <a href="{{ route('bank-sampah.riwayat') }}" class="btn btn-outline-light rounded-pill px-3 py-2 fw-semibold">
-                        <i data-lucide="wallet" class="me-1" style="width: 16px; height: 16px; vertical-align: middle;"></i> Tabungan Saya
+                    <a href="{{ route('dashboard') }}" class="btn btn-light rounded-pill px-3 py-2 fw-bold small text-success shadow-sm">
+                        <i data-lucide="layout-grid" class="me-1" style="width: 16px; height: 16px; vertical-align: middle;"></i> Ke Dashboard
                     </a>
+                    <button type="button" class="btn btn-success rounded-pill px-4 py-2 fw-bold text-white shadow-sm" data-bs-toggle="modal" data-bs-target="#modalSetorSampah" style="background: #10B981; border: none;">
+                        <i data-lucide="plus-circle" class="me-1" style="width: 18px; height: 18px; vertical-align: middle;"></i> Setor Sampah
+                    </button>
                 </div>
             </div>
         </div>
@@ -61,6 +61,7 @@
         </div>
     @endif
 
+    <!-- 2. AKSES PENGELOLAAN DAN STATISTIK BANK SAMPAH -->
     <!-- Role-Based Navigation & Action Bar -->
     <div class="wm-card mb-4 p-3 bg-white border rounded-4 shadow-sm">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
@@ -105,7 +106,7 @@
         </div>
     </div>
 
-    <!-- Ringkasan Statistik Sampah Terpadu (Aktual Database) -->
+    <!-- Ringkasan Statistik Tabungan Sampah (Aktual Database) -->
     <div class="row g-3 mb-4">
         <!-- Saldo Tabungan Pribadi -->
         <div class="col-12 col-md-6 col-xl-3">
@@ -167,105 +168,129 @@
         </div>
     </div>
 
-    <!-- TABEL UTAMA: Titik Pengumpulan & Petugas Bank Sampah 8 RT -->
-    <div class="wm-card mb-4 bg-white border rounded-4 shadow-sm overflow-hidden">
-        <div class="p-4 border-bottom bg-light d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <div>
-                <h5 class="fw-bold mb-1 text-dark">
-                    <i data-lucide="map-pin" class="me-2 text-success" style="width: 20px; height: 20px; vertical-align: middle;"></i>
-                    Titik Pengumpulan & Petugas Bank Sampah 8 RT Sukamiskin Arcamanik
-                </h5>
-                <p class="mb-0 text-muted small">
-                    Data unit bank sampah resmi terdaftar per wilayah RT 001 - RT 008 dengan penanggung jawab warga.
-                </p>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-3 py-1 rounded-pill small">
-                    <i data-lucide="info" style="width: 14px; height: 14px; vertical-align: middle;"></i> Data Aktual dihitung dari transaksi selesai
-                </span>
+    <!-- 3. INFORMASI ALUR KERJA BANK SAMPAH -->
+    <!-- Ringkasan Informasi Operasional Resmi RW 013 -->
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-md-4">
+            <div class="wm-card text-center p-4 h-100 bg-white border rounded-4 shadow-sm">
+                <div class="mx-auto mb-3 d-flex align-items-center justify-content-center rounded-3" style="width: 48px; height: 48px; background: #E8F5E9; color: #16865D;">
+                    <i data-lucide="calendar" style="width: 24px; height: 24px;"></i>
+                </div>
+                <h6 class="fw-bold text-dark mb-1">Jadwal Setor Sampah</h6>
+                <p class="text-success fw-bold mb-1 fs-5">Setiap Hari Rabu</p>
+                <small class="text-muted">Pukul 10.00 - 13.00 WIB</small>
             </div>
         </div>
-
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th class="ps-4">Unit Bank Sampah</th>
-                        <th>Wilayah RT</th>
-                        <th>Petugas Pengelola (Warga Terdaftar)</th>
-                        <th>Lokasi Drop Point</th>
-                        <th>Total Terkumpul Aktual</th>
-                        <th>Data Simulasi Awal</th>
-                        <th>Jadwal Penimbangan</th>
-                        <th class="text-end pe-4">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($bankSampahList as $bs)
-                        <tr>
-                            <td class="ps-4">
-                                <strong class="text-dark d-block">{{ $bs->nama_unit }}</strong>
-                                <small class="text-muted">Kategori: {{ Str::limit($bs->kategori_diterima, 35) }}</small>
-                            </td>
-                            <td>
-                                <span class="badge bg-emerald-100 text-emerald-800 border border-emerald-300 px-3 py-1 rounded-pill fw-bold" style="background: #E8F5E9; color: #1B5E20;">
-                                    RT {{ str_pad($bs->rt_number, 3, '0', STR_PAD_LEFT) }}
-                                </span>
-                            </td>
-                            <td>
-                                <div class="d-flex align-items-center gap-2">
-                                    <img src="{{ $bs->petugas_avatar_url }}" alt="{{ $bs->petugas_name }}" class="rounded-circle border" style="width: 32px; height: 32px; object-fit: cover;">
-                                    <div>
-                                        <span class="fw-semibold text-dark d-block">{{ $bs->petugas_name }}</span>
-                                        <small class="text-muted">ID: #{{ $bs->petugas_id ?? '-' }}</small>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <span class="small text-muted">{{ $bs->lokasi }}</span>
-                            </td>
-                            <td>
-                                <div class="d-flex align-items-center gap-1">
-                                    <span class="badge bg-success-subtle text-success border border-success-subtle fw-bold px-2 py-1">
-                                        {{ number_format($bs->total_aktual_kg, 1, ',', '.') }} kg
-                                    </span>
-                                    <small class="text-muted">({{ $bs->total_transaksi_selesai_count }} tx)</small>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="d-inline-flex flex-column">
-                                    <span class="badge bg-slate-100 text-slate-700 border fw-semibold px-2 py-1" style="background: #F1F5F9; color: #475569;">
-                                        {{ $bs->total_terkumpul_kg }} kg
-                                    </span>
-                                    <span class="badge bg-light text-muted border-0 p-0 text-start" style="font-size: 10px;">
-                                        <i data-lucide="tag" style="width: 10px; height: 10px; vertical-align: middle;"></i> Data Simulasi Awal
-                                    </span>
-                                </div>
-                            </td>
-                            <td>
-                                <small class="text-secondary">{{ $bs->jadwal }}</small>
-                            </td>
-                            <td class="text-end pe-4">
-                                <button type="button" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-bold btn-setor-unit" 
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#modalSetorSampah"
-                                    data-unit-id="{{ $bs->id }}"
-                                    data-unit-name="{{ $bs->nama_unit }} (RT {{ str_pad($bs->rt_number, 3, '0', STR_PAD_LEFT) }})">
-                                    <i data-lucide="plus" style="width: 14px; height: 14px; vertical-align: middle;"></i> Setor
-                                </button>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="8" class="text-center text-muted py-4">Belum ada unit bank sampah terdaftar.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+        <div class="col-12 col-md-4">
+            <div class="wm-card text-center p-4 h-100 bg-white border rounded-4 shadow-sm">
+                <div class="mx-auto mb-3 d-flex align-items-center justify-content-center rounded-3" style="width: 48px; height: 48px; background: #E1F5FE; color: #0288D1;">
+                    <i data-lucide="map-pin" style="width: 24px; height: 24px;"></i>
+                </div>
+                <h6 class="fw-bold text-dark mb-1">Pusat Penimbangan</h6>
+                <p class="text-primary fw-bold mb-1 fs-5">Pusat Bank Sampah RT 003</p>
+                <small class="text-muted">Pos Penampungan Komunal RW 013</small>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="wm-card text-center p-4 h-100 bg-white border rounded-4 shadow-sm">
+                <div class="mx-auto mb-3 d-flex align-items-center justify-content-center rounded-3" style="width: 48px; height: 48px; background: #FFF8E1; color: #F59E0B;">
+                    <i data-lucide="recycle" style="width: 24px; height: 24px;"></i>
+                </div>
+                <h6 class="fw-bold text-dark mb-1">Jenis Sampah Diterima</h6>
+                <p class="text-warning-emphasis fw-bold mb-1 fs-5" style="color: #D97706;">Plastik, Kertas, Kardus, Logam</p>
+                <small class="text-muted">Dalam kondisi bersih & kering</small>
+            </div>
         </div>
     </div>
 
-    <!-- KATALOG JENIS SAMPAH & TARIF AKTIF -->
+    <!-- Alur Kerja Bank Sampah Terpadu RW 013 -->
+    <div class="wm-card mb-4 bg-white border rounded-4 shadow-sm p-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3">
+            <div>
+                <h5 class="fw-bold mb-1 text-dark">
+                    <i data-lucide="git-merge" class="me-2 text-success" style="width: 20px; height: 20px; vertical-align: middle;"></i>
+                    Alur Kerja Setoran Bank Sampah RW 013
+                </h5>
+                <p class="mb-0 text-muted small">Tahapan mudah bagi warga menyetor sampah terpilah hingga pencatatan saldo tabungan dan kas lingkungan 8 RT.</p>
+            </div>
+            <span class="badge px-3 py-1 rounded-pill small fw-bold" style="background: #E8F5E9; color: #16865D; border: 1px solid #C8E6C9;">
+                <i data-lucide="shield-check" style="width: 14px; height: 14px; vertical-align: middle;"></i> Terintegrasi Otomatis
+            </span>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <!-- Tahap 1 -->
+            <div class="col-12 col-md-6 col-xl-3">
+                <div class="p-3 border rounded-3 h-100 bg-light-subtle d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center fw-bold shadow-sm" style="width: 28px; height: 28px; font-size: 13px;">1</span>
+                            <strong class="text-dark">Warga Mengajukan Setoran</strong>
+                        </div>
+                        <p class="text-muted small mb-0">
+                            Warga memilah sampah anorganik di rumah, lalu mengajukan setoran lewat formulir (pilih antar ke drop point atau jemput ke rumah).
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tahap 2 -->
+            <div class="col-12 col-md-6 col-xl-3">
+                <div class="p-3 border rounded-3 h-100 bg-light-subtle d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center fw-bold shadow-sm" style="width: 28px; height: 28px; font-size: 13px;">2</span>
+                            <strong class="text-dark">Petugas RT Menimbang</strong>
+                        </div>
+                        <p class="text-muted small mb-0">
+                            Petugas drop point RT memeriksa kebersihan sampah dan menimbang berat aktual per kategori secara transparan.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tahap 3 -->
+            <div class="col-12 col-md-6 col-xl-3">
+                <div class="p-3 border rounded-3 h-100 bg-light-subtle d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center fw-bold shadow-sm" style="width: 28px; height: 28px; font-size: 13px;">3</span>
+                            <strong class="text-dark">Perhitungan Otomatis</strong>
+                        </div>
+                        <p class="text-muted small mb-0">
+                            Sistem secara instan mengalikan bobot timbangan dengan tarif resmi aktif untuk menghitung total nominal rupiah yang didapat.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tahap 4 -->
+            <div class="col-12 col-md-6 col-xl-3">
+                <div class="p-3 border rounded-3 h-100 bg-light-subtle d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center fw-bold shadow-sm" style="width: 28px; height: 28px; font-size: 13px;">4</span>
+                            <strong class="text-dark">Saldo Masuk & Resi Terbit</strong>
+                        </div>
+                        <p class="text-muted small mb-0">
+                            Saldo tabungan warga otomatis bertambah, slip digital ber-QR Code diterbitkan, dan mutasi tercatat aman di buku ledger RT.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-3 rounded-3 border" style="background: #E8F5E9; border-color: #C8E6C9 !important;">
+            <div class="d-flex align-items-center gap-2 text-success fw-bold mb-1">
+                <i data-lucide="shield-check" style="width: 18px; height: 18px;"></i> Transparansi & Akuntabilitas Finansial
+            </div>
+            <p class="small text-muted mb-0">
+                Saldo tabungan warga tidak akan bertambah sebelum transaksi berstatus <strong>Selesai</strong> dan dikonfirmasi oleh petugas berwenang. Seluruh mutasi dana tercatat pada audit ledger terpusat.
+            </p>
+        </div>
+    </div>
+
+    <!-- 4. DAFTAR KATEGORI SAMPAH & TARIF RESMI RW 013 -->
     <div class="wm-card mb-4 bg-white border rounded-4 shadow-sm p-4">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3">
             <div>
@@ -307,131 +332,165 @@
         </div>
     </div>
 
-    <!-- TRANSAKSI TERBARU & PANDUAN -->
-    <div class="row g-4 mb-4">
-        <!-- Transaksi Terbaru (Disesuaikan Role) -->
-        <div class="col-lg-7">
-            <div class="wm-card bg-white border rounded-4 shadow-sm p-4 h-100">
-                <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-                    <h5 class="fw-bold mb-0 text-dark">
-                        <i data-lucide="activity" class="me-2 text-primary" style="width: 20px; height: 20px; vertical-align: middle;"></i>
-                        @if($user->isRw())
-                            Setoran Terbaru Seluruh RW 013
-                        @elseif($user->isPetugasBankSampah())
-                            Setoran Terbaru Wilayah RT {{ str_pad($user->rt_number, 3, '0', STR_PAD_LEFT) }}
-                        @else
-                            Riwayat Setoran Saya
-                        @endif
-                    </h5>
-                    <a href="{{ $user->isRw() || $user->isPetugasBankSampah() ? route('bank-sampah.kelola') : route('bank-sampah.riwayat') }}" class="small fw-bold text-primary text-decoration-none">
-                        Lihat Semua &rarr;
-                    </a>
-                </div>
+    <!-- 5. TABEL TRANSAKSI SETORAN TERBARU -->
+    <div class="wm-card bg-white border rounded-4 shadow-sm p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+            <h5 class="fw-bold mb-0 text-dark">
+                <i data-lucide="activity" class="me-2 text-primary" style="width: 20px; height: 20px; vertical-align: middle;"></i>
+                @if($user->isRw())
+                    Setoran Terbaru Seluruh RW 013
+                @elseif($user->isPetugasBankSampah())
+                    Setoran Terbaru Wilayah RT {{ str_pad($user->rt_number, 3, '0', STR_PAD_LEFT) }}
+                @else
+                    Riwayat Setoran Saya
+                @endif
+            </h5>
+            <a href="{{ $user->isRw() || $user->isPetugasBankSampah() ? route('bank-sampah.kelola') : route('bank-sampah.riwayat') }}" class="small fw-bold text-primary text-decoration-none">
+                Lihat Semua &rarr;
+            </a>
+        </div>
 
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Kode</th>
-                                <th>Warga / RT</th>
-                                <th>Berat</th>
-                                <th>Total Nilai</th>
-                                <th>Status</th>
-                                <th class="text-end">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($recentTransactions as $tx)
-                                <tr>
-                                    <td>
-                                        <strong class="text-dark">{{ $tx->kode_transaksi }}</strong>
-                                        <small class="text-muted d-block">{{ $tx->tanggal_pengajuan->format('d/m/Y H:i') }}</small>
-                                    </td>
-                                    <td>
-                                        <span class="text-dark fw-semibold d-block">{{ $tx->user->name ?? 'Warga' }}</span>
-                                        <span class="badge bg-light text-secondary border">RT {{ str_pad($tx->rt_number, 3, '0', STR_PAD_LEFT) }}</span>
-                                    </td>
-                                    <td>
-                                        <span class="fw-bold text-dark">{{ $tx->total_berat_formatted }}</span>
-                                    </td>
-                                    <td>
-                                        <span class="fw-bold text-success">{{ $tx->total_rupiah_formatted }}</span>
-                                    </td>
-                                    <td>
-                                        <span class="badge {{ $tx->status_badge['bg'] }} border px-2 py-1 rounded-pill fw-bold">
-                                            {{ $tx->status_label }}
-                                        </span>
-                                    </td>
-                                    <td class="text-end">
-                                        <a href="{{ route('bank-sampah.show', $tx->id) }}" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold">
-                                            Detail
-                                        </a>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="text-center text-muted py-4">Belum ada transaksi setoran tercatat.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-3 text-secondary small fw-bold">Kode Transaksi</th>
+                        <th class="text-secondary small fw-bold">Warga / RT</th>
+                        <th class="text-secondary small fw-bold">Berat Total</th>
+                        <th class="text-secondary small fw-bold">Nilai Rupiah</th>
+                        <th class="text-secondary small fw-bold">Status</th>
+                        <th class="text-end pe-3 text-secondary small fw-bold">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($recentTransactions as $tx)
+                        <tr>
+                            <td class="ps-3">
+                                <strong class="text-dark d-block">{{ $tx->kode_transaksi }}</strong>
+                                <small class="text-muted">{{ $tx->tanggal_pengajuan->format('d/m/Y H:i') }}</small>
+                            </td>
+                            <td>
+                                <span class="text-dark fw-semibold d-block">{{ $tx->user->name ?? 'Warga' }}</span>
+                                <span class="badge bg-light text-secondary border">RT {{ str_pad($tx->rt_number, 3, '0', STR_PAD_LEFT) }}</span>
+                            </td>
+                            <td>
+                                <span class="fw-bold text-dark">{{ $tx->total_berat_formatted }}</span>
+                            </td>
+                            <td>
+                                <span class="fw-bold text-success">{{ $tx->total_rupiah_formatted }}</span>
+                            </td>
+                            <td>
+                                <span class="badge {{ $tx->status_badge['bg'] }} border px-2 py-1 rounded-pill fw-bold">
+                                    {{ $tx->status_label }}
+                                </span>
+                            </td>
+                            <td class="text-end pe-3">
+                                <a href="{{ route('bank-sampah.show', $tx->id) }}" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold">
+                                    Detail
+                                </a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">Belum ada transaksi setoran tercatat.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 6. TITIK PENGUMPULAN & PETUGAS BANK SAMPAH 8 RT (PALING BAWAH HALAMAN) -->
+    <div class="wm-card mb-4 bg-white border rounded-4 shadow-sm overflow-hidden">
+        <div class="p-4 border-bottom bg-light d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h5 class="fw-bold mb-1 text-dark">
+                    <i data-lucide="map-pin" class="me-2 text-success" style="width: 20px; height: 20px; vertical-align: middle;"></i>
+                    Titik Pengumpulan & Petugas Bank Sampah 8 RT Sukamiskin Arcamanik
+                </h5>
+                <p class="mb-0 text-muted small">
+                    Data unit bank sampah resmi terdaftar per wilayah RT 001 - RT 008 dengan penanggung jawab warga.
+                </p>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-3 py-1 rounded-pill small">
+                    <i data-lucide="info" style="width: 14px; height: 14px; vertical-align: middle;"></i> Data Aktual dihitung dari transaksi selesai
+                </span>
             </div>
         </div>
 
-        <!-- Panduan Pemilahan & Manfaat -->
-        <div class="col-lg-5">
-            <div class="wm-card bg-white border rounded-4 shadow-sm p-4 h-100">
-                <h5 class="fw-bold mb-3 text-dark border-bottom pb-2">
-                    <i data-lucide="help-circle" class="me-2 text-success" style="width: 20px; height: 20px; vertical-align: middle;"></i>
-                    Alur Kerja Setoran Bank Sampah
-                </h5>
-
-                <div class="d-flex flex-column gap-3">
-                    <div class="d-flex align-items-start gap-3">
-                        <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px; min-width: 32px;">1</div>
-                        <div>
-                            <strong class="text-dark">Warga Mengajukan Setoran</strong>
-                            <p class="text-muted small mb-0">Warga memilah sampah di rumah dan mengajukan setoran (antar ke drop point atau jemput ke rumah).</p>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-start gap-3">
-                        <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px; min-width: 32px;">2</div>
-                        <div>
-                            <strong class="text-dark">Petugas RT Memeriksa & Menimbang</strong>
-                            <p class="text-muted small mb-0">Petugas memeriksa kondisi sampah dan menimbang per kategori jenis sampah secara transparan.</p>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-start gap-3">
-                        <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px; min-width: 32px;">3</div>
-                        <div>
-                            <strong class="text-dark">Perhitungan Otomatis & Konfirmasi</strong>
-                            <p class="text-muted small mb-0">Sistem mengalikan berat aktual dengan tarif resmi aktif untuk menentukan nilai rupiah.</p>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-start gap-3">
-                        <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px; min-width: 32px;">4</div>
-                        <div>
-                            <strong class="text-dark">Saldo Masuk & Resi Digital Terbit</strong>
-                            <p class="text-muted small mb-0">Saldo tabungan sampah warga otomatis bertambah dan riwayat transaksi tercatat abadi di buku ledger.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mt-4 p-3 rounded-3 bg-emerald-50 border border-emerald-200" style="background: #E8F5E9;">
-                    <div class="d-flex align-items-center gap-2 text-success fw-bold mb-1">
-                        <i data-lucide="shield-check" style="width: 18px; height: 18px;"></i> Transparansi Finansial
-                    </div>
-                    <p class="small text-muted mb-0">
-                        Saldo tidak akan bertambah sebelum transaksi berstatus <strong>Selesai</strong> dan dikonfirmasi oleh petugas berwenang. Seluruh mutasi dana tercatat pada audit ledger.
-                    </p>
-                </div>
-            </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4 text-secondary small fw-bold text-uppercase">Unit Bank Sampah</th>
+                        <th class="text-secondary small fw-bold text-uppercase">Wilayah RT</th>
+                        <th class="text-secondary small fw-bold text-uppercase">Petugas Pengelola (Warga Terdaftar)</th>
+                        <th class="text-secondary small fw-bold text-uppercase">Lokasi Drop Point</th>
+                        <th class="text-secondary small fw-bold text-uppercase">Total Terkumpul</th>
+                        <th class="text-secondary small fw-bold text-uppercase">Jadwal Penimbangan</th>
+                        <th class="text-end pe-4 text-secondary small fw-bold text-uppercase">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($bankSampahList as $bs)
+                        <tr>
+                            <td class="ps-4">
+                                <strong class="text-dark d-block">{{ $bs->nama_unit }}</strong>
+                                <small class="text-muted">Kategori: {{ Str::limit($bs->kategori_diterima, 35) }}</small>
+                            </td>
+                            <td>
+                                <span class="badge px-3 py-1 rounded-pill fw-bold" style="background: #E8F5E9; color: #16865D; border: 1px solid #C8E6C9;">
+                                    RT {{ str_pad($bs->rt_number, 3, '0', STR_PAD_LEFT) }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <img src="{{ $bs->petugas_avatar_url }}" alt="{{ $bs->petugas_name }}" class="rounded-circle border" style="width: 34px; height: 34px; object-fit: cover;">
+                                    <div>
+                                        <span class="fw-semibold text-dark d-block">{{ $bs->petugas_name }}</span>
+                                        <small class="text-muted">Warga Terdaftar &bull; ID #{{ $bs->petugas_id ?? '-' }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="small text-secondary">{{ $bs->lokasi }}</span>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column align-items-start gap-1">
+                                    <span class="badge px-3 py-2 rounded-pill fw-bold" style="background: #E1F5FE; color: #0288D1; font-size: 12px;">
+                                        {{ number_format($bs->total_terkumpul_kg + ($bs->total_aktual_kg ?? 0), 0, ',', '.') }} kg
+                                    </span>
+                                    @if(($bs->total_aktual_kg ?? 0) > 0)
+                                        <small class="text-success fw-semibold" style="font-size: 11px;">+{{ number_format($bs->total_aktual_kg, 1, ',', '.') }} kg transaksi baru</small>
+                                    @endif
+                                </div>
+                            </td>
+                            <td>
+                                <small class="text-secondary">{{ $bs->jadwal }}</small>
+                            </td>
+                            <td class="text-end pe-4">
+                                <button type="button" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-bold btn-setor-unit" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#modalSetorSampah"
+                                    data-unit-id="{{ $bs->id }}"
+                                    data-unit-name="{{ $bs->nama_unit }} (RT {{ str_pad($bs->rt_number, 3, '0', STR_PAD_LEFT) }})">
+                                    <i data-lucide="plus" style="width: 14px; height: 14px; vertical-align: middle;"></i> Setor
+                                </button>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">Belum ada unit bank sampah terdaftar.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 
-<!-- MODAL: AJUKAN SETORAN SAMPAH -->
+<!-- 7. MODAL: AJUKAN SETORAN SAMPAH -->
 <div class="modal fade" id="modalSetorSampah" tabindex="-1" aria-labelledby="modalSetorSampahLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content rounded-4 border-0 shadow">
