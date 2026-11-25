@@ -21,6 +21,9 @@ use App\Http\Controllers\TagihanController;
 use App\Http\Controllers\BankSampahController;
 use App\Http\Controllers\PosyanduController;
 use App\Http\Controllers\AuditController;
+use App\Http\Controllers\AgendaController;
+use App\Http\Controllers\RoleSwitchController;
+use App\Http\Controllers\SuperAdminController;
 
 // Guest routes
 Route::middleware('guest')->group(function () {
@@ -45,6 +48,32 @@ Route::get('/layanan-surat', [SuratController::class, 'publicCatalog'])->name('s
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+    // Fitur Switch Role Super Admin (Impersonation Tanpa Logout)
+    Route::post('/switch-role', [RoleSwitchController::class, 'switchRole'])->name('switch.role');
+    Route::post('/switch-role/revert', [RoleSwitchController::class, 'revert'])->name('switch.role.revert');
+    Route::post('/switch-role/mode', [RoleSwitchController::class, 'updateMode'])->name('switch.role.mode');
+    Route::get('/switch-role/warga-options', [RoleSwitchController::class, 'getWargaOptions'])->name('switch.role.warga_options');
+
+    // Dashboard Khusus Super Admin (Control Center)
+    Route::get('/dashboard/super-admin', [SuperAdminController::class, 'index'])
+        ->name('dashboard.super-admin')
+        ->middleware('role:super_admin');
+
+    // Modul Khusus Super Admin (Manajemen Pengguna & Master Keuangan)
+    Route::middleware('role:super_admin')->prefix('super-admin')->name('super-admin.')->group(function () {
+        Route::get('/users', [SuperAdminController::class, 'users'])->name('users.index');
+        Route::put('/users/{id}', [SuperAdminController::class, 'updateUser'])->name('users.update');
+        Route::post('/users/{id}/reset-password', [SuperAdminController::class, 'resetUserPassword'])->name('users.reset-password');
+        
+        Route::get('/master-keuangan', [SuperAdminController::class, 'masterKeuangan'])->name('master-keuangan.index');
+        Route::put('/master-keuangan/rekening/{id}', [SuperAdminController::class, 'updateRekening'])->name('master-keuangan.rekening.update');
+        Route::put('/master-keuangan/tarif/{id}', [SuperAdminController::class, 'updateTarif'])->name('master-keuangan.tarif.update');
+
+        // Modul 3: Log Aktivitas & Audit Trail Sistem
+        Route::get('/audit-log', [SuperAdminController::class, 'auditLog'])->name('audit-log.index');
+        Route::get('/audit-log/export', [SuperAdminController::class, 'exportAuditLog'])->name('audit-log.export');
+    });
+
     // Tombol Back multi-langkah
     Route::get('/back', function () {
         $stack = session(\App\Http\Middleware\NavigationHistory::KEY, []);
@@ -55,51 +84,69 @@ Route::middleware('auth')->group(function () {
     })->name('nav.back');
     Route::get('/profile', [AuthController::class, 'showProfile'])->name('profile.edit');
     Route::post('/profile', [AuthController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/profile/biodata', [AuthController::class, 'updateBiodata'])->name('profile.biodata.update');
+    Route::post('/profile/email', [AuthController::class, 'updateEmail'])->name('profile.email.update');
+    Route::post('/profile/password', [AuthController::class, 'updatePassword'])->name('profile.password.update');
+    Route::post('/profile/notifications', [AuthController::class, 'updateNotifications'])->name('profile.notifications.update');
+    Route::post('/profile/privacy', [AuthController::class, 'updatePrivacy'])->name('profile.privacy.update');
+    Route::post('/profile/upload-foto', [AuthController::class, 'uploadFoto'])->name('profile.upload-foto');
     Route::post('/profile/make-admin', [AuthController::class, 'makeAdmin'])->name('profile.makeAdmin');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/rw', [DashboardController::class, 'dashboardRw'])->name('dashboard.rw')->middleware('role:rw,admin,bendahara');
     Route::get('/dashboard/rt', [DashboardController::class, 'dashboardRt'])->name('dashboard.rt')->middleware('role:rt,rw,admin');
     Route::get('/dashboard/warga', [DashboardController::class, 'dashboardWarga'])->name('dashboard.warga');
-    
-    // Pindah ke sini: Agar semua warga yang login bisa upload & ganti foto profil
-    Route::post('/profile/upload-foto', [DashboardController::class, 'uploadFoto'])->name('profile.upload-foto');
 
     // Keuangan detail route
     Route::get('/keuangan/detail', [KeuanganController::class, 'detail'])->name('keuangan.detail');
     
     // Pengumuman routes
     Route::get('/pengumuman', [PengumumanController::class, 'index'])->name('pengumuman.index');
+    
+    // Pengumuman Manajemen (Khusus Pengurus RW, RT, Admin, Super Admin)
+    Route::middleware('role:rw,rt,admin,super_admin')->group(function () {
+        Route::get('/pengumuman/create', [PengumumanController::class, 'create'])->name('pengumuman.create');
+        Route::post('/pengumuman', [PengumumanController::class, 'store'])->name('pengumuman.store');
+        Route::get('/pengumuman/{id}/edit', [PengumumanController::class, 'edit'])->name('pengumuman.edit');
+        Route::put('/pengumuman/{id}', [PengumumanController::class, 'update'])->name('pengumuman.update');
+        Route::delete('/pengumuman/{id}', [PengumumanController::class, 'destroy'])->name('pengumuman.destroy');
+    });
+
     Route::get('/pengumuman/{id}', [PengumumanController::class, 'show'])->name('pengumuman.show');
     Route::get('/pengumuman/{id}/detail', [PengumumanController::class, 'detail'])->name('pengumuman.detail');
 
     // --- POSYANDU TERPADU RW 013 (ROLE-AWARE & OPERASIONAL) ---
     Route::get('/posyandu', [PosyanduController::class, 'index'])->name('posyandu');
     Route::get('/posyandu/peserta/{id}', [PosyanduController::class, 'showPeserta'])->name('posyandu.peserta.show');
-    Route::post('/posyandu/peserta', [PosyanduController::class, 'storePeserta'])->name('posyandu.peserta.store');
-    Route::post('/posyandu/peserta/{id}/pengukuran', [PosyanduController::class, 'storePengukuran'])->name('posyandu.pengukuran.store');
     Route::post('/posyandu/daftar-keluarga', [PosyanduController::class, 'daftarKeluarga'])->name('posyandu.daftar_keluarga');
-    
-    Route::post('/posyandu/jadwal', [PosyanduController::class, 'storeJadwal'])->name('posyandu.jadwal.store');
-    Route::post('/posyandu/jadwal/{id}/batal', [PosyanduController::class, 'batalJadwal'])->name('posyandu.jadwal.batal');
-    Route::post('/posyandu/jadwal/{id}/kehadiran', [PosyanduController::class, 'catatKehadiran'])->name('posyandu.jadwal.kehadiran');
-    Route::post('/posyandu/jadwal/{id}/laporan', [PosyanduController::class, 'storeLaporan'])->name('posyandu.jadwal.laporan');
-    
-    Route::post('/posyandu/kader', [PosyanduController::class, 'storeKader'])->name('posyandu.kader.store');
-    
     Route::get('/posyandu/laporan/{id}', [PosyanduController::class, 'showLaporan'])->name('posyandu.laporan.show');
     Route::get('/posyandu/laporan/{id}/cetak', [PosyanduController::class, 'cetakLaporan'])->name('posyandu.laporan.cetak');
-    Route::post('/posyandu/laporan/{id}/evaluasi', [PosyanduController::class, 'evaluasiLaporan'])->name('posyandu.laporan.evaluasi');
-    Route::post('/posyandu/monitoring/pengingat/{rt}', [PosyanduController::class, 'kirimPengingat'])->name('posyandu.monitoring.pengingat');
-    Route::get('/posyandu/api/search-warga', [PosyanduController::class, 'searchWarga'])->name('posyandu.api.search_warga');
+    
+    // Operasional Posyandu RT / RW
+    Route::middleware('role:rt,rw,admin,super_admin')->group(function () {
+        Route::post('/posyandu/peserta', [PosyanduController::class, 'storePeserta'])->name('posyandu.peserta.store');
+        Route::post('/posyandu/peserta/{id}/pengukuran', [PosyanduController::class, 'storePengukuran'])->name('posyandu.pengukuran.store');
+        Route::post('/posyandu/jadwal', [PosyanduController::class, 'storeJadwal'])->name('posyandu.jadwal.store');
+        Route::post('/posyandu/jadwal/{id}/batal', [PosyanduController::class, 'batalJadwal'])->name('posyandu.jadwal.batal');
+        Route::post('/posyandu/jadwal/{id}/kehadiran', [PosyanduController::class, 'catatKehadiran'])->name('posyandu.jadwal.kehadiran');
+        Route::post('/posyandu/jadwal/{id}/laporan', [PosyanduController::class, 'storeLaporan'])->name('posyandu.jadwal.laporan');
+        Route::post('/posyandu/kader', [PosyanduController::class, 'storeKader'])->name('posyandu.kader.store');
+        Route::get('/posyandu/api/search-warga', [PosyanduController::class, 'searchWarga'])->name('posyandu.api.search_warga');
+    });
 
-    // Route pendukung kompatibilitas
-    Route::get('/posyandu/jadwal', [DashboardController::class, 'jadwal'])->name('posyandu.jadwal'); 
-    Route::get('/posyandu/lokasi', [DashboardController::class, 'lokasi'])->name('posyandu.lokasi');
-    Route::get('/posyandu/detail-balita', [DashboardController::class, 'detailBalita'])->name('posyandu.detail_balita');
-    Route::get('/posyandu/detail-balita/{id}', [DashboardController::class, 'getBalitaDetail']);
-    Route::get('/posyandu/detail-imunisasi', [DashboardController::class, 'detailImunisasi'])->name('posyandu.detail_imunisasi');
-    Route::get('/posyandu/detail-ibu-hamil', [DashboardController::class, 'detailIbuHamil'])->name('posyandu.detail_ibu_hamil');
-    Route::get('/posyandu/detail-edukasi', [DashboardController::class, 'detailEdukasi'])->name('posyandu.detail_edukasi');
+    // Monitoring & Evaluasi Khusus RW / Admin
+    Route::middleware('role:rw,admin,super_admin')->group(function () {
+        Route::post('/posyandu/laporan/{id}/evaluasi', [PosyanduController::class, 'evaluasiLaporan'])->name('posyandu.laporan.evaluasi');
+        Route::post('/posyandu/monitoring/pengingat/{rt}', [PosyanduController::class, 'kirimPengingat'])->name('posyandu.monitoring.pengingat');
+    });
+
+    // Route legacy / kompatibilitas: Otomatis dialihkan ke route posyandu utama (tanpa kebocoran privasi)
+    Route::get('/posyandu/jadwal', fn() => redirect()->route('posyandu'))->name('posyandu.jadwal'); 
+    Route::get('/posyandu/lokasi', fn() => redirect()->route('posyandu'))->name('posyandu.lokasi');
+    Route::get('/posyandu/detail-balita', fn() => redirect()->route('posyandu'))->name('posyandu.detail_balita');
+    Route::get('/posyandu/detail-balita/{id}', fn() => redirect()->route('posyandu'));
+    Route::get('/posyandu/detail-imunisasi', fn() => redirect()->route('posyandu'))->name('posyandu.detail_imunisasi');
+    Route::get('/posyandu/detail-ibu-hamil', fn() => redirect()->route('posyandu'))->name('posyandu.detail_ibu_hamil');
+    Route::get('/posyandu/detail-edukasi', fn() => redirect()->route('posyandu'))->name('posyandu.detail_edukasi');
     // -----------------------------------------------------------
 
     // --- UMKM MARKETPLACE LOKAL RW 013 ---
@@ -143,6 +190,13 @@ Route::middleware('auth')->group(function () {
 
     // --- SISTEM LAYANAN WARGA LAINNYA ---
     Route::get('/ronda', [DashboardController::class, 'ronda'])->name('ronda.index');
+    Route::post('/ronda/lapor-keamanan', [DashboardController::class, 'storeLaporKeamanan'])->name('ronda.lapor-keamanan');
+    Route::post('/ronda/peringatan/{id}/konfirmasi-rt', [DashboardController::class, 'konfirmasiPeringatanRt'])->name('ronda.peringatan.konfirmasi-rt');
+    Route::post('/ronda/peringatan/{id}/umumkan-kondusif', [DashboardController::class, 'umumkanPeringatanKondusif'])->name('ronda.peringatan.umumkan-kondusif');
+    Route::post('/ronda/cctv-request', [DashboardController::class, 'storeCctvRequest'])->name('ronda.cctv-request.store');
+    Route::post('/ronda/cctv-request/{id}/approve-rt', [DashboardController::class, 'approveCctvRequestRt'])->name('ronda.cctv-request.approve-rt');
+    Route::post('/ronda/cctv-request/{id}/approve-rw', [DashboardController::class, 'approveCctvRequestRw'])->name('ronda.cctv-request.approve-rw');
+    Route::post('/ronda/cctv-request/{id}/reject', [DashboardController::class, 'rejectCctvRequest'])->name('ronda.cctv-request.reject');
     Route::get('/pengaduan', [DashboardController::class, 'pengaduan'])->name('pengaduan.index');
     Route::post('/pengaduan', [DashboardController::class, 'storePengaduan'])->name('pengaduan.store');
     Route::patch('/pengaduan/{id}/status', [DashboardController::class, 'updateStatusPengaduan'])->name('pengaduan.status');
@@ -153,7 +207,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/monitoring-rt/{rt}', [DashboardController::class, 'detailMonitoringRt'])->name('monitoring-rt.show');
     Route::post('/monitoring-rt/{rt}/evaluasi', [DashboardController::class, 'saveEvaluasiRt'])->name('monitoring-rt.evaluasi');
     Route::get('/laporan-rt', [DashboardController::class, 'laporanRt'])->name('laporan-rt.index');
-    Route::get('/agenda-rw', [DashboardController::class, 'agendaRw'])->name('agenda-rw.index');
+    
+    // --- FITUR AGENDA & RAPAT RW (SISTEM NAVIGASI 3 TAB & MONITORING RT) ---
+    Route::get('/agenda-rw', [AgendaController::class, 'index'])->name('agenda-rw.index');
+    Route::post('/agenda-rw', [AgendaController::class, 'store'])->name('agenda-rw.store');
+    Route::get('/agenda-rw/{id}', [AgendaController::class, 'show'])->name('agenda-rw.show');
+    Route::post('/agenda-rw/{id}/status', [AgendaController::class, 'updateStatus'])->name('agenda-rw.status');
+    Route::delete('/agenda-rw/{id}', [AgendaController::class, 'destroy'])->name('agenda-rw.destroy');
 
     // --- MANAJEMEN AKUN KETUA RT (KHUSUS RW & ADMIN) ---
     Route::middleware('role:rw,admin,super_admin')->group(function () {
@@ -172,8 +232,10 @@ Route::middleware('auth')->group(function () {
 
         // Master Katalog Jenis, Template, dan Konfigurasi Alur Surat RW 013
         Route::get('/rw/surat-master', [LetterMasterController::class, 'index'])->name('rw.surat_master.index');
+        Route::post('/rw/surat-master', [LetterMasterController::class, 'store'])->name('rw.surat_master.store');
         Route::get('/rw/surat-master/{id}/edit', [LetterMasterController::class, 'edit'])->name('rw.surat_master.edit');
         Route::put('/rw/surat-master/{id}', [LetterMasterController::class, 'update'])->name('rw.surat_master.update');
+        Route::put('/rw/surat-master/{id}/alur', [LetterMasterController::class, 'updateAlur'])->name('rw.surat_master.update_alur');
         Route::patch('/rw/surat-master/{id}/toggle', [LetterMasterController::class, 'toggleActive'])->name('rw.surat_master.toggle');
 
         // Monitoring Keuangan RW 013 (Sentral, Terpadu & Read-Only)
@@ -181,6 +243,9 @@ Route::middleware('auth')->group(function () {
 
         // Audit & Evaluasi RW 013
         Route::get('/rw/audit', [AuditController::class, 'index'])->name('rw.audit.index');
+        Route::post('/rw/audit/kas-rw/store', [AuditController::class, 'storeTransaksiRw'])->name('rw.audit.kas_rw.store');
+        Route::post('/rw/audit/kas-rw/{id}/update', [AuditController::class, 'updateTransaksiRw'])->name('rw.audit.kas_rw.update');
+        Route::post('/rw/audit/rekap-rt/{rt}/verifikasi', [AuditController::class, 'verifikasiLaporanRt'])->name('rw.audit.rekap_rt.verifikasi');
         Route::post('/rw/audit/temuan', [AuditController::class, 'storeTemuan'])->name('rw.audit.temuan.store');
         Route::post('/rw/audit/temuan/{id}/status', [AuditController::class, 'updateStatusTemuan'])->name('rw.audit.temuan.status');
         Route::post('/rw/audit/evaluasi-rt', [AuditController::class, 'storeEvaluasiRt'])->name('rw.audit.evaluasi.store');
@@ -202,6 +267,13 @@ Route::middleware('auth')->group(function () {
     // Dashboard Keuangan Berjenjang (RW / RT / Warga)
     Route::get('/keuangan', [KeuanganController::class, 'dashboard'])->name('keuangan.index');
     Route::get('/keuangan/dashboard', [KeuanganController::class, 'dashboard'])->name('keuangan.dashboard');
+    Route::get('/keuangan/saya', [KeuanganController::class, 'dashboardWarga'])->name('warga.keuangan.index');
+
+    // Modul Mandiri Keuangan Warga (Keuangan Saya) - Kompatibilitas Redirect ke Tab
+    Route::get('/keuangan/saya/tagihan', [KeuanganController::class, 'wargaTagihan'])->name('warga.keuangan.tagihan');
+    Route::get('/keuangan/saya/bayar', [KeuanganController::class, 'wargaBayar'])->name('warga.keuangan.bayar');
+    Route::get('/keuangan/saya/riwayat', [KeuanganController::class, 'wargaRiwayat'])->name('warga.keuangan.riwayat');
+    Route::get('/keuangan/saya/kuitansi', [KeuanganController::class, 'wargaKuitansi'])->name('warga.keuangan.kuitansi');
 
     // Buku Kas (Kas RW, Kas RT 001-008, Kas Sampah, Dana Kegiatan)
     Route::get('/keuangan/buku-kas', [KeuanganController::class, 'bukuKasIndex'])->name('keuangan.buku_kas.index');
@@ -220,15 +292,23 @@ Route::middleware('auth')->group(function () {
     // Pengaturan Tarif Iuran Bulanan KK (Khusus RW / Admin)
     Route::get('/keuangan/pengaturan-iuran', [KeuanganController::class, 'pengaturanIuran'])->name('keuangan.pengaturan');
     Route::post('/keuangan/pengaturan-iuran/{id}', [KeuanganController::class, 'updateTarif'])->name('keuangan.pengaturan.update');
+    Route::post('/keuangan/rt/lapor', [KeuanganController::class, 'kirimLaporanRt'])->name('keuangan.rt.lapor');
 
     // Modul Tagihan Iuran Keluarga
     Route::get('/tagihan', [TagihanController::class, 'index'])->name('tagihan.index');
+    Route::get('/tagihan/cetak', [TagihanController::class, 'cetakLaporan'])->name('tagihan.cetak');
     Route::post('/tagihan/generate', [TagihanController::class, 'generateBulanan'])->name('tagihan.generate');
     Route::get('/tagihan/{id}', [TagihanController::class, 'show'])->name('tagihan.show');
+    Route::post('/tagihan/{id}/pay-digital', [TagihanController::class, 'payDigital'])->name('tagihan.pay_digital');
     Route::post('/tagihan/{id}/bayar', [TagihanController::class, 'konfirmasiPembayaran'])->name('tagihan.bayar');
     Route::post('/tagihan/{id}/verifikasi', [TagihanController::class, 'verifikasiPembayaran'])->name('tagihan.verifikasi');
+    Route::post('/tagihan/{id}/bayar-sebagian', [TagihanController::class, 'prosesPembayaran'])->name('tagihan.bayar_sebagian');
     Route::post('/tagihan/{id}/bebaskan', [TagihanController::class, 'bebaskanTagihan'])->name('tagihan.bebaskan');
     Route::get('/tagihan/{id}/kuitansi', [TagihanController::class, 'kuitansi'])->name('tagihan.kuitansi');
+    Route::post('/tagihan/setor-tunai-rw', [TagihanController::class, 'setorTunaiKeRw'])->name('tagihan.setor_tunai_rw');
+    Route::post('/tagihan/keringanan', [TagihanController::class, 'keringananStore'])->name('tagihan.keringanan.store');
+    Route::post('/tagihan/keringanan/{id}/batal', [TagihanController::class, 'keringananBatal'])->name('tagihan.keringanan.batal');
+    Route::post('/webhook/payment-gateway', [TagihanController::class, 'handleWebhook'])->name('payment.webhook');
 
     // Backward-Compatibility Aliases
     Route::get('/kas-rw', [KeuanganController::class, 'dashboard'])->name('kas-rw.index');
@@ -258,7 +338,7 @@ Route::middleware('auth')->group(function () {
 
     // Warga & Kas routes (Pengurus RW, Bendahara, dan Ketua RT sesuai hak akses)
     Route::middleware('role:admin,bendahara,rt,rw,super_admin')->group(function () {
-        Route::post('/posyandu/detail-balita/{id}/perkembangan', [DashboardController::class, 'storePerkembanganBalita'])->name('posyandu.store_perkembangan');
+        Route::post('/posyandu/detail-balita/{id}/perkembangan', fn() => redirect()->route('posyandu'))->name('posyandu.store_perkembangan');
         
         // ======================================================================
         // MODUL TUNGGAL: DATA KEPENDUDUKAN RW 013 (WARGA, KELUARGA & DOKUMEN KK)
@@ -275,6 +355,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/kependudukan/verifikasi', [DataKependudukanController::class, 'verifikasiWarga'])->name('kependudukan.verifikasi');
         Route::get('/kependudukan/riwayat', [DataKependudukanController::class, 'riwayatPerubahan'])->name('kependudukan.riwayat');
         Route::get('/kependudukan/laporan', [DataKependudukanController::class, 'laporanKependudukan'])->name('kependudukan.laporan');
+        Route::post('/kependudukan/mutasi', [DataKependudukanController::class, 'storeMutasi'])->name('kependudukan.mutasi.store');
 
         // Backward-compatibility Aliases (Menghindari 404 & Mengarahkan ke Tab Terpadu)
         Route::get('/warga', function () {

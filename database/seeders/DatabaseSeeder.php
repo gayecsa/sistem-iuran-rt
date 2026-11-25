@@ -9,12 +9,14 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             UserSeeder::class,
+            SuperAdminSeeder::class,
             WargaTransaksiSeeder::class,
             IuranSeeder::class,
             PengumumanSeeder::class,
             KasRtSeeder::class,
             UmkmSeeder::class,
             AkunRtSeeder::class,
+            RealisticFiveMonthFinanceSeeder::class,
         ]);
     }
 }

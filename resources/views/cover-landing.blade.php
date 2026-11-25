@@ -10,7 +10,7 @@
                 <div class="card cover-card border-0 shadow-lg p-4 p-md-5 w-100 d-flex flex-column justify-content-between" style="border-radius: 28px; background: rgba(255,255,255,0.96);">
                     <div>
                         <span class="badge bg-primary px-3 py-2 rounded-pill shadow-sm mb-3 fs-6">
-                            <i class="fas fa-city me-1"></i> Selamat Datang di Warkas Machi RW 013
+                            <i class="fas fa-city me-1"></i> Selamat Datang di Haven RW 013
                         </span>
                         <h1 class="display-5 fw-bold text-dark mb-3">Sistem Informasi & Layanan Terpadu RW 013</h1>
                         <p class="lead text-muted mb-4" style="font-size: 1.05rem;">
@@ -99,7 +99,7 @@
 
                     <!-- Tombol Masuk & Daftar Akun DI BAWAH 4 Kotak -->
                     <div class="mt-4 pt-3 border-top">
-                        <p class="text-muted small mb-2"><i class="fas fa-arrow-circle-right me-1 text-primary"></i> Akses layanan Warkas Machi RW 013:</p>
+                        <p class="text-muted small mb-2"><i class="fas fa-arrow-circle-right me-1 text-primary"></i> Akses layanan Haven RW 013:</p>
                         <div class="d-flex flex-wrap gap-2">
                             <a href="{{ route('login') }}" class="btn btn-primary btn-lg rounded-pill px-4 shadow-sm fw-bold flex-grow-1">
                                 <i class="fas fa-sign-in-alt me-2"></i>Masuk

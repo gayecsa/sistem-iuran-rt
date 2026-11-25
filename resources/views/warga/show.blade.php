@@ -425,7 +425,7 @@
                                 </div>
                                 <p class="text-muted small mb-1">{{ $h->catatan }}</p>
                                 <small class="text-muted" style="font-size: 0.74rem;">
-                                    Petugas: <strong>{{ $h->petugas_nama ?: 'Sistem Warkas Machi' }}</strong> ({{ strtoupper($h->petugas_role ?: 'Admin') }})
+                                    Petugas: <strong>{{ $h->petugas_nama ?: 'Sistem Haven' }}</strong> ({{ strtoupper($h->petugas_role ?: 'Admin') }})
                                 </small>
                             </div>
                         @endforeach

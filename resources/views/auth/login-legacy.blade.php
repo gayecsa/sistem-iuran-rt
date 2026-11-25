@@ -14,7 +14,7 @@
                     </svg>
                 </div>
                 <h3 class="fw-bold">Login</h3>
-                <p class="text-muted">Warkas Machi (RW 013)</p>
+                <p class="text-muted">Haven (RW 013)</p>
             </div>
             <div class="card-body p-4">
 

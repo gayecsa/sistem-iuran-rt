@@ -1,336 +1,501 @@
 @extends('layouts.app')
 
-@section('title', 'Detail Tagihan - ' . $tagihan->nomor_tagihan . ' - Warkas Machi')
+@section('title', 'Detail Tagihan - ' . $tagihan->nomor_tagihan)
 
 @section('content')
-<div class="max-w-4xl mx-auto space-y-6">
-    <!-- Breadcrumb -->
-    <div class="flex items-center gap-2 text-xs text-slate-500">
-        <a href="{{ route('keuangan.dashboard') }}" class="hover:underline">Dashboard Keuangan</a>
+<div class="container py-3" style="max-width: 1000px;">
+
+    {{-- Breadcrumb Navigasi --}}
+    <div class="d-flex align-items-center gap-2 small text-muted mb-3">
+        <a href="{{ route('keuangan.dashboard') }}" class="text-decoration-none text-muted">Dashboard Keuangan</a>
         <span>/</span>
-        <a href="{{ route('tagihan.index') }}" class="hover:underline">Tagihan Iuran</a>
+        <a href="{{ route('tagihan.index') }}" class="text-decoration-none text-muted">Manajemen Tagihan</a>
         <span>/</span>
-        <span class="text-slate-800 font-semibold">{{ $tagihan->nomor_tagihan }}</span>
+        <span class="text-dark fw-bold font-monospace">{{ $tagihan->nomor_tagihan }}</span>
     </div>
 
-    <!-- Alert Notifikasi -->
+    {{-- Alert Notifikasi --}}
     @if(session('success'))
-        <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-xl flex items-center justify-between shadow-sm">
-            <div class="flex items-center gap-3 text-emerald-800 text-sm font-medium">
-                <i data-lucide="check-circle" class="w-5 h-5 text-emerald-600 flex-shrink-0"></i>
-                <span>{{ session('success') }}</span>
+        <div class="alert alert-success alert-dismissible fade show rounded-4 border-0 shadow-sm d-flex align-items-center gap-3 p-3 mb-4" role="alert" style="background-color: #ECFDF5; color: #065F46; border-left: 4px solid #10B981 !important;">
+            <i data-lucide="check-circle-2" style="width: 22px; height: 22px; color: #10B981;" class="flex-shrink-0"></i>
+            <div>
+                <strong>Berhasil!</strong> {{ session('success') }}
             </div>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
     @if(session('error'))
-        <div class="bg-rose-50 border-l-4 border-rose-500 p-4 rounded-xl flex items-center justify-between shadow-sm">
-            <div class="flex items-center gap-3 text-rose-800 text-sm font-medium">
-                <i data-lucide="alert-triangle" class="w-5 h-5 text-rose-600 flex-shrink-0"></i>
-                <span>{{ session('error') }}</span>
+        <div class="alert alert-danger alert-dismissible fade show rounded-4 border-0 shadow-sm d-flex align-items-center gap-3 p-3 mb-4" role="alert" style="background-color: #FEF2F2; color: #991B1B; border-left: 4px solid #EF4444 !important;">
+            <i data-lucide="alert-triangle" style="width: 22px; height: 22px; color: #EF4444;" class="flex-shrink-0"></i>
+            <div>
+                <strong>Perhatian:</strong> {{ session('error') }}
             </div>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
 
-    <!-- Card Lembar Tagihan Resmi -->
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-md overflow-hidden">
-        <!-- Header Tagihan -->
-        <div class="p-6 border-b border-slate-100 bg-slate-50/70 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    {{-- ======================================================================
+         LEMBAR INVOICE INDUK RESMI HAVEN
+         ====================================================================== --}}
+    <div class="card border-0 rounded-4 shadow-sm overflow-hidden mb-4" style="background: #FFFFFF;">
+        {{-- Header Lembar Tagihan --}}
+        <div class="p-4 border-bottom bg-light d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
-                <div class="flex items-center gap-2 mb-1">
-                    <span class="font-mono text-xs font-bold px-2.5 py-0.5 rounded bg-blue-100 text-[#1456A0]">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge bg-primary text-white rounded-pill px-3 py-1 font-monospace fw-bold" style="font-size: 0.78rem;">
                         {{ $tagihan->nomor_tagihan }}
                     </span>
-                    <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-700">
+                    <span class="badge bg-white text-secondary border rounded-pill px-3 py-1 fw-bold" style="font-size: 0.78rem;">
                         Periode {{ \Carbon\Carbon::parse($tagihan->periode . '-01')->translatedFormat('F Y') }}
                     </span>
                 </div>
-                <h1 class="text-xl font-black text-slate-800">Lembar Tagihan Iuran Warga Terpadu</h1>
-                <p class="text-xs text-slate-500">Diterbitkan oleh Pengurus RW 013 Kelurahan Sukamiskin Arcamanik</p>
+                <h4 class="fw-bold text-dark mb-0">Lembar Tagihan Iuran Warga Terpadu</h4>
+                <small class="text-muted">Rukun Warga 013 Kelurahan Sukamiskin, Kecamatan Arcamanik Kota Bandung</small>
             </div>
 
-            <div class="text-right">
-                <span class="px-3.5 py-1.5 text-xs font-bold rounded-full border {{ $tagihan->badge_class }} inline-block">
-                    {{ $tagihan->status }}
-                </span>
-                <p class="text-[11px] text-slate-400 mt-1.5">
-                    Jatuh Tempo: {{ \Carbon\Carbon::parse($tagihan->jatuh_tempo)->translatedFormat('d F Y') }}
-                </p>
-            </div>
-        </div>
-
-        <div class="p-6 space-y-6">
-            <!-- Informasi Keluarga Wajib Iuran -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-                <div>
-                    <span class="text-slate-400 font-semibold uppercase text-[10px]">Data Kartu Keluarga</span>
-                    <p class="text-sm font-bold text-slate-800 mt-0.5">{{ $tagihan->kartuKeluarga->nama_kepala_keluarga ?? '-' }}</p>
-                    <p class="font-mono text-slate-600 mt-0.5">No. KK: {{ $tagihan->kartuKeluarga->masked_no_kk ?? '-' }}</p>
-                    <p class="text-slate-500 mt-0.5">{{ $tagihan->kartuKeluarga->total_anggota ?? 0 }} Anggota Keluarga Terdaftar</p>
-                </div>
-
-                <div>
-                    <span class="text-slate-400 font-semibold uppercase text-[10px]">Alamat & Wilayah</span>
-                    <p class="text-sm font-bold text-slate-800 mt-0.5">RT {{ $tagihan->clean_rt }} / RW 013</p>
-                    <p class="text-slate-600 mt-0.5">{{ $tagihan->kartuKeluarga->alamat ?? '-' }} No. {{ $tagihan->kartuKeluarga->nomor_rumah ?? '-' }}</p>
-                    <p class="text-slate-500 mt-0.5">Kelurahan Sukamiskin, Kec. Arcamanik, Bandung</p>
-                </div>
-            </div>
-
-            <!-- Tabel Rincian Tagihan -->
-            <div>
-                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Komponen & Rincian Iuran</h3>
-                <div class="border border-slate-200 rounded-xl overflow-hidden">
-                    <table class="w-full text-xs text-left">
-                        <thead class="bg-slate-100/80 font-bold text-slate-700">
-                            <tr>
-                                <th class="py-2.5 px-4">No</th>
-                                <th class="py-2.5 px-4">Komponen Layanan</th>
-                                <th class="py-2.5 px-4">Tujuan Akun Kas</th>
-                                <th class="py-2.5 px-4 text-right">Nominal</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100 font-medium">
-                            <tr>
-                                <td class="py-2.5 px-4 text-slate-400">1</td>
-                                <td class="py-2.5 px-4">
-                                    <strong class="text-slate-800">Iuran Operasional RT {{ $tagihan->clean_rt }}</strong>
-                                    <p class="text-[11px] text-slate-400">Pemeliharaan jalan lingkungan, konsumsi kerja bakti, ATK RT</p>
-                                </td>
-                                <td class="py-2.5 px-4 text-slate-600">Buku Kas RT {{ $tagihan->clean_rt }}</td>
-                                <td class="py-2.5 px-4 text-right font-bold text-slate-800">Rp {{ number_format($tagihan->nominal_rt, 0, ',', '.') }}</td>
-                            </tr>
-                            <tr>
-                                <td class="py-2.5 px-4 text-slate-400">2</td>
-                                <td class="py-2.5 px-4">
-                                    <strong class="text-slate-800">Iuran Sentral Kas RW 013</strong>
-                                    <p class="text-[11px] text-slate-400">Honor keamanan 24 jam, pemeliharaan CCTV kawasan, operasional balai RW</p>
-                                </td>
-                                <td class="py-2.5 px-4 text-slate-600">Kas Induk RW 013</td>
-                                <td class="py-2.5 px-4 text-right font-bold text-slate-800">Rp {{ number_format($tagihan->nominal_rw, 0, ',', '.') }}</td>
-                            </tr>
-                            <tr>
-                                <td class="py-2.5 px-4 text-slate-400">3</td>
-                                <td class="py-2.5 px-4">
-                                    <strong class="text-slate-800">Retribusi Kebersihan & Pengangkutan Sampah</strong>
-                                    <p class="text-[11px] text-slate-400">Petugas motor cator sampah door-to-door dan retribusi TPS Sukamiskin</p>
-                                </td>
-                                <td class="py-2.5 px-4 text-slate-600">Kas Sampah RW 013</td>
-                                <td class="py-2.5 px-4 text-right font-bold text-slate-800">Rp {{ number_format($tagihan->nominal_sampah, 0, ',', '.') }}</td>
-                            </tr>
-                        </tbody>
-                        <tfoot class="bg-slate-50 font-extrabold text-slate-900 border-t border-slate-200">
-                            <tr>
-                                <td colspan="3" class="py-3 px-4 text-right">TOTAL TAGIHAN KELUARGA:</td>
-                                <td class="py-3 px-4 text-right text-base text-[#1456A0]">
-                                    Rp {{ number_format($tagihan->total_tagihan, 0, ',', '.') }}
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Bagian Bukti Transfer Warga Jika Ada -->
-            @if($tagihan->bukti_pembayaran_path || $tagihan->catatan_warga)
-                <div class="p-4 rounded-xl bg-amber-50/50 border border-amber-200 text-xs space-y-2">
-                    <span class="font-bold text-amber-900 uppercase text-[10px] tracking-wider flex items-center gap-1.5">
-                        <i data-lucide="receipt" class="w-3.5 h-3.5 text-amber-600"></i> Informasi Pengajuan Pembayaran Warga
-                    </span>
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                        <div>
-                            <p class="text-slate-700"><strong>Metode:</strong> {{ $tagihan->metode_pembayaran_terakhir ?: '-' }}</p>
-                            @if($tagihan->catatan_warga)
-                                <p class="text-slate-600 mt-0.5"><strong>Catatan Warga:</strong> {{ $tagihan->catatan_warga }}</p>
-                            @endif
-                        </div>
-                        @if($tagihan->bukti_pembayaran_path)
-                            <a href="{{ asset('storage/' . $tagihan->bukti_pembayaran_path) }}" target="_blank" 
-                               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-amber-300 text-amber-900 font-semibold hover:bg-amber-100 shadow-sm">
-                                <i data-lucide="eye" class="w-4 h-4"></i> Buka Lampiran Bukti Transfer
-                            </a>
-                        @endif
-                    </div>
-                </div>
-            @endif
-
-            <!-- Rincian Mutasi Kas Terkait Jika Lunas -->
-            @if($tagihan->status === 'Lunas' && $tagihan->transaksis->count() > 0)
-                <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-xs">
-                    <span class="font-bold text-emerald-900 uppercase text-[10px] tracking-wider flex items-center gap-1.5 mb-2">
-                        <i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-600"></i> Transaksi Kas Terverifikasi & Teralokasi
-                    </span>
-                    <div class="space-y-1.5">
-                        @foreach($tagihan->transaksis as $trx)
-                            <div class="flex justify-between items-center py-1 border-b border-emerald-100 text-[11px]">
-                                <span class="font-mono font-bold text-emerald-800">{{ $trx->nomor_transaksi }}</span>
-                                <span class="text-emerald-700">[{{ $trx->bukuKas->nama_kas ?? '-' }}] {{ $trx->kategori }}</span>
-                                <span class="font-bold text-emerald-900">+Rp {{ number_format($trx->nominal, 0, ',', '.') }}</span>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            @endif
-
-            <!-- Panel Tombol Aksi Sesuai Role & Status -->
-            <div class="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
-                <a href="{{ route('tagihan.index') }}" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100">
-                    ← Kembali ke Daftar Tagihan
+            <div class="d-flex align-items-center gap-2">
+                @if($tagihan->status === 'Lunas')
+                    <a href="{{ route('tagihan.kuitansi', $tagihan->id) }}" target="_blank" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-bold d-inline-flex align-items-center gap-1 shadow-sm">
+                        <i data-lucide="printer" style="width: 14px; height: 14px;"></i> Cetak Kuitansi
+                    </a>
+                @endif
+                <a href="{{ route('tagihan.index') }}" class="btn btn-sm btn-light border rounded-pill px-3 fw-semibold">
+                    <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i> Kembali
                 </a>
+            </div>
+        </div>
 
-                <div class="flex flex-wrap items-center gap-2">
-                    @if($tagihan->status === 'Lunas')
-                        <a href="{{ route('tagihan.kuitansi', $tagihan->id) }}" target="_blank" class="px-5 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow inline-flex items-center gap-2">
-                            <i data-lucide="printer" class="w-4 h-4"></i> Cetak Kuitansi Sah
-                        </a>
-                    @else
-                        <!-- Tombol Verifikasi (Untuk RW / RT) -->
-                        @if($isRw || $isRt)
-                            <button onclick="document.getElementById('modal-verifikasi-pembayaran').classList.remove('hidden')" class="px-5 py-2.5 rounded-xl text-xs font-bold bg-[#1456A0] hover:bg-blue-800 text-white shadow inline-flex items-center gap-1.5">
-                                <i data-lucide="check-square" class="w-4 h-4"></i> Verifikasi Pembayaran (Lunas)
-                            </button>
-                            <button onclick="document.getElementById('modal-bebaskan-tagihan').classList.remove('hidden')" class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200">
-                                Bebaskan Iuran (SKTM)
-                            </button>
+        <div class="p-4">
+            {{-- Bagian Identitas KK & Status Tagihan --}}
+            <div class="row g-4 mb-4">
+                <div class="col-md-7">
+                    <h6 class="text-secondary small fw-bold text-uppercase mb-2" style="font-size: 0.72rem; letter-spacing: 0.05em;">
+                        Identitas Kepala Keluarga & Rumah Tangga
+                    </h6>
+                    <div class="p-3 rounded-4 border bg-light">
+                        <div class="row g-2">
+                            <div class="col-sm-6">
+                                <span class="text-muted small d-block">Nama Kepala Keluarga:</span>
+                                <strong class="text-dark fs-6">{{ $tagihan->kartuKeluarga->nama_kepala_keluarga ?? ($tagihan->kepalaKeluarga->name ?? 'Warga') }}</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted small d-block">Nomor Kartu Keluarga (KK):</span>
+                                <span class="font-monospace fw-bold text-secondary">{{ $tagihan->kartuKeluarga->no_kk ?? '-' }}</span>
+                            </div>
+                            <div class="col-sm-6 mt-2">
+                                <span class="text-muted small d-block">Wilayah Domisili:</span>
+                                <span class="badge bg-primary text-white rounded-pill px-2 py-0.5">RT {{ $tagihan->clean_rt }} / RW 013</span>
+                            </div>
+                            <div class="col-sm-6 mt-2">
+                                <span class="text-muted small d-block">Tanggungan / Jiwa:</span>
+                                <span class="text-dark fw-semibold">{{ $tagihan->kartuKeluarga->anggota ? $tagihan->kartuKeluarga->anggota->count() : 1 }} Jiwa Terdaftar</span>
+                            </div>
+                            <div class="col-12 mt-2">
+                                <span class="text-muted small d-block">Alamat Tempat Tinggal:</span>
+                                <span class="text-dark small">{{ $tagihan->kartuKeluarga->alamat ?? 'Jl. Pacantel No. 12, Sukamiskin' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Status & Ringkasan Pembayaran --}}
+                <div class="col-md-5">
+                    <h6 class="text-secondary small fw-bold text-uppercase mb-2" style="font-size: 0.72rem; letter-spacing: 0.05em;">
+                        Status & Kewajiban Finansial
+                    </h6>
+                    <div class="p-3 rounded-4 border h-100 d-flex flex-column justify-content-between" style="background: #F8FAFC;">
+                        <div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-muted small">Status Tagihan:</span>
+                                @if($tagihan->status === 'Lunas')
+                                    @if(isset($allComponentsAllocated) && !$allComponentsAllocated)
+                                        <span class="badge px-2.5 py-1 rounded-pill fw-bold" style="background-color: #FEF3C7; color: #92400E; border: 1px solid #FDE68A;">
+                                            Menunggu Alokasi Komponen
+                                        </span>
+                                    @else
+                                        <span class="badge px-2.5 py-1 rounded-pill fw-bold" style="background-color: #DCFCE7; color: #166534; border: 1px solid #86EFAC;">
+                                            <i data-lucide="check-circle-2" style="width: 12px; height: 12px; vertical-align: middle;"></i> Lunas Sepenuhnya
+                                        </span>
+                                    @endif
+                                @elseif($tagihan->status === 'Dibayar Sebagian')
+                                    <span class="badge px-2.5 py-1 rounded-pill fw-bold" style="background-color: #DBEAFE; color: #1E40AF; border: 1px solid #93C5FD;">
+                                        Dibayar Sebagian
+                                    </span>
+                                @elseif($tagihan->status === 'Menunggu Konfirmasi')
+                                    <span class="badge px-2.5 py-1 rounded-pill fw-bold" style="background-color: #FEF3C7; color: #92400E; border: 1px solid #FDE68A;">
+                                        Menunggu Verifikasi
+                                    </span>
+                                @else
+                                    <span class="badge px-2.5 py-1 rounded-pill fw-bold" style="background-color: #FEE2E2; color: #991B1B; border: 1px solid #FECACA;">
+                                        Belum Lunas
+                                    </span>
+                                @endif
+                            </div>
+
+                            <div class="d-flex justify-content-between text-muted small mb-1">
+                                <span>Total Tagihan Gabungan:</span>
+                                <strong class="text-dark">Rp {{ number_format($tagihan->total_tagihan, 0, ',', '.') }}</strong>
+                            </div>
+                            <div class="d-flex justify-content-between text-muted small mb-1">
+                                <span>Jumlah Sudah Terbayar:</span>
+                                <strong class="text-success">Rp {{ number_format($tagihan->total_dibayar, 0, ',', '.') }}</strong>
+                            </div>
+                            <div class="d-flex justify-content-between border-top pt-2 mt-2">
+                                <span class="fw-bold text-dark">Sisa Tagihan:</span>
+                                <strong class="fs-5 {{ $tagihan->sisa_tagihan > 0 ? 'text-danger' : 'text-success' }}">
+                                    Rp {{ number_format($tagihan->sisa_tagihan, 0, ',', '.') }}
+                                </strong>
+                            </div>
+                        </div>
+
+                        {{-- Tombol Tindakan Pembayaran --}}
+                        @if($tagihan->sisa_tagihan > 0 && ($isRw || $isRt))
+                            <div class="mt-3 pt-2 border-top d-flex gap-2">
+                                <button type="button" class="btn btn-sm btn-primary rounded-pill px-3 fw-bold flex-grow-1" data-bs-toggle="modal" data-bs-target="#modalInputBayar">
+                                    <i data-lucide="credit-card" style="width: 14px; height: 14px;"></i> Catat Pembayaran
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold" data-bs-toggle="modal" data-bs-target="#modalDigitalPay">
+                                    <i data-lucide="qr-code" style="width: 14px; height: 14px;"></i> QRIS / Digital
+                                </button>
+                            </div>
                         @endif
-
-                        <!-- Tombol Bayar bagi Warga -->
-                        <button onclick="document.getElementById('modal-warga-bayar').classList.remove('hidden')" class="px-5 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow inline-flex items-center gap-1.5">
-                            <i data-lucide="upload" class="w-4 h-4"></i> Konfirmasi Pembayaran
-                        </button>
-                    @endif
+                    </div>
                 </div>
             </div>
+
+            {{-- ======================================================================
+                 TABEL 1: RINCIAN KOMPONEN IURAN (ITEMS BREAKDOWN)
+                 ====================================================================== --}}
+            <h6 class="text-secondary small fw-bold text-uppercase mb-2" style="font-size: 0.72rem; letter-spacing: 0.05em;">
+                Rincian Komponen Tagihan & Target Rekening Kas
+            </h6>
+            <div class="table-responsive rounded-4 border overflow-hidden mb-4">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3 text-secondary small fw-bold" style="width: 40px;">No</th>
+                            <th class="text-secondary small fw-bold">Komponen Iuran</th>
+                            <th class="text-secondary small fw-bold">Pemilik Dana</th>
+                            <th class="text-secondary small fw-bold">Rekening Kas Tujuan</th>
+                            <th class="text-secondary small fw-bold text-end">Tarif Satuan</th>
+                            <th class="text-secondary small fw-bold text-center">Qty</th>
+                            <th class="text-secondary small fw-bold text-end">Subtotal</th>
+                            <th class="text-secondary small fw-bold text-end">Terbayar</th>
+                            <th class="text-secondary small fw-bold text-end">Sisa</th>
+                            <th class="text-secondary small fw-bold text-center pe-3">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($tagihan->items as $idx => $item)
+                            <tr>
+                                <td class="ps-3 text-center text-muted small">{{ $idx + 1 }}</td>
+                                <td>
+                                    <strong class="text-dark d-block">{{ $item->nama_iuran }}</strong>
+                                    <small class="text-muted" style="font-size: 0.72rem;">{{ $item->metode_label ?? 'Per KK' }}</small>
+                                </td>
+                                <td>
+                                    @php
+                                        $pDana = strtoupper($item->pemilik_dana ?: 'RW');
+                                    @endphp
+                                    <span class="badge px-2 py-0.5 rounded-pill" style="font-size: 0.7rem; background: #F1F5F9; color: #334155; border: 1px solid #CBD5E1;">
+                                        {{ $pDana }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="text-dark small fw-semibold">
+                                        {{ $item->bukuKas->nama_kas ?? 'Rekening Induk ' . $pDana }}
+                                    </span>
+                                </td>
+                                <td class="text-end small">Rp {{ number_format($item->tarif_satuan, 0, ',', '.') }}</td>
+                                <td class="text-center small">{{ $item->kuantitas }}</td>
+                                <td class="text-end"><strong>Rp {{ number_format($item->nominal_akhir, 0, ',', '.') }}</strong></td>
+                                <td class="text-end text-success fw-bold">Rp {{ number_format($item->nominal_terbayar, 0, ',', '.') }}</td>
+                                <td class="text-end {{ $item->sisa_item > 0 ? 'text-danger fw-bold' : 'text-muted' }}">
+                                    Rp {{ number_format($item->sisa_item, 0, ',', '.') }}
+                                </td>
+                                <td class="text-center pe-3">
+                                    @if($item->status_pembayaran === 'lunas')
+                                        <span class="badge bg-success-subtle text-success px-2 py-0.5 rounded-pill fw-bold" style="font-size: 0.7rem;">
+                                            Lunas
+                                        </span>
+                                    @elseif($item->nominal_terbayar > 0)
+                                        <span class="badge bg-primary-subtle text-primary px-2 py-0.5 rounded-pill fw-bold" style="font-size: 0.7rem;">
+                                            Sebagian
+                                        </span>
+                                    @else
+                                        <span class="badge bg-danger-subtle text-danger px-2 py-0.5 rounded-pill fw-bold" style="font-size: 0.7rem;">
+                                            Belum
+                                        </span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="10" class="text-center text-muted py-3">Tidak ada item rincian komponen tagihan.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                    <tfoot class="table-light fw-bold">
+                        <tr>
+                            <td colspan="6" class="text-end ps-3">TOTAL KEWAJIBAN BULANAN:</td>
+                            <td class="text-end">Rp {{ number_format($tagihan->total_tagihan, 0, ',', '.') }}</td>
+                            <td class="text-end text-success">Rp {{ number_format($tagihan->total_dibayar, 0, ',', '.') }}</td>
+                            <td class="text-end text-danger">Rp {{ number_format($tagihan->sisa_tagihan, 0, ',', '.') }}</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            {{-- ======================================================================
+                 TABEL 2: RIWAYAT PEMBAYARAN DAN BUKTI
+                 ====================================================================== --}}
+            <h6 class="text-secondary small fw-bold text-uppercase mb-2" style="font-size: 0.72rem; letter-spacing: 0.05em;">
+                Riwayat Pembayaran Diterima
+            </h6>
+            <div class="table-responsive rounded-4 border overflow-hidden mb-4">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3 text-secondary small fw-bold" style="width: 40px;">No</th>
+                            <th class="text-secondary small fw-bold">No Pembayaran</th>
+                            <th class="text-secondary small fw-bold">Tanggal Bayar</th>
+                            <th class="text-secondary small fw-bold text-end">Nominal</th>
+                            <th class="text-secondary small fw-bold">Metode / Kanal</th>
+                            <th class="text-secondary small fw-bold">Penerima</th>
+                            <th class="text-secondary small fw-bold">Status Setoran RT</th>
+                            <th class="text-secondary small fw-bold text-center pe-3">Bukti</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($tagihan->pembayarans as $idx => $pay)
+                            <tr>
+                                <td class="ps-3 text-center text-muted small">{{ $idx + 1 }}</td>
+                                <td class="font-monospace fw-bold small text-primary">{{ $pay->nomor_pembayaran }}</td>
+                                <td class="small">{{ $pay->tanggal_bayar ? $pay->tanggal_bayar->translatedFormat('d M Y, H:i') : '-' }}</td>
+                                <td class="text-end fw-bold text-success">Rp {{ number_format($pay->nominal_bayar, 0, ',', '.') }}</td>
+                                <td class="small">
+                                    <span class="badge bg-light text-dark border rounded-pill px-2 py-0.5">
+                                        {{ strtoupper(str_replace('_', ' ', $pay->metode_pembayaran)) }}
+                                    </span>
+                                </td>
+                                <td class="small">{{ $pay->nama_penerima ?? ($pay->penerima->name ?? 'System') }}</td>
+                                <td class="small">
+                                    @if($pay->status_setoran_rw === 'menunggu_setor_ke_rw')
+                                        <span class="badge bg-warning text-dark rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">
+                                            Titipan di RT (Menunggu Setor)
+                                        </span>
+                                    @elseif($pay->status_setoran_rw === 'sudah_disetor_ke_rw')
+                                        <span class="badge bg-success text-white rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">
+                                            Sudah Disetor ke RW
+                                        </span>
+                                    @else
+                                        <span class="badge bg-light text-secondary border rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">
+                                            Langsung Masuk Kas
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="text-center pe-3">
+                                    @if($pay->bukti_pembayaran_path)
+                                        <a href="{{ asset('storage/' . $pay->bukti_pembayaran_path) }}" target="_blank" class="btn btn-xs btn-outline-secondary rounded-pill px-2 py-0.5">
+                                            <i data-lucide="image" style="width: 12px; height: 12px;"></i> Lihat
+                                        </a>
+                                    @else
+                                        <span class="text-muted small">-</span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="8" class="text-center text-muted py-3">Belum ada riwayat pembayaran untuk tagihan ini.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            {{-- ======================================================================
+                 TABEL 3: STATUS SETIAP KOMPONEN ALOKASI (TRANSPARANSI KAS INDUK & RT)
+                 ====================================================================== --}}
+            <h6 class="text-secondary small fw-bold text-uppercase mb-2" style="font-size: 0.72rem; letter-spacing: 0.05em;">
+                Status Realisasi Alokasi Otomatis ke Masing-Masing Kas
+            </h6>
+            <div class="table-responsive rounded-4 border overflow-hidden">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3 text-secondary small fw-bold" style="width: 40px;">No</th>
+                            <th class="text-secondary small fw-bold">Komponen</th>
+                            <th class="text-secondary small fw-bold">Hak Entitas</th>
+                            <th class="text-secondary small fw-bold">Rekening Buku Kas</th>
+                            <th class="text-secondary small fw-bold text-end">Nominal Alokasi</th>
+                            <th class="text-secondary small fw-bold text-center">Status Alokasi</th>
+                            <th class="text-secondary small fw-bold text-center pe-3">Status Settlement</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($tagihan->alokasis as $idx => $alo)
+                            <tr>
+                                <td class="ps-3 text-center text-muted small">{{ $idx + 1 }}</td>
+                                <td><strong class="text-dark small">{{ $alo->nama_komponen }}</strong></td>
+                                <td>
+                                    <span class="badge px-2 py-0.5 rounded-pill" style="font-size: 0.7rem; background: #F1F5F9; color: #334155; border: 1px solid #CBD5E1;">
+                                        {{ strtoupper($alo->pemilik_dana) }}
+                                    </span>
+                                </td>
+                                <td class="small">{{ $alo->bukuKas->nama_kas ?? 'Kas Terkait' }}</td>
+                                <td class="text-end fw-bold text-success">Rp {{ number_format($alo->nominal_alokasi, 0, ',', '.') }}</td>
+                                <td class="text-center">
+                                    @if($alo->status_alokasi === 'masuk_kas')
+                                        <span class="badge bg-success-subtle text-success px-2 py-0.5 rounded-pill fw-bold" style="font-size: 0.7rem;">
+                                            Masuk Kas Resmi
+                                        </span>
+                                    @elseif($alo->status_alokasi === 'titipan_rt')
+                                        <span class="badge bg-warning-subtle text-warning-emphasis px-2 py-0.5 rounded-pill fw-bold" style="font-size: 0.7rem;">
+                                            Titipan Tunai RT
+                                        </span>
+                                    @else
+                                        <span class="badge bg-info-subtle text-info px-2 py-0.5 rounded-pill fw-bold" style="font-size: 0.7rem;">
+                                            Disetor ke RW
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="text-center pe-3">
+                                    @if($alo->settlement_status === 'settled')
+                                        <span class="badge bg-success text-white rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">
+                                            Settled
+                                        </span>
+                                    @elseif($alo->settlement_status === 'dalam_proses')
+                                        <span class="badge bg-secondary text-white rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">
+                                            Dalam Proses Split
+                                        </span>
+                                    @else
+                                        <span class="badge bg-light text-muted border rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">
+                                            Pending
+                                        </span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-3">Belum ada dana yang dialokasikan untuk tagihan ini.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Modal Verifikasi Pengurus (RT / RW) -->
-@if($isRw || $isRt)
-<div id="modal-verifikasi-pembayaran" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl mx-4">
-        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-            <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
-                <i data-lucide="check-circle" class="w-5 h-5 text-emerald-600"></i> Verifikasi Pembayaran Lunas
-            </h3>
-            <button onclick="document.getElementById('modal-verifikasi-pembayaran').classList.add('hidden')" class="text-slate-400 hover:text-slate-600">
-                <i data-lucide="x" class="w-5 h-5"></i>
-            </button>
+{{-- ======================================================================
+     MODAL: INPUT PEMBAYARAN MANUAL (TUNAI / TRANSFER)
+     ====================================================================== --}}
+<div class="modal fade" id="modalInputBayar" tabindex="-1" aria-labelledby="modalInputBayarLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-dark d-flex align-items-center gap-2" id="modalInputBayarLabel">
+                    <i data-lucide="credit-card" class="text-primary"></i> Catat Pembayaran Iuran
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('tagihan.bayar_sebagian', $tagihan->id) }}" method="POST">
+                @csrf
+                <div class="modal-body space-y-3">
+                    <div class="p-3 rounded-3 border bg-light mb-3">
+                        <div class="d-flex justify-content-between text-muted small mb-1">
+                            <span>Sisa Kewajiban Saat Ini:</span>
+                            <strong class="text-danger fs-6">Rp {{ number_format($tagihan->sisa_tagihan, 0, ',', '.') }}</strong>
+                        </div>
+                        <div class="small text-muted" style="font-size: 0.75rem;">
+                            Pembayaran akan langsung dipecah dan dialokasikan ke rekening Kas RT, RW, dan Sampah secara berurutan.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary">Nominal Bayar (Rp) *</label>
+                        <input type="number" name="nominal_bayar" max="{{ $tagihan->sisa_tagihan }}" value="{{ $tagihan->sisa_tagihan }}" required class="form-control rounded-3 fw-bold fs-5">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary">Kanal Pembayaran *</label>
+                        <select name="kanal_pembayaran" class="form-select rounded-3" required>
+                            @if($isRt)
+                                <option value="tunai_melalui_rt">Tunai Melalui Pengurus RT {{ $tagihan->clean_rt }}</option>
+                            @endif
+                            <option value="langsung_rekening">Transfer Langsung ke Rekening Kas</option>
+                            <option value="tunai_rw">Tunai Melalui Pengurus RW 013</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary">Catatan / Keterangan</label>
+                        <input type="text" name="catatan" class="form-control rounded-3" placeholder="Contoh: Diterima tunai di sekretariat RT">
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-sm btn-light border rounded-pill px-3" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-sm btn-primary rounded-pill px-4 fw-bold">
+                        <i data-lucide="check" style="width: 14px; height: 14px;"></i> Proses Pembayaran
+                    </button>
+                </div>
+            </form>
         </div>
-
-        <form action="{{ route('tagihan.verifikasi', $tagihan->id) }}" method="POST" class="mt-4 space-y-4">
-            @csrf
-            <div class="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-900">
-                <p>Total Nominal Diterima: <strong>Rp {{ number_format($tagihan->total_tagihan, 0, ',', '.') }}</strong></p>
-                <p class="text-[11px] text-blue-700 mt-1">Sistem otomatis mendistribusikan dana ke Buku Kas RT {{ $tagihan->clean_rt }} (Rp 20.000), Kas RW (Rp 10.000), dan Kas Sampah (Rp 15.000).</p>
-            </div>
-
-            <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">Metode Penerimaan *</label>
-                <select name="metode_verifikasi" required class="w-full text-xs font-medium border border-slate-300 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-[#1456A0] outline-none">
-                    <option value="Transfer Bank">Transfer Bank (Telah Dicek di Rekening)</option>
-                    <option value="Tunai">Tunai (Diterima Langsung oleh Petugas)</option>
-                    <option value="QRIS">QRIS RW 013</option>
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan Verifikasi (Opsional)</label>
-                <input type="text" name="catatan_petugas" placeholder="Contoh: Diterima lunas di kantor RT / rekening koran valid" 
-                       class="w-full text-xs font-medium border border-slate-300 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-[#1456A0] outline-none">
-            </div>
-
-            <div class="flex justify-end gap-2 pt-2">
-                <button type="button" onclick="document.getElementById('modal-verifikasi-pembayaran').classList.add('hidden')" 
-                        class="px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-xl">
-                    Batal
-                </button>
-                <button type="submit" class="px-4 py-2 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow">
-                    Setujui Lunas
-                </button>
-            </div>
-        </form>
     </div>
 </div>
 
-<!-- Modal Pembebasan Iuran (SKTM) -->
-<div id="modal-bebaskan-tagihan" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl mx-4">
-        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-            <h3 class="text-base font-bold text-purple-700 flex items-center gap-2">
-                <i data-lucide="shield-alert" class="w-5 h-5 text-purple-600"></i> Pembebasan Iuran Warga
-            </h3>
-            <button onclick="document.getElementById('modal-bebaskan-tagihan').classList.add('hidden')" class="text-slate-400 hover:text-slate-600">
-                <i data-lucide="x" class="w-5 h-5"></i>
-            </button>
+{{-- ======================================================================
+     MODAL: PEMBAYARAN DIGITAL & SIMULASI SPLIT SETTLEMENT
+     ====================================================================== --}}
+<div class="modal fade" id="modalDigitalPay" tabindex="-1" aria-labelledby="modalDigitalPayLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-dark d-flex align-items-center gap-2" id="modalDigitalPayLabel">
+                    <i data-lucide="qr-code" class="text-success"></i> Pembayaran Digital QRIS & Split Settlement
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <div class="p-3 rounded-4 border bg-light d-inline-block mb-3 shadow-sm" style="max-width: 250px;">
+                    {{-- QR Code Placeholder / Simulated QRIS --}}
+                    <div class="bg-white p-3 rounded-3 border d-flex flex-column align-items-center justify-content-center">
+                        <i data-lucide="qr-code" style="width: 140px; height: 140px; color: #1456A0;"></i>
+                        <span class="badge bg-dark text-white mt-2 px-3 py-1 font-monospace" style="font-size: 0.72rem;">QRIS HAVEN</span>
+                    </div>
+                </div>
+
+                <div class="fs-5 fw-black text-dark mb-1">
+                    Rp {{ number_format($tagihan->sisa_tagihan, 0, ',', '.') }}
+                </div>
+                <p class="text-muted small mb-3">
+                    Pindai dengan aplikasi mobile banking atau e-wallet (BCA, Mandiri, GoPay, OVO, Dana).
+                </p>
+
+                <div class="text-start p-3 rounded-3 border bg-light small mb-3" style="font-size: 0.78rem;">
+                    <strong class="d-block text-dark mb-1"><i data-lucide="git-fork" style="width: 14px; height: 14px;"></i> Arsitektur Split Settlement Gateway:</strong>
+                    <div class="text-muted">• Dana porsi RT masuk rekening Kas RT {{ $tagihan->clean_rt }}</div>
+                    <div class="text-muted">• Dana porsi RW masuk rekening Kas Induk RW 013</div>
+                    <div class="text-muted">• Retribusi sampah masuk rekening Kas Bank Sampah / Kebersihan</div>
+                    <div class="text-muted mt-1 pt-1 border-top" style="font-size: 0.72rem;">
+                        Status: <span class="badge bg-success-subtle text-success">Split Engine Ready</span>
+                    </div>
+                </div>
+
+                {{-- Tombol Simulasi Webhook Pembayaran Berhasil --}}
+                <form action="{{ route('tagihan.bayar_sebagian', $tagihan->id) }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="nominal_bayar" value="{{ $tagihan->sisa_tagihan }}">
+                    <input type="hidden" name="kanal_pembayaran" value="QRIS">
+                    <input type="hidden" name="catatan" value="Simulasi pembayaran sukses via Gateway QRIS">
+                    <input type="hidden" name="idempotency_key" value="MOCK-PAY-{{ $tagihan->id }}-{{ time() }}">
+                    <button type="submit" class="btn btn-sm btn-success rounded-pill px-4 fw-bold w-100 shadow-sm">
+                        <i data-lucide="check-circle" style="width: 14px; height: 14px;"></i> Simulasikan Sukses Bayar Digital
+                    </button>
+                </form>
+            </div>
         </div>
-
-        <form action="{{ route('tagihan.bebaskan', $tagihan->id) }}" method="POST" class="mt-4 space-y-4">
-            @csrf
-            <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">Alasan Pembebasan *</label>
-                <textarea name="alasan_pembebasan" required rows="3" placeholder="Contoh: Warga lansia dhuafa / Memiliki Surat Keterangan Tidak Mampu (SKTM) Sukamiskin" 
-                          class="w-full text-xs font-medium border border-slate-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none"></textarea>
-            </div>
-
-            <div class="flex justify-end gap-2 pt-2">
-                <button type="button" onclick="document.getElementById('modal-bebaskan-tagihan').classList.add('hidden')" 
-                        class="px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-xl">
-                    Batal
-                </button>
-                <button type="submit" class="px-4 py-2 text-xs font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-xl shadow">
-                    Bebaskan Tagihan
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-@endif
-
-<!-- Modal Upload Warga -->
-<div id="modal-warga-bayar" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl mx-4">
-        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-            <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
-                <i data-lucide="upload" class="w-5 h-5 text-blue-600"></i> Konfirmasi Pembayaran
-            </h3>
-            <button onclick="document.getElementById('modal-warga-bayar').classList.add('hidden')" class="text-slate-400 hover:text-slate-600">
-                <i data-lucide="x" class="w-5 h-5"></i>
-            </button>
-        </div>
-
-        <form action="{{ route('tagihan.bayar', $tagihan->id) }}" method="POST" enctype="multipart/form-data" class="mt-4 space-y-4">
-            @csrf
-            <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">Metode Pembayaran *</label>
-                <select name="metode_pembayaran" required class="w-full text-xs font-medium border border-slate-300 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-[#1456A0] outline-none">
-                    <option value="Transfer Bank">Transfer Bank (Mandiri / BCA / BJB)</option>
-                    <option value="Tunai">Tunai ke Bendahara RT</option>
-                    <option value="QRIS">QRIS RW 013</option>
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">Upload Bukti Transfer (Opsional jika tunai)</label>
-                <input type="file" name="bukti_pembayaran" accept="image/*,application/pdf" 
-                       class="w-full text-xs text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-[#1456A0] hover:file:bg-blue-100">
-            </div>
-
-            <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan Tambahan</label>
-                <input type="text" name="catatan_warga" placeholder="Keterangan pengirim..." 
-                       class="w-full text-xs font-medium border border-slate-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-[#1456A0] outline-none">
-            </div>
-
-            <div class="flex justify-end gap-2 pt-2">
-                <button type="button" onclick="document.getElementById('modal-warga-bayar').classList.add('hidden')" 
-                        class="px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-xl">
-                    Batal
-                </button>
-                <button type="submit" class="px-4 py-2 text-xs font-bold bg-[#1456A0] hover:bg-blue-800 text-white rounded-xl shadow">
-                    Kirim Konfirmasi
-                </button>
-            </div>
-        </form>
     </div>
 </div>
 @endsection

@@ -96,27 +96,40 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
-                    <tr>
-                        <td class="py-2 px-3 text-slate-400">1</td>
-                        <td class="py-2 px-3">Iuran Kas Operasional RT {{ $tagihan->clean_rt }}</td>
-                        <td class="py-2 px-3 text-right font-bold text-slate-800">Rp {{ number_format($tagihan->nominal_rt, 0, ',', '.') }}</td>
-                    </tr>
-                    <tr>
-                        <td class="py-2 px-3 text-slate-400">2</td>
-                        <td class="py-2 px-3">Iuran Pemeliharaan Kawasan Kas RW 013</td>
-                        <td class="py-2 px-3 text-right font-bold text-slate-800">Rp {{ number_format($tagihan->nominal_rw, 0, ',', '.') }}</td>
-                    </tr>
-                    <tr>
-                        <td class="py-2 px-3 text-slate-400">3</td>
-                        <td class="py-2 px-3">Retribusi Pengangkutan Kebersihan & Sampah</td>
-                        <td class="py-2 px-3 text-right font-bold text-slate-800">Rp {{ number_format($tagihan->nominal_sampah, 0, ',', '.') }}</td>
-                    </tr>
+                    @if($tagihan->items && $tagihan->items->count() > 0)
+                        @foreach($tagihan->items as $idx => $item)
+                            <tr>
+                                <td class="py-2 px-3 text-slate-400">{{ $idx + 1 }}</td>
+                                <td class="py-2 px-3">
+                                    <strong class="text-slate-800">{{ $item->nama_item }}</strong>
+                                    <span class="text-[10px] text-slate-400 block">{{ $item->keterangan_snapshot }}</span>
+                                </td>
+                                <td class="py-2 px-3 text-right font-bold text-slate-800">Rp {{ number_format($item->total_akhir, 0, ',', '.') }}</td>
+                            </tr>
+                        @endforeach
+                    @else
+                        <tr>
+                            <td class="py-2 px-3 text-slate-400">1</td>
+                            <td class="py-2 px-3">Iuran Kas Operasional RT {{ $tagihan->clean_rt }}</td>
+                            <td class="py-2 px-3 text-right font-bold text-slate-800">Rp {{ number_format($tagihan->nominal_rt, 0, ',', '.') }}</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 px-3 text-slate-400">2</td>
+                            <td class="py-2 px-3">Iuran Pemeliharaan Kawasan Kas RW 013</td>
+                            <td class="py-2 px-3 text-right font-bold text-slate-800">Rp {{ number_format($tagihan->nominal_rw, 0, ',', '.') }}</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 px-3 text-slate-400">3</td>
+                            <td class="py-2 px-3">Retribusi Pengangkutan Kebersihan & Sampah</td>
+                            <td class="py-2 px-3 text-right font-bold text-slate-800">Rp {{ number_format($tagihan->nominal_sampah, 0, ',', '.') }}</td>
+                        </tr>
+                    @endif
                 </tbody>
                 <tfoot class="bg-slate-50 font-black border-t-2 border-slate-300 text-slate-900">
                     <tr>
                         <td colspan="2" class="py-2.5 px-3 text-right text-xs uppercase tracking-wider">TOTAL YANG DIBAYAR:</td>
                         <td class="py-2.5 px-3 text-right text-base text-[#1456A0]">
-                            Rp {{ number_format($tagihan->total_tagihan, 0, ',', '.') }}
+                            Rp {{ number_format($tagihan->total_dibayar ?: $tagihan->total_tagihan, 0, ',', '.') }}
                         </td>
                     </tr>
                 </tfoot>
@@ -124,7 +137,7 @@
         </div>
 
         <div class="mt-2 text-[11px] text-slate-500 italic">
-            Terbilang: <strong>Empat Puluh Lima Ribu Rupiah</strong>
+            Tanda bukti pembayaran sah digital diterbitkan oleh Pengurus RW 013 Sukamiskin.
         </div>
 
         <!-- Tanda Tangan & QR Validasi -->

@@ -394,7 +394,7 @@
 
         <!-- Kolom Prinsip Keamanan & Ketentuan Otorisasi -->
         <div class="col-lg-5">
-            <div class="wm-card h-100" style="background: linear-gradient(135deg, #F8FAFC 0%, #FFFFFF 100%); border-left: 5px solid var(--wm-primary);">
+            <div class="wm-card h-100 card-prinsip-keamanan" style="background: linear-gradient(135deg, #F8FAFC 0%, #FFFFFF 100%); border-left: 5px solid var(--wm-primary);">
                 <div class="d-flex align-items-center gap-2 mb-2">
                     <div class="p-2 rounded bg-primary text-white">
                         <i data-lucide="shield-check" style="width: 20px; height: 20px;"></i>
@@ -474,7 +474,7 @@
                         <!-- Email Login -->
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Email Login <span class="text-danger">*</span></label>
-                            <input type="email" name="email" class="form-control" placeholder="Contoh: rt001@warkas.machi.id" required>
+                            <input type="email" name="email" class="form-control" placeholder="Contoh: rt001@havenportal.id" required>
                             <small class="text-muted">Gunakan alamat email unik untuk autentikasi sistem.</small>
                         </div>
 
@@ -739,7 +739,7 @@
             header.className = 'modal-header bg-danger text-white';
             icon.innerHTML = '<i data-lucide="lock" style="width:48px;height:48px;color:#DC2626;"></i>';
             question.innerText = 'Kunci / Nonaktifkan Akun ' + rtLabel + '?';
-            explanation.innerText = 'Ketua RT ' + name + ' tidak akan dapat login ke sistem Warkas Machi sampai diaktifkan kembali. Seluruh data warga dan riwayat kas tetap aman tersimpan.';
+            explanation.innerText = 'Ketua RT ' + name + ' tidak akan dapat login ke sistem Haven sampai diaktifkan kembali. Seluruh data warga dan riwayat kas tetap aman tersimpan.';
             submitBtn.className = 'btn btn-danger px-4 fw-bold';
             submitBtn.innerText = 'Ya, Nonaktifkan Akun';
         } else {

@@ -47,7 +47,7 @@
                 </div>
                 <h4 class="fw-bold mb-1">DOKUMEN RESMI TERVERIFIKASI SAH</h4>
                 <p class="mb-0 text-white text-opacity-90 small">
-                    Sistem Penerbitan Surat Terpadu Warkas Machi &bull; RW 013 Kota Bandung
+                    Sistem Penerbitan Surat Terpadu Haven &bull; RW 013 Kota Bandung
                 </p>
                 <span class="badge bg-white text-success fw-bold px-3 py-1 rounded-pill mt-2 shadow-sm" style="font-size: 0.8rem;">
                     Status: ASLI & TERCATAT RESMI
@@ -76,7 +76,7 @@
 
                     <div class="col-12 col-md-6">
                         <span class="text-muted small">Nama Pemohon:</span>
-                        <div class="fw-bold text-dark">{{ $letter->nama_lengkap }}</div>
+                        <div class="fw-bold text-dark text-uppercase">{{ $letter->nama_lengkap }}</div>
                     </div>
 
                     <div class="col-12 col-md-6">
@@ -151,7 +151,7 @@
 
             <div class="p-4 text-center">
                 <p class="text-muted mb-4">
-                    Dokumen dengan kode identifikasi di atas tidak ditemukan di basis data resmi Warkas Machi RW 013, atau permohonan surat tersebut belum memperoleh persetujuan lengkap dari Ketua RT dan Ketua RW.
+                    Dokumen dengan kode identifikasi di atas tidak ditemukan di basis data resmi Haven RW 013, atau permohonan surat tersebut belum memperoleh persetujuan lengkap dari Ketua RT dan Ketua RW.
                 </p>
                 <div class="p-3 rounded bg-light border small text-secondary mx-auto mb-4" style="max-width: 480px;">
                     Pastikan Anda memindai QR Code langsung dari surat resmi cetak ber-Kop Sukamiskin Arcamanik yang telah bertanda tangan ganda RT dan RW 013.

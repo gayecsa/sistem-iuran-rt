@@ -14,14 +14,18 @@ class TransaksiKeuangan extends Model
     protected $fillable = [
         'nomor_transaksi',
         'buku_kas_id',
+        'pemilik_dana',
         'tagihan_keluarga_id',
         'tanggal_transaksi',
         'jenis_transaksi',
         'kategori',
+        'sumber_dana',
+        'tujuan_penggunaan',
         'nominal',
         'saldo_sebelumnya',
         'saldo_setelahnya',
         'metode_pembayaran',
+        'referensi_pembayaran',
         'penyetor_penerima',
         'keterangan',
         'petugas_id',
@@ -32,6 +36,9 @@ class TransaksiKeuangan extends Model
         'dibatalkan_oleh_id',
         'alasan_batal',
         'dibatalkan_pada',
+        'edited_by_id',
+        'alasan_edit',
+        'edited_at',
     ];
 
     protected $casts = [
@@ -40,6 +47,7 @@ class TransaksiKeuangan extends Model
         'saldo_setelahnya' => 'decimal:2',
         'tanggal_transaksi' => 'date',
         'dibatalkan_pada' => 'datetime',
+        'edited_at' => 'datetime',
     ];
 
     public function bukuKas()
@@ -60,6 +68,38 @@ class TransaksiKeuangan extends Model
     public function dibatalkanOleh()
     {
         return $this->belongsTo(User::class, 'dibatalkan_oleh_id');
+    }
+
+    public function editedBy()
+    {
+        return $this->belongsTo(User::class, 'edited_by_id');
+    }
+
+    public function scopeVerified($query)
+    {
+        return $query->where('status', 'selesai');
+    }
+
+    public function scopeRw($query)
+    {
+        return $query->where('pemilik_dana', 'rw');
+    }
+
+    public function scopeRt($query, $rt = null)
+    {
+        $q = $query->where('pemilik_dana', 'rt');
+        if ($rt) {
+            $formattedRt = str_pad(preg_replace('/[^0-9]/', '', (string)$rt), 3, '0', STR_PAD_LEFT);
+            $q->whereHas('bukuKas', function ($b) use ($formattedRt) {
+                $b->where('rt_number', $formattedRt);
+            });
+        }
+        return $q;
+    }
+
+    public function scopeUnit($query)
+    {
+        return $query->where('pemilik_dana', 'unit');
     }
 
     public function getJenisBadgeAttribute()

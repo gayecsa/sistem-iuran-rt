@@ -1,24 +1,42 @@
 @extends('layouts.app')
 
+@section('title', 'Administrasi Kependudukan')
+
 @section('content')
 <div class="container-fluid p-0">
     <!-- Top Hero Banner -->
-    <div class="wm-card mb-4 overflow-hidden position-relative" style="background: linear-gradient(135deg, #123766 0%, #1E4E8C 60%, #16865D 100%); color: #fff; border: none; border-radius: 16px;">
+    <div class="wm-card mb-4 overflow-hidden position-relative" style="background: linear-gradient(135deg, #0F3966 0%, #1456A0 55%, #2878D0 100%) !important; color: #fff; border: none; border-radius: 16px; box-shadow: 0 4px 20px rgba(10, 37, 64, 0.15);">
         <div class="p-4 p-md-5 position-relative" style="z-index: 2;">
             <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
                 <div style="max-width: 760px;">
                     <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
-                        <span class="badge bg-white text-dark fw-bold px-3 py-1 rounded-pill opacity-95">
-                            <i data-lucide="shield-check" style="width: 14px; height: 14px; vertical-align: middle;" class="text-success me-1"></i> SISTEM KEPENDUDUKAN TERPADU
-                        </span>
-                        <span class="badge bg-emerald-500 text-white fw-bold px-3 py-1 rounded-pill" style="background: #10B981 !important;">
-                            RW 013 Sukamiskin Arcamanik
-                        </span>
+                        @if($user->isRt())
+                            <span class="badge bg-white text-dark fw-bold px-3 py-1 rounded-pill opacity-95">
+                                <i data-lucide="shield-check" style="width: 14px; height: 14px; vertical-align: middle;" class="text-primary me-1"></i> PUSAT KEPENDUDUKAN RT
+                            </span>
+                            <span class="badge rounded-pill text-white fw-bold px-3 py-1" style="background: rgba(255,255,255,0.2) !important;">
+                                {{ $user->clean_rt_label }} / RW 013
+                            </span>
+                        @else
+                            <span class="badge bg-white text-dark fw-bold px-3 py-1 rounded-pill opacity-95">
+                                <i data-lucide="shield-check" style="width: 14px; height: 14px; vertical-align: middle;" class="text-primary me-1"></i> SISTEM KEPENDUDUKAN TERPADU
+                            </span>
+                            <span class="badge rounded-pill text-white fw-bold px-3 py-1" style="background: rgba(255,255,255,0.2) !important;">
+                                RW 013 Sukamiskin Arcamanik
+                            </span>
+                        @endif
                     </div>
-                    <h2 class="fw-bold mb-2 text-white" style="letter-spacing: -0.5px;">Data Kependudukan RW 013</h2>
-                    <p class="mb-0 text-white text-opacity-75 lead fs-6">
-                        Pusat pengelolaan terintegrasi data individu warga, catatan kartu keluarga, dan dokumen kependudukan resmi RT 001 s/d RT 008.
-                    </p>
+                    @if($user->isRt())
+                        <h2 class="fw-bold mb-2 text-white" style="letter-spacing: -0.5px;">Data Kependudukan {{ $user->clean_rt_label }}</h2>
+                        <p class="mb-0 text-white text-opacity-75 lead fs-6">
+                            Pengelolaan terintegrasi data individu warga, catatan kartu keluarga, warga pendatang / kontrak, dan riwayat mutasi di wilayah {{ $user->clean_rt_label }}.
+                        </p>
+                    @else
+                        <h2 class="fw-bold mb-2 text-white" style="letter-spacing: -0.5px;">Data Kependudukan RW 013</h2>
+                        <p class="mb-0 text-white text-opacity-75 lead fs-6">
+                            Pusat pengelolaan terintegrasi data individu warga, catatan kartu keluarga, warga pendatang, dan dokumen resmi RT 001 s/d RT 008.
+                        </p>
+                    @endif
                 </div>
                 <div class="d-flex align-items-center gap-2 flex-wrap">
                     @if($user->isRw() || $user->isRt())
@@ -129,65 +147,89 @@
         </div>
     </div>
 
-    <!-- Sebaran Warga per RT (001 - 008) -->
-    <div class="wm-card mb-4 bg-white border rounded-4 shadow-sm p-3">
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
-            <span class="small fw-bold text-muted text-uppercase">
-                <i data-lucide="map-pin" style="width: 14px; height: 14px; vertical-align: middle;" class="text-primary me-1"></i>
-                Sebaran Penduduk per RT (RW 013 Sukamiskin Arcamanik):
-            </span>
-            <span class="small text-muted">Total 8 RT Aktif</span>
+    <!-- Sebaran Warga per RT (Khusus Tingkat RW) -->
+    @if(!$user->isRt())
+        <div class="wm-card mb-4 bg-white border rounded-4 shadow-sm p-3">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                <span class="small fw-bold text-muted text-uppercase">
+                    <i data-lucide="map-pin" style="width: 14px; height: 14px; vertical-align: middle;" class="text-primary me-1"></i>
+                    Sebaran Penduduk per RT (RW 013 Sukamiskin Arcamanik):
+                </span>
+                <span class="small text-muted">Total 8 RT Aktif</span>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+                @foreach($distribusiRt as $d)
+                    <a href="{{ route('kependudukan.index', ['tab' => $activeTab, 'rt' => intval($d['rt'])]) }}" 
+                       class="badge text-decoration-none px-3 py-2 rounded-pill border {{ request('rt') == intval($d['rt']) ? 'bg-primary text-white border-primary shadow-sm' : 'bg-light text-dark border-light-subtle' }}">
+                        <strong class="d-block">RT {{ $d['rt'] }}</strong>
+                        <span style="font-size: 11px; opacity: 0.85;">{{ $d['warga'] }} Jiwa ({{ $d['kk'] }} KK)</span>
+                    </a>
+                @endforeach
+                @if(request()->filled('rt'))
+                    <a href="{{ route('kependudukan.index', ['tab' => $activeTab]) }}" class="badge bg-secondary-subtle text-secondary px-3 py-2 rounded-pill text-decoration-none align-self-center">
+                        Tampilkan Semua RT &times;
+                    </a>
+                @endif
+            </div>
         </div>
-        <div class="d-flex gap-2 flex-wrap">
-            @foreach($distribusiRt as $d)
-                <a href="{{ route('kependudukan.index', ['tab' => $activeTab, 'rt' => intval($d['rt'])]) }}" 
-                   class="badge text-decoration-none px-3 py-2 rounded-pill border {{ request('rt') == intval($d['rt']) ? 'bg-primary text-white border-primary shadow-sm' : 'bg-light text-dark border-light-subtle' }}">
-                    <strong class="d-block">RT {{ $d['rt'] }}</strong>
-                    <span style="font-size: 11px; opacity: 0.85;">{{ $d['warga'] }} Jiwa ({{ $d['kk'] }} KK)</span>
-                </a>
-            @endforeach
-            @if(request()->filled('rt'))
-                <a href="{{ route('kependudukan.index', ['tab' => $activeTab]) }}" class="badge bg-secondary-subtle text-secondary px-3 py-2 rounded-pill text-decoration-none align-self-center">
-                    Tampilkan Semua RT &times;
-                </a>
-            @endif
-        </div>
-    </div>
+    @endif
 
-    <!-- 2. TAB NAVIGASI TUNGGAL: INDIVIDU, KELUARGA, DOKUMEN KK -->
+    <!-- 2. TAB NAVIGASI TUNGGAL: 5 TAB KEPENDUDUKAN TERPADU -->
     <div class="wm-card bg-white border rounded-4 shadow-sm mb-4 overflow-hidden">
-        <div class="border-bottom bg-light px-3 pt-3">
-            <ul class="nav nav-tabs border-0 gap-2" id="kependudukanTabs" role="tablist">
-                <li class="nav-item" role="presentation">
+        <div class="border-bottom bg-light px-3 pt-3" style="overflow-x: auto;">
+            <ul class="nav nav-tabs border-0 gap-2 flex-nowrap" id="kependudukanTabs" role="tablist" style="overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; padding-bottom: 1px;">
+                <li class="nav-item flex-shrink-0" role="presentation">
                     <a href="{{ route('kependudukan.index', array_merge(request()->except(['page']), ['tab' => 'individu'])) }}" 
-                       class="nav-link px-4 py-3 fw-bold rounded-top-3 border-0 d-flex align-items-center gap-2 {{ $activeTab === 'individu' ? 'active bg-white text-primary border-top border-primary' : 'text-secondary' }}"
+                       class="nav-link px-3.5 py-2.5 fw-bold rounded-top-3 border-0 d-flex align-items-center gap-2 {{ $activeTab === 'individu' ? 'active bg-white text-primary border-top border-primary' : 'text-secondary' }}"
                        style="{{ $activeTab === 'individu' ? 'border-top: 3px solid #1456A0 !important;' : '' }}">
-                        <i data-lucide="user" style="width: 18px; height: 18px;"></i>
+                        <i data-lucide="user" style="width: 17px; height: 17px;"></i>
                         <span>A. Data Individu</span>
                         <span class="badge {{ $activeTab === 'individu' ? 'bg-primary text-white' : 'bg-secondary text-white' }} rounded-pill small">
                             {{ number_format($totalWarga) }}
                         </span>
                     </a>
                 </li>
-                <li class="nav-item" role="presentation">
+                <li class="nav-item flex-shrink-0" role="presentation">
                     <a href="{{ route('kependudukan.index', array_merge(request()->except(['page']), ['tab' => 'keluarga'])) }}" 
-                       class="nav-link px-4 py-3 fw-bold rounded-top-3 border-0 d-flex align-items-center gap-2 {{ $activeTab === 'keluarga' ? 'active bg-white text-success border-top border-success' : 'text-secondary' }}"
+                       class="nav-link px-3.5 py-2.5 fw-bold rounded-top-3 border-0 d-flex align-items-center gap-2 {{ $activeTab === 'keluarga' ? 'active bg-white text-success border-top border-success' : 'text-secondary' }}"
                        style="{{ $activeTab === 'keluarga' ? 'border-top: 3px solid #10B981 !important;' : '' }}">
-                        <i data-lucide="users-round" style="width: 18px; height: 18px;"></i>
+                        <i data-lucide="users-round" style="width: 17px; height: 17px;"></i>
                         <span>B. Data Keluarga</span>
                         <span class="badge {{ $activeTab === 'keluarga' ? 'bg-success text-white' : 'bg-secondary text-white' }} rounded-pill small">
                             {{ number_format($totalKk) }}
                         </span>
                     </a>
                 </li>
-                <li class="nav-item" role="presentation">
+                <li class="nav-item flex-shrink-0" role="presentation">
                     <a href="{{ route('kependudukan.index', array_merge(request()->except(['page']), ['tab' => 'dokumen'])) }}" 
-                       class="nav-link px-4 py-3 fw-bold rounded-top-3 border-0 d-flex align-items-center gap-2 {{ $activeTab === 'dokumen' ? 'active bg-white text-indigo border-top border-indigo' : 'text-secondary' }}"
+                       class="nav-link px-3.5 py-2.5 fw-bold rounded-top-3 border-0 d-flex align-items-center gap-2 {{ $activeTab === 'dokumen' ? 'active bg-white text-indigo border-top border-indigo' : 'text-secondary' }}"
                        style="{{ $activeTab === 'dokumen' ? 'border-top: 3px solid #4F46E5 !important;' : '' }}">
-                        <i data-lucide="file-check" style="width: 18px; height: 18px;"></i>
+                        <i data-lucide="file-check" style="width: 17px; height: 17px;"></i>
                         <span>C. Dokumen KK</span>
                         <span class="badge {{ $activeTab === 'dokumen' ? 'bg-dark text-white' : 'bg-secondary text-white' }} rounded-pill small">
                             {{ $kkTerverifikasi }}/{{ $totalKk }} Sah
+                        </span>
+                    </a>
+                </li>
+                <li class="nav-item flex-shrink-0" role="presentation">
+                    <a href="{{ route('kependudukan.index', array_merge(request()->except(['page']), ['tab' => 'pendatang'])) }}" 
+                       class="nav-link px-3.5 py-2.5 fw-bold rounded-top-3 border-0 d-flex align-items-center gap-2 {{ $activeTab === 'pendatang' ? 'active bg-white text-warning border-top border-warning' : 'text-secondary' }}"
+                       style="{{ $activeTab === 'pendatang' ? 'border-top: 3px solid #D97706 !important;' : '' }}">
+                        <i data-lucide="user-check" style="width: 17px; height: 17px;"></i>
+                        <span>D. Data Pendatang</span>
+                        <span class="badge {{ $activeTab === 'pendatang' ? 'bg-warning text-dark' : 'bg-secondary text-white' }} rounded-pill small">
+                            {{ number_format($totalPendatang) }}
+                        </span>
+                    </a>
+                </li>
+                <li class="nav-item flex-shrink-0" role="presentation">
+                    <a href="{{ route('kependudukan.index', array_merge(request()->except(['page']), ['tab' => 'mutasi'])) }}" 
+                       class="nav-link px-3.5 py-2.5 fw-bold rounded-top-3 border-0 d-flex align-items-center gap-2 {{ $activeTab === 'mutasi' ? 'active bg-white text-info border-top border-info' : 'text-secondary' }}"
+                       style="{{ $activeTab === 'mutasi' ? 'border-top: 3px solid #0284C7 !important;' : '' }}">
+                        <i data-lucide="arrow-left-right" style="width: 17px; height: 17px;"></i>
+                        <span>E. Mutasi Warga</span>
+                        <span class="badge {{ $activeTab === 'mutasi' ? 'bg-info text-white' : 'bg-secondary text-white' }} rounded-pill small">
+                            {{ number_format($totalMutasi) }}
                         </span>
                     </a>
                 </li>
@@ -283,7 +325,7 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge {{ $w->gender === 'Laki-laki' ? 'bg-sky-100 text-primary' : 'bg-pink-100 text-danger' }} border small fw-semibold" style="background: {{ $w->gender === 'Laki-laki' ? '#E1F5FE' : '#FCE4EC' }};">
+                                    <span class="badge {{ $w->gender === 'Laki-laki' ? 'bg-sky-100 text-primary badge-gender-l' : 'bg-pink-100 text-danger badge-gender-p' }} border small fw-semibold" style="background: {{ $w->gender === 'Laki-laki' ? '#E1F5FE' : '#FCE4EC' }};">
                                         {{ $w->gender ?? '-' }}
                                     </span>
                                     <small class="text-muted d-block">{{ $w->age ? $w->age . ' Th' : '-' }}</small>
@@ -490,7 +532,7 @@
         <!-- ====================================================================== -->
         <!-- TAB C: DOKUMEN KK RESMI -->
         <!-- ====================================================================== -->
-        @else
+        @elseif($activeTab === 'dokumen')
             <div class="p-4 border-bottom bg-light-subtle">
                 <form action="{{ route('kependudukan.index') }}" method="GET" class="row g-2 align-items-center">
                     <input type="hidden" name="tab" value="dokumen">
@@ -641,7 +683,396 @@
                     {{ $dokumens->links() }}
                 </div>
             @endif
+
+        <!-- ====================================================================== -->
+        <!-- TAB D: DATA WARGA PENDATANG & KONTRAK -->
+        <!-- ====================================================================== -->
+        @elseif($activeTab === 'pendatang')
+            <div class="p-4 border-bottom bg-light-subtle">
+                <form action="{{ route('kependudukan.index') }}" method="GET" class="row g-2 align-items-center">
+                    <input type="hidden" name="tab" value="pendatang">
+
+                    <div class="col-12 col-md-4">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0">
+                                <i data-lucide="search" style="width: 16px; height: 16px;"></i>
+                            </span>
+                            <input type="text" name="search" class="form-control border-start-0" placeholder="Cari nama pendatang, NIK, alamat, telepon..." value="{{ request('search') }}">
+                        </div>
+                    </div>
+
+                    @if($user->isRw())
+                        <div class="col-6 col-md-2">
+                            <select name="rt" class="form-select">
+                                <option value="all">Semua Wilayah RT</option>
+                                @for($i = 1; $i <= 8; $i++)
+                                    <option value="{{ $i }}" {{ request('rt') == $i ? 'selected' : '' }}>
+                                        RT {{ str_pad($i, 3, '0', STR_PAD_LEFT) }}
+                                    </option>
+                                @endfor
+                            </select>
+                        </div>
+                    @endif
+
+                    <div class="col-6 col-md-2">
+                        <select name="status_rumah" class="form-select">
+                            <option value="all">Semua Tempat Tinggal</option>
+                            <option value="kontrak" {{ request('status_rumah') == 'kontrak' ? 'selected' : '' }}>Kontrak / Sewa</option>
+                            <option value="kos" {{ request('status_rumah') == 'kos' ? 'selected' : '' }}>Kos / Paviliun</option>
+                            <option value="sewa" {{ request('status_rumah') == 'sewa' ? 'selected' : '' }}>Sewa Rumah</option>
+                            <option value="Menumpang" {{ request('status_rumah') == 'Menumpang' ? 'selected' : '' }}>Menumpang</option>
+                        </select>
+                    </div>
+
+                    <div class="col-6 col-md-2">
+                        <select name="status_domisili" class="form-select">
+                            <option value="all">Semua Status Domisili</option>
+                            <option value="Pendatang Baru" {{ request('status_domisili') == 'Pendatang Baru' ? 'selected' : '' }}>Pendatang Baru</option>
+                            <option value="Warga Sementara" {{ request('status_domisili') == 'Warga Sementara' ? 'selected' : '' }}>Warga Sementara</option>
+                            <option value="Akan Pindah" {{ request('status_domisili') == 'Akan Pindah' ? 'selected' : '' }}>Akan Pindah</option>
+                        </select>
+                    </div>
+
+                    <div class="col-auto d-flex gap-2">
+                        <button type="submit" class="btn btn-primary rounded-pill px-3 fw-bold shadow-xs">
+                            <i data-lucide="filter" style="width: 14px; height: 14px; vertical-align: middle;"></i> Filter
+                        </button>
+                        <a href="{{ route('kependudukan.index', ['tab' => 'pendatang']) }}" class="btn btn-outline-secondary rounded-pill px-3">
+                            Reset
+                        </a>
+                    </div>
+
+                    <div class="col-12 col-md text-md-end mt-2 mt-md-0">
+                        <a href="{{ route('warga.create', ['tipe' => 'pendatang', 'status_domisili' => 'Pendatang Baru', 'status_rumah' => 'Kontrak']) }}" 
+                           class="btn btn-primary rounded-pill px-3.5 py-2 fw-bold text-white shadow-sm d-inline-flex align-items-center gap-1.5"
+                           style="background: #1456A0; border-color: #1456A0; font-size: 0.85rem;">
+                            <i data-lucide="user-plus" style="width: 16px; height: 16px;"></i>
+                            <span>Daftarkan Pendatang</span>
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr class="text-muted small text-uppercase" style="font-size: 0.76rem; letter-spacing: 0.5px;">
+                            <th class="ps-4">No</th>
+                            <th>Nama Pendatang & NIK</th>
+                            <th>Status Tempat Tinggal</th>
+                            <th>Status Domisili</th>
+                            <th>Wilayah & Alamat</th>
+                            <th>No. Kontak</th>
+                            <th class="pe-4 text-end">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($pendatangs as $idx => $p)
+                            <tr>
+                                <td class="ps-4 text-muted small">{{ $pendatangs->firstItem() + $idx }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <img src="{{ $p->profile_photo ? asset('storage/' . $p->profile_photo) : 'https://ui-avatars.com/api/?name=' . urlencode($p->name) . '&background=EAF3FF&color=1456A0&bold=true' }}" 
+                                             alt="Avatar" class="rounded-circle border" style="width: 38px; height: 38px; object-fit: cover;">
+                                        <div>
+                                            <strong class="text-dark d-block">{{ $p->name }}</strong>
+                                            <span class="small text-muted font-monospace">
+                                                NIK: {{ $p->nik ? substr($p->nik, 0, 6) . '******' . substr($p->nik, -4) : '-' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2.5 py-1 rounded-pill fw-semibold">
+                                        <i data-lucide="home" style="width: 12px; height: 12px; vertical-align: middle;"></i>
+                                        {{ ucfirst($p->status_rumah ?: 'Kontrak / Sewa') }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle px-2.5 py-1 rounded-pill fw-semibold">
+                                        {{ $p->status_domisili ?: 'Warga Sementara' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="small fw-semibold text-dark">RT {{ str_pad($p->clean_rt_number, 3, '0', STR_PAD_LEFT) }}</div>
+                                    <small class="text-muted text-truncate d-block" style="max-width: 220px;">
+                                        {{ $p->address ?: '-' }}
+                                    </small>
+                                </td>
+                                <td>
+                                    <span class="small text-dark">{{ $p->phone ?: '-' }}</span>
+                                </td>
+                                <td class="pe-4 text-end">
+                                    <div class="btn-group btn-group-sm">
+                                        <button type="button" class="btn btn-light border rounded-pill px-2.5 py-1 text-primary btn-quickview-warga me-1" data-id="{{ $p->id }}" title="Lihat Biodata">
+                                            <i data-lucide="eye" style="width: 14px; height: 14px;"></i>
+                                        </button>
+                                        <a href="{{ route('warga.edit', $p->id) }}" class="btn btn-outline-primary rounded-pill px-2.5 py-1" title="Edit Warga">
+                                            <i data-lucide="edit" style="width: 14px; height: 14px;"></i> Edit
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-5">
+                                    <i data-lucide="user-x" style="width: 44px; height: 44px;" class="mb-2 text-secondary opacity-50 d-block mx-auto"></i>
+                                    Tidak ada data warga pendatang yang sesuai dengan filter.
+                                    <div class="mt-2">
+                                        <a href="{{ route('warga.create', ['tipe' => 'pendatang', 'status_domisili' => 'Pendatang Baru', 'status_rumah' => 'Kontrak']) }}" class="btn btn-sm btn-primary rounded-pill px-3 fw-bold" style="background:#1456A0;">
+                                            + Daftarkan Pendatang Sekarang
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            @if($pendatangs->hasPages())
+                <div class="p-3 border-top bg-light">
+                    {{ $pendatangs->links() }}
+                </div>
+            @endif
+
+        <!-- ====================================================================== -->
+        <!-- TAB E: LOG & PENCATATAN MUTASI WARGA -->
+        <!-- ====================================================================== -->
+        @elseif($activeTab === 'mutasi')
+            <div class="p-4 border-bottom bg-light-subtle">
+                <form action="{{ route('kependudukan.index') }}" method="GET" class="row g-2 align-items-center">
+                    <input type="hidden" name="tab" value="mutasi">
+
+                    <div class="col-12 col-md-4">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0">
+                                <i data-lucide="search" style="width: 16px; height: 16px;"></i>
+                            </span>
+                            <input type="text" name="search" class="form-control border-start-0" placeholder="Cari nama warga, NIK, No KK, kode mutasi..." value="{{ request('search') }}">
+                        </div>
+                    </div>
+
+                    @if($user->isRw())
+                        <div class="col-6 col-md-2">
+                            <select name="rt" class="form-select">
+                                <option value="all">Semua Wilayah RT</option>
+                                @for($i = 1; $i <= 8; $i++)
+                                    <option value="{{ $i }}" {{ request('rt') == $i ? 'selected' : '' }}>
+                                        RT {{ str_pad($i, 3, '0', STR_PAD_LEFT) }}
+                                    </option>
+                                @endfor
+                            </select>
+                        </div>
+                    @endif
+
+                    <div class="col-6 col-md-2">
+                        <select name="jenis_mutasi" class="form-select">
+                            <option value="all">Semua Jenis Mutasi</option>
+                            <option value="mutasi_masuk" {{ request('jenis_mutasi') == 'mutasi_masuk' ? 'selected' : '' }}>Mutasi Masuk</option>
+                            <option value="mutasi_keluar" {{ request('jenis_mutasi') == 'mutasi_keluar' ? 'selected' : '' }}>Mutasi Keluar</option>
+                            <option value="pindah_antar_rt" {{ request('jenis_mutasi') == 'pindah_antar_rt' ? 'selected' : '' }}>Pindah Antar-RT</option>
+                            <option value="perubahan_alamat" {{ request('jenis_mutasi') == 'perubahan_alamat' ? 'selected' : '' }}>Perubahan Alamat</option>
+                            <option value="kelahiran" {{ request('jenis_mutasi') == 'kelahiran' ? 'selected' : '' }}>Kelahiran</option>
+                            <option value="kematian" {{ request('jenis_mutasi') == 'kematian' ? 'selected' : '' }}>Kematian</option>
+                        </select>
+                    </div>
+
+                    <div class="col-6 col-md-2">
+                        <select name="status" class="form-select">
+                            <option value="all">Semua Status</option>
+                            <option value="disetujui" {{ request('status') == 'disetujui' ? 'selected' : '' }}>Disetujui</option>
+                            <option value="menunggu_verifikasi" {{ request('status') == 'menunggu_verifikasi' ? 'selected' : '' }}>Menunggu Verifikasi</option>
+                            <option value="ditolak" {{ request('status') == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
+                        </select>
+                    </div>
+
+                    <div class="col-auto d-flex gap-2">
+                        <button type="submit" class="btn btn-primary rounded-pill px-3 fw-bold shadow-xs">
+                            <i data-lucide="filter" style="width: 14px; height: 14px; vertical-align: middle;"></i> Filter
+                        </button>
+                        <a href="{{ route('kependudukan.index', ['tab' => 'mutasi']) }}" class="btn btn-outline-secondary rounded-pill px-3">
+                            Reset
+                        </a>
+                    </div>
+
+                    <div class="col-12 col-md text-md-end mt-2 mt-md-0">
+                        <button type="button" class="btn btn-primary rounded-pill px-3.5 py-2 fw-bold text-white shadow-sm d-inline-flex align-items-center gap-1.5" data-bs-toggle="modal" data-bs-target="#modalCatatMutasi" style="background: #1456A0; border-color: #1456A0; font-size: 0.85rem;">
+                            <i data-lucide="plus-circle" style="width: 16px; height: 16px;"></i>
+                            <span>Catat Mutasi Warga</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr class="text-muted small text-uppercase" style="font-size: 0.76rem; letter-spacing: 0.5px;">
+                            <th class="ps-4">Kode & Tanggal</th>
+                            <th>Nama Warga & NIK</th>
+                            <th>Jenis Mutasi</th>
+                            <th>Perpindahan Wilayah</th>
+                            <th>Alasan / Keterangan</th>
+                            <th>Status Administrasi</th>
+                            <th class="pe-4 text-end">Penanggung Jawab</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($mutasis as $m)
+                            <tr>
+                                <td class="ps-4">
+                                    <span class="fw-bold font-monospace text-primary d-block">{{ $m->kode_mutasi }}</span>
+                                    <small class="text-muted">{{ $m->tanggal_mutasi ? $m->tanggal_mutasi->format('d M Y') : '-' }}</small>
+                                </td>
+                                <td>
+                                    <strong class="text-dark d-block">{{ $m->nama_warga }}</strong>
+                                    <small class="text-muted font-monospace">NIK: {{ $m->nik ?: '-' }}</small>
+                                </td>
+                                <td>
+                                    <span class="badge {{ $m->jenis_mutasi_badge }} px-2.5 py-1 rounded-pill fw-semibold">
+                                        {{ $m->jenis_mutasi_label }}
+                                    </span>
+                                </td>
+                                <td>
+                                    @if($m->rt_asal || $m->rt_tujuan)
+                                        <span class="small fw-semibold text-dark d-block">
+                                            RT {{ $m->rt_asal ?: '-' }} &rarr; RT {{ $m->rt_tujuan ?: '-' }}
+                                        </span>
+                                    @endif
+                                    <small class="text-muted text-truncate d-block" style="max-width: 220px;">
+                                        {{ $m->alamat_tujuan ?: ($m->alamat_asal ?: '-') }}
+                                    </small>
+                                </td>
+                                <td>
+                                    <span class="small text-secondary" style="max-width: 240px; display: inline-block;">
+                                        {{ Str::limit($m->alasan_mutasi ?: 'Pencatatan mutasi domisili', 50) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge {{ $m->status === 'disetujui' ? 'bg-success-subtle text-success border border-success-subtle' : ($m->status === 'ditolak' ? 'bg-danger-subtle text-danger border border-danger-subtle' : 'bg-warning-subtle text-warning border border-warning-subtle') }} px-2.5 py-1 rounded-pill fw-semibold">
+                                        {{ $m->status_label }}
+                                    </span>
+                                </td>
+                                <td class="pe-4 text-end">
+                                    <small class="text-muted d-block">{{ $m->pemeriksa ? $m->pemeriksa->name : ($m->pengaju ? $m->pengaju->name : 'Pengurus RT') }}</small>
+                                    <span class="badge bg-light text-dark border px-2 py-0.5" style="font-size: 0.7rem;">Tercatat Sistem</span>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-5">
+                                    <i data-lucide="arrow-left-right" style="width: 44px; height: 44px;" class="mb-2 text-secondary opacity-50 d-block mx-auto"></i>
+                                    Belum ada catatan mutasi warga yang sesuai dengan filter.
+                                    <div class="mt-2">
+                                        <button type="button" class="btn btn-sm btn-primary rounded-pill px-3 fw-bold" data-bs-toggle="modal" data-bs-target="#modalCatatMutasi" style="background:#1456A0;">
+                                            + Catat Mutasi Baru Sekarang
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            @if($mutasis->hasPages())
+                <div class="p-3 border-top bg-light">
+                    {{ $mutasis->links() }}
+                </div>
+            @endif
         @endif
+    </div>
+</div>
+
+<!-- MODAL CATAT MUTASI WARGA BARU -->
+<div class="modal fade" id="modalCatatMutasi" tabindex="-1" aria-labelledby="modalCatatMutasiLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header border-bottom bg-light">
+                <h5 class="modal-title fw-bold text-dark" id="modalCatatMutasiLabel">
+                    <i data-lucide="arrow-left-right" class="me-2 text-primary" style="width: 20px; height: 20px; vertical-align: middle;"></i>
+                    Catat Mutasi Kependudukan Warga
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('kependudukan.mutasi.store') }}" method="POST">
+                @csrf
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-bold small text-dark mb-1">Nama Lengkap Warga <span class="text-danger">*</span></label>
+                            <input type="text" name="nama_warga" class="form-control" placeholder="Contoh: Budi Santoso" required>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-bold small text-dark mb-1">NIK (Nomor Induk Kependudukan)</label>
+                            <input type="text" name="nik" class="form-control" placeholder="16 digit NIK (jika ada)">
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-bold small text-dark mb-1">Nomor Kartu Keluarga (KK)</label>
+                            <input type="text" name="nomor_kk" class="form-control" placeholder="16 digit No KK (jika ada)">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-bold small text-dark mb-1">Jenis Kelamin</label>
+                            <select name="gender" class="form-select">
+                                <option value="Laki-laki">Laki-laki</option>
+                                <option value="Perempuan">Perempuan</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-bold small text-dark mb-1">Jenis Mutasi <span class="text-danger">*</span></label>
+                            <select name="jenis_mutasi" class="form-select" required>
+                                <option value="mutasi_masuk">Mutasi Masuk (Pendatang Baru ke RW 013)</option>
+                                <option value="mutasi_keluar">Mutasi Keluar (Pindah ke Luar RW 013)</option>
+                                <option value="pindah_antar_rt">Pindah Antar-RT (Internal RW 013)</option>
+                                <option value="perubahan_alamat">Perubahan Alamat (Dalam RT yang Sama)</option>
+                                <option value="kelahiran">Kelahiran Baru</option>
+                                <option value="kematian">Kematian / Meninggal Dunia</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-bold small text-dark mb-1">Tanggal Mutasi / Lapor <span class="text-danger">*</span></label>
+                            <input type="date" name="tanggal_mutasi" class="form-control" value="{{ date('Y-m-d') }}" required>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-bold small text-dark mb-1">RT Asal</label>
+                            <input type="text" name="rt_asal" class="form-control" placeholder="Misal: 001 atau luar RW" value="{{ $user->isRt() ? str_pad($user->clean_rt_number, 3, '0', STR_PAD_LEFT) : '' }}">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-bold small text-dark mb-1">RT Tujuan</label>
+                            <input type="text" name="rt_tujuan" class="form-control" placeholder="Misal: 001 atau luar RW" value="{{ $user->isRt() ? str_pad($user->clean_rt_number, 3, '0', STR_PAD_LEFT) : '' }}">
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-bold small text-dark mb-1">Alamat Asal</label>
+                            <input type="text" name="alamat_asal" class="form-control" placeholder="Alamat asal sebelum mutasi">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-bold small text-dark mb-1">Alamat Tujuan</label>
+                            <input type="text" name="alamat_tujuan" class="form-control" placeholder="Alamat tujuan mutasi baru">
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-bold small text-dark mb-1">No. Kontak / WhatsApp</label>
+                            <input type="text" name="no_telepon" class="form-control" placeholder="08xxxxxxxxxx">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-bold small text-dark mb-1">Alasan / Catatan Mutasi</label>
+                            <input type="text" name="alasan_mutasi" class="form-control" placeholder="Alasan perpindahan domisili / catatan RT">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top bg-light">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold" style="background:#1456A0; border-color:#1456A0;">
+                        <i data-lucide="save" style="width: 15px; height: 15px; vertical-align: middle;"></i> Simpan Catatan Mutasi
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 

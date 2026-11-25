@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-{{-- Tailwind CDN dengan preflight false agar kompatibel dengan Bootstrap dan style Warkas Machi --}}
+{{-- Tailwind CDN dengan preflight false agar kompatibel dengan Bootstrap dan style Haven --}}
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
     tailwind.config = {
@@ -54,14 +54,14 @@
         </div>
 
         <div class="text-slate-500 text-[11px] font-normal hidden md:block">
-            <span class="font-semibold text-slate-700">Prinsip Warkas Machi:</span> Pemilik Mengelola &bull; RT/RW Mengawasi &bull; Warga Menggunakan
+            <span class="font-semibold text-slate-700">Prinsip Haven:</span> Pemilik Mengelola &bull; RT/RW Mengawasi &bull; Warga Menggunakan
         </div>
     </div>
 
     {{-- ======================================================================
          1. HERO HEADER: JELAJAHI UMKM RW 013
          ====================================================================== --}}
-    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F3966] via-[#1456A0] to-[#1D68FE] text-white p-6 sm:p-8 md:p-10 shadow-lg">
+    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F3966] via-[#1456A0] to-[#1D68FE] text-white p-6 sm:p-8 md:p-10 shadow-lg umkm-hero-header">
         {{-- Decorative Background Elements --}}
         <div class="absolute -right-16 -top-16 w-80 h-80 rounded-full bg-white/5 blur-2xl pointer-events-none"></div>
         <div class="absolute right-1/4 -bottom-24 w-96 h-96 rounded-full bg-blue-400/10 blur-3xl pointer-events-none"></div>
@@ -102,14 +102,14 @@
             <div class="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full lg:w-auto">
                 <button type="button" 
                         onclick="openDaftarModal()" 
-                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-blue-800 hover:bg-blue-50 font-extrabold text-sm shadow-md transition-all duration-200">
+                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-blue-800 hover:bg-blue-50 font-extrabold text-sm shadow-md transition-all duration-200 umkm-hero-btn-white">
                     <i data-lucide="plus-circle" class="w-4 h-4 text-blue-600"></i>
                     <span>Daftarkan Usaha Saya</span>
                 </button>
 
                 @if(auth()->check() && in_array(auth()->user()->role, ['rw', 'admin', 'super_admin', 'rt']))
                     <a href="{{ route('umkm.moderasi') }}" 
-                       class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-emerald-500 text-white hover:bg-emerald-600 font-extrabold text-sm shadow-md transition-all duration-200">
+                       class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-emerald-500 text-white hover:bg-emerald-600 font-extrabold text-sm shadow-md transition-all duration-200 umkm-hero-btn-green">
                         <i data-lucide="shield-check" class="w-4 h-4"></i>
                         <span>Menu Pengawasan</span>
                     </a>

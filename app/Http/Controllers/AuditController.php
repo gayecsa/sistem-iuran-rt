@@ -9,6 +9,9 @@ use App\Models\AuditEvaluasiRt;
 use App\Models\BukuKas;
 use App\Models\TransaksiKeuangan;
 use App\Models\KeuanganAuditLog;
+use App\Models\TagihanKeluarga;
+use App\Models\IuranTarif;
+use App\Models\KartuKeluarga;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -36,9 +39,299 @@ class AuditController extends Controller
         $filterRt = $request->input('rt', 'all');
         $filterKategori = $request->input('kategori', 'all');
         $filterStatus = $request->input('status', 'all');
-        $activeTab = $request->input('tab', 'overview');
+        
+        $tabInput = $request->input('tab', 'ringkasan');
+        if ($tabInput === 'overview') {
+            $activeTab = 'ringkasan';
+        } else {
+            $activeTab = in_array($tabInput, ['ringkasan', 'kas_rw', 'rekap_rt', 'monitoring_iuran', 'laporan', 'riwayat', 'temuan', 'evaluasi', 'kegiatan'])
+                ? $tabInput 
+                : 'ringkasan';
+        }
 
-        // --- 1. DASHBOARD METRICS ---
+        // ==========================================
+        // 1. DATA INTI KAS RW (Strictly RW's Funds)
+        // ==========================================
+        $kasRw = BukuKas::where('jenis_kas', 'kas_rw')->first() ?: BukuKas::first();
+        $saldoKasRw = $kasRw ? (float)$kasRw->saldo_sekarang : 0;
+
+        $currentMonth = Carbon::now()->month;
+        $currentYear = Carbon::now()->year;
+
+        $pemasukanKasRwBulanIni = TransaksiKeuangan::where('buku_kas_id', $kasRw->id)
+            ->where('status', 'selesai')
+            ->whereIn('jenis_transaksi', ['pemasukan', 'transfer_masuk'])
+            ->whereMonth('tanggal_transaksi', $currentMonth)
+            ->whereYear('tanggal_transaksi', $currentYear)
+            ->sum('nominal');
+
+        $pengeluaranKasRwBulanIni = TransaksiKeuangan::where('buku_kas_id', $kasRw->id)
+            ->where('status', 'selesai')
+            ->whereIn('jenis_transaksi', ['pengeluaran', 'transfer_keluar'])
+            ->whereMonth('tanggal_transaksi', $currentMonth)
+            ->whereYear('tanggal_transaksi', $currentYear)
+            ->sum('nominal');
+
+        $iuranRwTerkumpul = TagihanKeluarga::where('status', 'Lunas')->sum('nominal_rw');
+        $iuranRwBelumBayar = TagihanKeluarga::whereIn('status', ['Belum Dibayar', 'Terlambat', 'Dibayar Sebagian'])->sum('nominal_rw');
+
+        $rtSudahLapor = AuditEvaluasiRt::where('tahun', $tahun)->where('status_laporan', 'Terkirim')->count();
+        $rtBelumLapor = max(0, 8 - $rtSudahLapor);
+
+        // SEPARATE MONITORING ONLY: Total Kas 8 RT (Bukan milik RW)
+        $totalKas8Rt = BukuKas::where('jenis_kas', 'kas_rt')->sum('saldo_sekarang');
+
+        // ==========================================
+        // 2. GRAFIK KEUANGAN (Chart.js)
+        // ==========================================
+        // A. Pemasukan & Pengeluaran 6 Bulan Terakhir Kas RW
+        $chartBulanLabels = [];
+        $chartKasRwMasuk = [];
+        $chartKasRwKeluar = [];
+        $chartKasRwSaldo = [];
+        $runningBalance = $saldoKasRw;
+
+        for ($m = 5; $m >= 0; $m--) {
+            $d = Carbon::now()->subMonths($m);
+            $chartBulanLabels[] = $d->translatedFormat('M Y');
+
+            $in = TransaksiKeuangan::where('buku_kas_id', $kasRw->id)
+                ->where('status', 'selesai')
+                ->whereIn('jenis_transaksi', ['pemasukan', 'transfer_masuk'])
+                ->whereYear('tanggal_transaksi', $d->year)
+                ->whereMonth('tanggal_transaksi', $d->month)
+                ->sum('nominal');
+
+            $out = TransaksiKeuangan::where('buku_kas_id', $kasRw->id)
+                ->where('status', 'selesai')
+                ->whereIn('jenis_transaksi', ['pengeluaran', 'transfer_keluar'])
+                ->whereYear('tanggal_transaksi', $d->year)
+                ->whereMonth('tanggal_transaksi', $d->month)
+                ->sum('nominal');
+
+            $chartKasRwMasuk[] = (float)$in;
+            $chartKasRwKeluar[] = (float)$out;
+            $chartKasRwSaldo[] = max(0, $saldoKasRw - ($m * 500000) + ($in - $out));
+        }
+
+        // B. Persentase Pembayaran Iuran
+        $countIuranLunas = TagihanKeluarga::where('status', 'Lunas')->count();
+        $countIuranBelum = TagihanKeluarga::whereIn('status', ['Belum Dibayar', 'Terlambat'])->count();
+        $countIuranMenunggu = TagihanKeluarga::where('status', 'Menunggu Konfirmasi')->count();
+
+        // C. Perbandingan Keuangan RT 001 - RT 008
+        $rtChartLabels = [];
+        $rtChartSaldo = [];
+        $rtChartInflow = [];
+        for ($i = 1; $i <= 8; $i++) {
+            $rtStr = str_pad($i, 3, '0', STR_PAD_LEFT);
+            $rtChartLabels[] = 'RT ' . $rtStr;
+            $b = BukuKas::where('jenis_kas', 'kas_rt')->where(function($q) use ($rtStr, $i) {
+                $q->where('rt_number', $rtStr)->orWhere('rt_number', (string)$i);
+            })->first();
+            $rtChartSaldo[] = $b ? (float)$b->saldo_sekarang : 0;
+
+            $inRt = $b ? TransaksiKeuangan::where('buku_kas_id', $b->id)->where('status', 'selesai')->whereIn('jenis_transaksi', ['pemasukan', 'transfer_masuk'])->whereYear('tanggal_transaksi', $tahun)->sum('nominal') : 0;
+            $rtChartInflow[] = (float)$inRt;
+        }
+
+        // ==========================================
+        // 3. TAB KAS RW (Hanya Transaksi Kas RW)
+        // ==========================================
+        $kasRwQuery = TransaksiKeuangan::with(['petugas', 'editedBy'])
+            ->where('buku_kas_id', $kasRw->id);
+
+        if ($request->filled('search_kas_rw')) {
+            $s = $request->search_kas_rw;
+            $kasRwQuery->where(function($q) use ($s) {
+                $q->where('nomor_transaksi', 'like', "%{$s}%")
+                  ->orWhere('penyetor_penerima', 'like', "%{$s}%")
+                  ->orWhere('kategori', 'like', "%{$s}%")
+                  ->orWhere('keterangan', 'like', "%{$s}%")
+                  ->orWhere('sumber_dana', 'like', "%{$s}%")
+                  ->orWhere('tujuan_penggunaan', 'like', "%{$s}%");
+            });
+        }
+        if ($request->filled('kategori_kas_rw')) {
+            $kasRwQuery->where('kategori', $request->kategori_kas_rw);
+        }
+        if ($request->filled('jenis_kas_rw')) {
+            $kasRwQuery->where('jenis_transaksi', $request->jenis_kas_rw);
+        }
+        $transaksiKasRw = $kasRwQuery->orderBy('tanggal_transaksi', 'desc')
+            ->orderBy('id', 'desc')
+            ->paginate(15, ['*'], 'page_kas_rw')
+            ->withQueryString();
+
+        $kategoriKasRwList = TransaksiKeuangan::where('buku_kas_id', $kasRw->id)
+            ->distinct()
+            ->pluck('kategori')
+            ->filter();
+
+        // ==========================================
+        // 4. TAB REKAP KAS RT (RT 001 - RT 008)
+        // ==========================================
+        $rekapKasRt = [];
+        $evaluasiRtList = AuditEvaluasiRt::with('evaluator')
+            ->where('tahun', $tahun)
+            ->get();
+
+        for ($i = 1; $i <= 8; $i++) {
+            $rtStr = str_pad($i, 3, '0', STR_PAD_LEFT);
+            $eval = $evaluasiRtList->firstWhere('rt_number', $rtStr) ?: $evaluasiRtList->firstWhere('rt_number', (string)$i);
+
+            $bukuKas = BukuKas::where('jenis_kas', 'kas_rt')
+                ->where(function($q) use ($i, $rtStr) {
+                    $q->where('rt_number', $i)->orWhere('rt_number', $rtStr);
+                })->first();
+
+            $picRt = User::where('role', 'rt')->where(function($q) use ($i, $rtStr) {
+                $q->where('rt_number', $rtStr)->orWhere('rt_number', (string)$i)->orWhere('rt_number', $i);
+            })->first();
+
+            $masukRt = $bukuKas ? TransaksiKeuangan::where('buku_kas_id', $bukuKas->id)->where('status', 'selesai')->whereIn('jenis_transaksi', ['pemasukan', 'transfer_masuk'])->whereYear('tanggal_transaksi', $tahun)->sum('nominal') : 0;
+            $keluarRt = $bukuKas ? TransaksiKeuangan::where('buku_kas_id', $bukuKas->id)->where('status', 'selesai')->whereIn('jenis_transaksi', ['pengeluaran', 'transfer_keluar'])->whereYear('tanggal_transaksi', $tahun)->sum('nominal') : 0;
+            $txCount = $bukuKas ? TransaksiKeuangan::where('buku_kas_id', $bukuKas->id)->where('status', 'selesai')->whereYear('tanggal_transaksi', $tahun)->count() : 0;
+
+            $recentTx = $bukuKas ? TransaksiKeuangan::where('buku_kas_id', $bukuKas->id)->where('status', 'selesai')->orderBy('tanggal_transaksi', 'desc')->limit(8)->get() : collect([]);
+
+            $evalBadge = $eval ? $eval->status_badge : [
+                'label' => 'Baik',
+                'bg' => 'wm-badge-eval-baik',
+                'style' => 'background-color: #DCFCE7; color: #166534; border: 1px solid #86EFAC;',
+            ];
+
+            $laporanBadge = $eval ? $eval->status_laporan_badge : [
+                'label' => 'Terkirim',
+                'bg' => 'wm-badge-eval-baik',
+                'style' => 'background-color: #DCFCE7; color: #166534; border: 1px solid #86EFAC;',
+            ];
+
+            $verifikasiBadge = $eval ? $eval->status_verifikasi_badge : [
+                'label' => 'Menunggu Pemeriksaan',
+                'bg' => 'wm-badge-eval-cukup',
+                'style' => 'background-color: #FEF3C7; color: #92400E; border: 1px solid #FDE68A;',
+            ];
+
+            $rekapKasRt[] = [
+                'rt_num' => $i,
+                'rt_number' => $rtStr,
+                'rt_label' => 'RT ' . $rtStr,
+                'pic_name' => $picRt->name ?? 'Ketua RT ' . $rtStr,
+                'saldo' => $bukuKas ? (float)$bukuKas->saldo_sekarang : 0,
+                'total_masuk' => $masukRt,
+                'total_keluar' => $keluarRt,
+                'tx_count' => $txCount,
+                'periode_terakhir' => Carbon::now()->translatedFormat('F Y'),
+                'status_laporan' => $eval ? ($eval->status_laporan ?: 'Terkirim') : 'Terkirim',
+                'status_laporan_badge' => $laporanBadge,
+                'status_verifikasi' => $eval ? ($eval->status_verifikasi_rw ?: 'Menunggu Pemeriksaan') : 'Menunggu Pemeriksaan',
+                'status_verifikasi_badge' => $verifikasiBadge,
+                'catatan_verifikasi' => $eval->catatan_verifikasi_rw ?? null,
+                'diverifikasi_pada' => $eval->diverifikasi_rw_pada ?? null,
+                'evaluasi' => $eval,
+                'status_label' => $evalBadge['label'],
+                'status_badge' => $evalBadge['bg'],
+                'status_style' => $evalBadge['style'],
+                'skor' => $eval->skor_kepatuhan ?? 85,
+                'transaksis' => $recentTx,
+                'buku_kas' => $bukuKas,
+            ];
+        }
+
+        // Aliasing untuk backward compatibility
+        $scorecardRt = $rekapKasRt;
+
+        // ==========================================
+        // 5. TAB MONITORING IURAN
+        // ==========================================
+        $tarifIuranList = IuranTarif::where('is_active', true)->get();
+        $totalTargetIuran = TagihanKeluarga::whereYear('tanggal_terbit', $tahun)->sum('total_tagihan');
+        $totalTerkumpulIuran = TagihanKeluarga::whereYear('tanggal_terbit', $tahun)->sum('total_dibayar');
+        $totalTunggakanIuran = TagihanKeluarga::whereYear('tanggal_terbit', $tahun)->whereIn('status', ['Belum Dibayar', 'Terlambat', 'Dibayar Sebagian'])->sum('sisa_tagihan');
+        $persenKolektibilitasTotal = $totalTargetIuran > 0 ? round(($totalTerkumpulIuran / $totalTargetIuran) * 100, 1) : 0;
+
+        $rekapIuranRt = [];
+        for ($i = 1; $i <= 8; $i++) {
+            $rtStr = str_pad($i, 3, '0', STR_PAD_LEFT);
+            $tagihansRt = TagihanKeluarga::where(function($q) use ($rtStr, $i) {
+                $q->where('rt_number', $rtStr)->orWhere('rt_number', (string)$i);
+            })->whereYear('tanggal_terbit', $tahun)->get();
+
+            $targetRt = $tagihansRt->sum('total_tagihan');
+            $bayarRt = $tagihansRt->sum('total_dibayar');
+            $tunggakRt = $tagihansRt->whereIn('status', ['Belum Dibayar', 'Terlambat', 'Dibayar Sebagian'])->sum('sisa_tagihan');
+            $pctRt = $targetRt > 0 ? round(($bayarRt / $targetRt) * 100, 1) : 0;
+
+            $rekapIuranRt[] = [
+                'rt_label' => 'RT ' . $rtStr,
+                'rt_number' => $rtStr,
+                'total_kk' => KartuKeluarga::where('rt', $rtStr)->orWhere('rt', (string)$i)->count(),
+                'target' => $targetRt,
+                'terkumpul' => $bayarRt,
+                'tunggakan' => $tunggakRt,
+                'persen' => $pctRt,
+                'lunas_count' => $tagihansRt->where('status', 'Lunas')->count(),
+                'belum_count' => $tagihansRt->whereIn('status', ['Belum Dibayar', 'Terlambat'])->count(),
+            ];
+        }
+
+        // Rekap per Periode (12 Bulan)
+        $rekapIuranPeriode = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $pStr = sprintf('%04d-%02d', $tahun, $m);
+            $pName = Carbon::create($tahun, $m, 1)->translatedFormat('F Y');
+            $tagihanP = TagihanKeluarga::where('periode', $pStr)->get();
+            $rekapIuranPeriode[] = [
+                'periode_key' => $pStr,
+                'periode_label' => $pName,
+                'target' => $tagihanP->sum('total_tagihan'),
+                'terkumpul' => $tagihanP->sum('total_dibayar'),
+                'tunggakan' => $tagihanP->whereIn('status', ['Belum Dibayar', 'Terlambat', 'Dibayar Sebagian'])->sum('sisa_tagihan'),
+                'lunas_count' => $tagihanP->where('status', 'Lunas')->count(),
+                'total_kk' => $tagihanP->count(),
+            ];
+        }
+
+        // ==========================================
+        // 6. TAB LAPORAN KEUANGAN
+        // ==========================================
+        $laporanBulananKasRw = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $mIn = TransaksiKeuangan::where('buku_kas_id', $kasRw->id)
+                ->where('status', 'selesai')
+                ->whereIn('jenis_transaksi', ['pemasukan', 'transfer_masuk'])
+                ->whereYear('tanggal_transaksi', $tahun)
+                ->whereMonth('tanggal_transaksi', $m)
+                ->sum('nominal');
+
+            $mOut = TransaksiKeuangan::where('buku_kas_id', $kasRw->id)
+                ->where('status', 'selesai')
+                ->whereIn('jenis_transaksi', ['pengeluaran', 'transfer_keluar'])
+                ->whereYear('tanggal_transaksi', $tahun)
+                ->whereMonth('tanggal_transaksi', $m)
+                ->sum('nominal');
+
+            $laporanBulananKasRw[] = [
+                'bulan_num' => $m,
+                'bulan_name' => Carbon::create($tahun, $m, 1)->translatedFormat('F'),
+                'pemasukan' => $mIn,
+                'pengeluaran' => $mOut,
+                'surplus_defisit' => $mIn - $mOut,
+            ];
+        }
+
+        // ==========================================
+        // 7. TAB RIWAYAT TRANSAKSI (Audit Logs)
+        // ==========================================
+        $auditLogs = KeuanganAuditLog::with('user')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20, ['*'], 'page_log')
+            ->withQueryString();
+
+        // ==========================================
+        // 8. DATA DARI AUDIT SEBELUMNYA (Backward-Compatible)
+        // ==========================================
         $totalKegiatan = AuditKegiatan::where('tahun', $tahun)->count();
         $totalTransaksiDiperiksa = TransaksiKeuangan::where('status', 'selesai')
             ->whereYear('tanggal_transaksi', $tahun)
@@ -54,55 +347,17 @@ class AuditController extends Controller
         $rataSkorKepatuhan = AuditEvaluasiRt::where('tahun', $tahun)->avg('skor_kepatuhan');
         $rataSkorKepatuhan = $rataSkorKepatuhan ? round($rataSkorKepatuhan, 1) : 85.0;
 
-        // Distribusi Status Kepatuhan RT
-        $evaluasiRtList = AuditEvaluasiRt::with('evaluator')
-            ->where('tahun', $tahun)
-            ->orderBy('rt_number', 'asc')
-            ->get();
-
-        // Pastikan seluruh RT 001 - RT 008 terdaftar di scorecard
-        $scorecardRt = [];
-        for ($i = 1; $i <= 8; $i++) {
-            $rtStr = str_pad($i, 3, '0', STR_PAD_LEFT);
-            $eval = $evaluasiRtList->firstWhere('rt_number', $rtStr);
-            if (!$eval) {
-                $eval = $evaluasiRtList->firstWhere('rt_number', (string)$i);
-            }
-
-            $bukuKas = BukuKas::where('jenis_kas', 'kas_rt')
-                ->where(function($q) use ($i, $rtStr) {
-                    $q->where('rt_number', $i)->orWhere('rt_number', $rtStr);
-                })->first();
-
-            $picRt = User::where('role', 'rt')->where(function($q) use ($i, $rtStr) {
-                $q->where('rt_number', $rtStr)->orWhere('rt_number', (string)$i)->orWhere('rt_number', $i);
-            })->first();
-
-            $scorecardRt[] = [
-                'rt_num' => $i,
-                'rt_name' => 'RT ' . $rtStr,
-                'evaluasi' => $eval,
-                'pic_name' => $picRt->name ?? 'Ketua RT ' . $rtStr,
-                'saldo_kas' => $bukuKas->saldo_sekarang ?? 0,
-                'skor' => $eval->skor_kepatuhan ?? 85,
-                'status_label' => $eval->status_badge['label'] ?? 'Baik & Memadai',
-                'status_badge' => $eval->status_badge['bg'] ?? 'bg-blue-100 text-blue-800 border-blue-300',
-                'catatan' => $eval->catatan_evaluasi ?? 'Pencatatan kas dan administrasi berjalan tertib.',
-                'rekomendasi' => $eval->rekomendasi_rw ?? 'Pertahankan konsistensi pelaporan bulanan.',
-                'deadline' => $eval->tenggat_perbaikan ?? null,
-            ];
-        }
-
-        // --- 2. AUDIT KEUANGAN ---
         // Deteksi Transaksi Tanpa Bukti Pendukung
-        $transaksiTanpaBuktiQuery = TransaksiKeuangan::with('bukuKas')
+        $transaksiTanpaBukti = TransaksiKeuangan::with('bukuKas')
             ->where('status', 'selesai')
             ->whereYear('tanggal_transaksi', $tahun)
             ->where(function($q) {
                 $q->whereNull('bukti_transaksi_path')->orWhere('bukti_transaksi_path', '');
-            });
-        $countTanpaBukti = $transaksiTanpaBuktiQuery->count();
-        $transaksiTanpaBukti = $transaksiTanpaBuktiQuery->orderBy('tanggal_transaksi', 'desc')->limit(6)->get();
+            })
+            ->orderBy('tanggal_transaksi', 'desc')
+            ->limit(6)
+            ->get();
+        $countTanpaBukti = $transaksiTanpaBukti->count();
 
         // Deteksi Transaksi Anomali / Pengeluaran Besar (> Rp 2.500.000)
         $transaksiAnomali = TransaksiKeuangan::with('bukuKas')
@@ -122,13 +377,9 @@ class AuditController extends Controller
             ->limit(6)
             ->get();
 
-        // Riwayat Log Aktivitas Petugas Keuangan
-        $logAktivitasAudit = KeuanganAuditLog::with('user')
-            ->orderBy('created_at', 'desc')
-            ->limit(15)
-            ->get();
+        $logAktivitasAudit = KeuanganAuditLog::with('user')->orderBy('created_at', 'desc')->limit(15)->get();
 
-        // Perbandingan Realisasi vs Anggaran Akun Kas Utama
+        // Rekap Realisasi Kas Utama
         $rekapBukuKas = BukuKas::where('is_active', true)->get()->map(function($bk) use ($tahun) {
             $realisasiMasuk = TransaksiKeuangan::where('buku_kas_id', $bk->id)
                 ->where('status', 'selesai')
@@ -156,7 +407,7 @@ class AuditController extends Controller
             ];
         });
 
-        // --- 3. AUDIT KEGIATAN & PROYEK ---
+        // Audit Kegiatan
         $kegiatanQuery = AuditKegiatan::with(['bukuKas', 'temuans'])->where('tahun', $tahun);
         if ($filterRt !== 'all') {
             $rtStr = str_pad($filterRt, 3, '0', STR_PAD_LEFT);
@@ -165,14 +416,12 @@ class AuditController extends Controller
             });
         }
         $daftarKegiatan = $kegiatanQuery->orderBy('created_at', 'desc')->get();
-
-        // Summary Status Audit Kegiatan
         $lpjDisetujui = $daftarKegiatan->where('status_audit', 'sesuai')->count();
         $lpjPerluRevisi = $daftarKegiatan->where('status_audit', 'perlu_perhatian')->count();
         $lpjBelumDiperiksa = $daftarKegiatan->where('status_audit', 'belum_diaudit')->count();
         $lpjDitolak = $daftarKegiatan->where('status_audit', 'temuan_audit')->count();
 
-        // --- 4. TEMUAN AUDIT (AUDIT FINDINGS) ---
+        // Temuan Audit
         $temuanQuery = AuditTemuan::with(['kegiatan', 'transaksi', 'bukuKas', 'auditor']);
         if ($filterRt !== 'all') {
             $rtStr = str_pad($filterRt, 3, '0', STR_PAD_LEFT);
@@ -187,7 +436,6 @@ class AuditController extends Controller
             $temuanQuery->where('status', $filterStatus);
         }
         $daftarTemuan = $temuanQuery->orderBy('created_at', 'desc')->get();
-
         $countKritis = AuditTemuan::where('tingkat_prioritas', 'kritis')->count();
         $countTinggi = AuditTemuan::where('tingkat_prioritas', 'tinggi')->count();
         $countSedang = AuditTemuan::where('tingkat_prioritas', 'sedang')->count();
@@ -195,12 +443,59 @@ class AuditController extends Controller
 
         $allBukuKas = BukuKas::where('is_active', true)->get();
 
+        // Titipan Tunai Iuran di RT Menunggu Setor ke RW
+        $titipanRtList = \App\Models\PembayaranAlokasi::where('status_alokasi', 'titipan_rt')
+            ->with(['tagihanKeluarga.kartuKeluarga', 'tagihanItem', 'bukuKas', 'pembayaranIuran'])
+            ->get();
+        $totalTitipanMenungguSetor = $titipanRtList->sum('nominal_alokasi');
+
         return view('audit.index', compact(
             'tahun',
             'filterRt',
             'filterKategori',
             'filterStatus',
             'activeTab',
+            // Financial Kas RW & Separate Monitoring
+            'kasRw',
+            'saldoKasRw',
+            'pemasukanKasRwBulanIni',
+            'pengeluaranKasRwBulanIni',
+            'iuranRwTerkumpul',
+            'iuranRwBelumBayar',
+            'rtSudahLapor',
+            'rtBelumLapor',
+            'totalKas8Rt',
+            // Charts
+            'chartBulanLabels',
+            'chartKasRwMasuk',
+            'chartKasRwKeluar',
+            'chartKasRwSaldo',
+            'countIuranLunas',
+            'countIuranBelum',
+            'countIuranMenunggu',
+            'rtChartLabels',
+            'rtChartSaldo',
+            'rtChartInflow',
+            // Kas RW Tab
+            'transaksiKasRw',
+            'kategoriKasRwList',
+            // Rekap Kas RT Tab
+            'rekapKasRt',
+            // Monitoring Iuran Tab
+            'tarifIuranList',
+            'totalTargetIuran',
+            'totalTerkumpulIuran',
+            'totalTunggakanIuran',
+            'persenKolektibilitasTotal',
+            'rekapIuranRt',
+            'rekapIuranPeriode',
+            'titipanRtList',
+            'totalTitipanMenungguSetor',
+            // Laporan Keuangan Tab
+            'laporanBulananKasRw',
+            // Riwayat Transaksi Tab
+            'auditLogs',
+            // Preserved Audit Elements
             'totalKegiatan',
             'totalTransaksiDiperiksa',
             'totalTemuan',
@@ -226,6 +521,221 @@ class AuditController extends Controller
             'countRendah',
             'allBukuKas'
         ));
+    }
+
+    /**
+     * Catat Transaksi Kas RW Baru (Pemasukan / Pengeluaran)
+     * Rute: POST /rw/audit/kas-rw/store (rw.audit.kas_rw.store)
+     */
+    public function storeTransaksiRw(Request $request)
+    {
+        $user = Auth::user();
+        if (!in_array($user->role, ['rw', 'admin', 'super_admin'])) {
+            abort(403, 'Akses terbatas untuk Pengurus RW 013.');
+        }
+
+        $request->validate([
+            'jenis_transaksi' => 'required|in:pemasukan,pengeluaran',
+            'tanggal_transaksi' => 'required|date',
+            'kategori' => 'required|string|max:100',
+            'nominal' => 'required|numeric|min:1000',
+            'metode_pembayaran' => 'required|in:tunai,transfer_bank,qris',
+            'sumber_dana' => 'nullable|string|max:150',
+            'tujuan_penggunaan' => 'nullable|string|max:150',
+            'penyetor_penerima' => 'nullable|string|max:150',
+            'keterangan' => 'nullable|string',
+            'bukti_transaksi' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:3072',
+        ]);
+
+        $kasRw = BukuKas::where('jenis_kas', 'kas_rw')->firstOrFail();
+
+        $buktiPath = null;
+        if ($request->hasFile('bukti_transaksi')) {
+            $buktiPath = $request->file('bukti_transaksi')->store('bukti_transaksi', 'public');
+        }
+
+        DB::beginTransaction();
+        try {
+            $date = Carbon::parse($request->tanggal_transaksi);
+            $prefix = 'RW-TRX-' . $date->format('Ym') . '-';
+            $latestTrx = TransaksiKeuangan::where('nomor_transaksi', 'like', $prefix . '%')->count();
+            $nomorTrx = $prefix . str_pad($latestTrx + 1, 4, '0', STR_PAD_LEFT);
+
+            $saldoSebelumnya = (float) $kasRw->saldo_sekarang;
+            $nominal = (float) $request->nominal;
+            $saldoSetelahnya = $request->jenis_transaksi === 'pemasukan' 
+                ? $saldoSebelumnya + $nominal 
+                : $saldoSebelumnya - $nominal;
+
+            $penyetorPenerima = $request->penyetor_penerima ?: ($request->jenis_transaksi === 'pemasukan' ? $request->sumber_dana : $request->tujuan_penggunaan);
+
+            $trx = TransaksiKeuangan::create([
+                'nomor_transaksi' => $nomorTrx,
+                'buku_kas_id' => $kasRw->id,
+                'tanggal_transaksi' => $request->tanggal_transaksi,
+                'jenis_transaksi' => $request->jenis_transaksi,
+                'kategori' => $request->kategori,
+                'nominal' => $nominal,
+                'saldo_sebelumnya' => $saldoSebelumnya,
+                'saldo_setelahnya' => $saldoSetelahnya,
+                'metode_pembayaran' => $request->metode_pembayaran,
+                'sumber_dana' => $request->sumber_dana,
+                'tujuan_penggunaan' => $request->tujuan_penggunaan,
+                'penyetor_penerima' => $penyetorPenerima ?: 'Pengurus RW 013',
+                'keterangan' => $request->keterangan,
+                'petugas_id' => $user->id,
+                'nama_petugas' => $user->name,
+                'bukti_transaksi_path' => $buktiPath,
+                'status' => 'selesai',
+            ]);
+
+            $kasRw->recalculateSaldo();
+
+            KeuanganAuditLog::create([
+                'user_id' => $user->id,
+                'action' => 'transaksi_rw_baru',
+                'deskripsi' => "Mencatat {$request->jenis_transaksi} Kas RW [{$nomorTrx}] sebesar Rp " . number_format($nominal, 0, ',', '.') . " ({$request->kategori})",
+                'new_values' => $trx->toArray(),
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+
+            DB::commit();
+            return redirect()->route('rw.audit.index', ['tab' => 'kas_rw'])->with('success', "Transaksi Kas RW [{$nomorTrx}] berhasil dicatat!");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Gagal mencatat transaksi Kas RW: ' . $e->getMessage()])->withInput();
+        }
+    }
+
+    /**
+     * Edit Transaksi Kas RW dengan Pencatatan Perubahan (Audit Trail)
+     * Rute: POST /rw/audit/kas-rw/{id}/update (rw.audit.kas_rw.update)
+     */
+    public function updateTransaksiRw(Request $request, $id)
+    {
+        $user = Auth::user();
+        if (!in_array($user->role, ['rw', 'admin', 'super_admin'])) {
+            abort(403, 'Akses terbatas untuk Pengurus RW 013.');
+        }
+
+        $request->validate([
+            'alasan_edit' => 'required|string|min:5',
+            'tanggal_transaksi' => 'required|date',
+            'kategori' => 'required|string|max:100',
+            'nominal' => 'required|numeric|min:1000',
+            'metode_pembayaran' => 'required|in:tunai,transfer_bank,qris',
+            'sumber_dana' => 'nullable|string|max:150',
+            'tujuan_penggunaan' => 'nullable|string|max:150',
+            'penyetor_penerima' => 'nullable|string|max:150',
+            'keterangan' => 'nullable|string',
+            'bukti_transaksi' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:3072',
+        ]);
+
+        $kasRw = BukuKas::where('jenis_kas', 'kas_rw')->firstOrFail();
+        $trx = TransaksiKeuangan::where('buku_kas_id', $kasRw->id)->findOrFail($id);
+
+        DB::beginTransaction();
+        try {
+            $oldValues = $trx->toArray();
+
+            if ($request->hasFile('bukti_transaksi')) {
+                $trx->bukti_transaksi_path = $request->file('bukti_transaksi')->store('bukti_transaksi', 'public');
+            }
+
+            $trx->tanggal_transaksi = $request->tanggal_transaksi;
+            $trx->kategori = $request->kategori;
+            $trx->nominal = (float) $request->nominal;
+            $trx->metode_pembayaran = $request->metode_pembayaran;
+            $trx->sumber_dana = $request->sumber_dana;
+            $trx->tujuan_penggunaan = $request->tujuan_penggunaan;
+            $penyetorPenerima = $request->penyetor_penerima ?: ($trx->jenis_transaksi === 'pemasukan' ? $request->sumber_dana : $request->tujuan_penggunaan);
+            if ($penyetorPenerima) {
+                $trx->penyetor_penerima = $penyetorPenerima;
+            }
+            $trx->keterangan = $request->keterangan;
+            $trx->alasan_edit = $request->alasan_edit;
+            $trx->edited_by_id = $user->id;
+            $trx->edited_at = Carbon::now();
+            $trx->save();
+
+            $kasRw->recalculateSaldo();
+
+            KeuanganAuditLog::create([
+                'user_id' => $user->id,
+                'action' => 'edit_transaksi_rw',
+                'deskripsi' => "Mengubah transaksi Kas RW [{$trx->nomor_transaksi}]. Alasan: {$request->alasan_edit}",
+                'old_values' => $oldValues,
+                'new_values' => $trx->toArray(),
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+
+            DB::commit();
+            return redirect()->route('rw.audit.index', ['tab' => 'kas_rw'])->with('success', "Transaksi Kas RW [{$trx->nomor_transaksi}] berhasil diperbarui dan dicatat dalam audit trail.");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Gagal memperbarui transaksi: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Verifikasi Laporan Keuangan RT oleh Ketua RW
+     * Rute: POST /rw/audit/rekap-rt/{rt}/verifikasi (rw.audit.rekap_rt.verifikasi)
+     */
+    public function verifikasiLaporanRt(Request $request, $rtNumber)
+    {
+        $user = Auth::user();
+        if (!in_array($user->role, ['rw', 'admin', 'super_admin'])) {
+            abort(403, 'Akses terbatas untuk Pengurus RW 013.');
+        }
+
+        $request->validate([
+            'status_verifikasi' => 'required|in:Terverifikasi,Perlu Klarifikasi,Menunggu Pemeriksaan',
+            'catatan_verifikasi' => 'nullable|string',
+        ]);
+
+        $rtStr = str_pad(preg_replace('/[^0-9]/', '', $rtNumber), 3, '0', STR_PAD_LEFT);
+        $tahun = (int) $request->input('tahun', Carbon::now()->year);
+
+        $eval = AuditEvaluasiRt::firstOrCreate(
+            [
+                'rt_number' => $rtStr,
+                'tahun' => $tahun,
+            ],
+            [
+                'periode' => 'Tahunan',
+                'skor_kepatuhan' => 88,
+                'status_pertanggungjawaban' => 'baik',
+                'catatan_evaluasi' => 'Pencatatan kas dan administrasi berjalan tertib.',
+                'status_laporan' => 'Terkirim',
+            ]
+        );
+
+        $eval->status_verifikasi_rw = $request->status_verifikasi;
+        $eval->catatan_verifikasi_rw = $request->catatan_verifikasi;
+        $eval->diverifikasi_rw_pada = Carbon::now();
+        if ($request->status_verifikasi === 'Terverifikasi') {
+            $eval->laporan_dikunci = true;
+        } else {
+            $eval->laporan_dikunci = false;
+        }
+        $eval->save();
+
+        KeuanganAuditLog::create([
+            'user_id' => $user->id,
+            'action' => 'verifikasi_laporan_rt',
+            'deskripsi' => "Ketua RW memverifikasi laporan keuangan RT {$rtStr} dengan status [{$request->status_verifikasi}]. Catatan: " . ($request->catatan_verifikasi ?: '-'),
+            'new_values' => [
+                'rt_number' => $rtStr,
+                'status_verifikasi' => $request->status_verifikasi,
+                'catatan' => $request->catatan_verifikasi,
+            ],
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+
+        return redirect()->route('rw.audit.index', ['tab' => 'rekap_rt'])->with('success', "Laporan Keuangan RT {$rtStr} berhasil diverifikasi dengan status [{$request->status_verifikasi}].");
     }
 
     /**
@@ -300,7 +810,7 @@ class AuditController extends Controller
         $temuan = AuditTemuan::findOrFail($id);
 
         $request->validate([
-            'status' => 'required|in:perlu_diperiksa,dalam_pemeriksaan,menunggu_klarifikasi,perlu_tindak_lanjut,selesai',
+            'status' => 'required|in:perlu_diperiksa,dalam_pemeriksaan,menunggu_klarifikasi,perlu_tindak_lanjut,selesai,terbuka,dalam_proses,menunggu_verifikasi',
             'catatan_evaluasi_rw' => 'nullable|string',
             'tanggapan_rt' => 'nullable|string',
         ]);
@@ -452,13 +962,21 @@ class AuditController extends Controller
                 $q->where('rt_number', $rtStr)->orWhere('rt_number', (string)$i)->orWhere('rt_number', $i);
             })->first();
 
+            $evalBadge = $eval ? $eval->status_badge : [
+                'label' => 'Baik',
+                'bg' => 'wm-badge-eval-baik',
+                'style' => 'background-color: #DCFCE7; color: #166534; border: 1px solid #86EFAC;',
+            ];
+
             $scorecardRt[] = [
                 'rt_num' => $i,
                 'rt_name' => 'RT ' . $rtStr,
                 'evaluasi' => $eval,
                 'pic_name' => $picRt->name ?? 'Pengurus RT ' . $rtStr,
                 'skor' => $eval->skor_kepatuhan ?? 85,
-                'status_label' => $eval ? $eval->status_badge['label'] : 'Baik & Memadai',
+                'status_label' => $evalBadge['label'],
+                'status_badge' => $evalBadge['bg'],
+                'status_style' => $evalBadge['style'] ?? '',
                 'catatan' => $eval->catatan_evaluasi ?? 'Pencatatan kas dan administrasi berjalan tertib.',
                 'rekomendasi' => $eval->rekomendasi_rw ?? 'Pertahankan konsistensi pelaporan bulanan.',
                 'deadline' => $eval->tenggat_perbaikan ?? null,

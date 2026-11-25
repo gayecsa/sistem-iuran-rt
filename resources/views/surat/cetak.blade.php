@@ -404,7 +404,7 @@
                 <tr>
                     <td class="label">1. Nama Lengkap</td>
                     <td class="colon">:</td>
-                    <td class="value">{{ strtoupper($letter->nama_lengkap) }}</td>
+                    <td class="value"><strong>{{ strtoupper($letter->nama_lengkap) }}</strong></td>
                 </tr>
                 <tr>
                     <td class="label">2. NIK / No. KTP</td>
@@ -454,7 +454,7 @@
             {{-- KETERANGAN SPESIFIK SESUAI MASTER TEMPLATE / JENIS SURAT --}}
             @if(!empty($templateText))
                 <p class="surat-paragraf">
-                    {{ $templateText }}
+                    {!! $templateText !!}
                 </p>
             @elseif($letter->jenis_surat === 'domisili')
                 <p class="surat-paragraf">
@@ -510,7 +510,7 @@
                         </div>
                     </div>
 
-                    <div class="ttd-nama">{{ $rtName }}</div>
+                    <div class="ttd-nama">{{ strtoupper($rtName) }}</div>
                     <div class="ttd-nip">Token: {{ substr($letter->rt_signature_token ?? 'RT-VERIFIED', 0, 16) }}</div>
                 </div>
             </div>
@@ -536,7 +536,7 @@
                         </div>
                     </div>
 
-                    <div class="ttd-nama">{{ $rtName }}</div>
+                    <div class="ttd-nama">{{ strtoupper($rtName) }}</div>
                     <div class="ttd-nip">Token: {{ substr($letter->rt_signature_token ?? 'RT-VERIFIED', 0, 16) }}</div>
                 </div>
 
@@ -560,7 +560,7 @@
                         </div>
                     </div>
 
-                    <div class="ttd-nama">{{ $rwName }}</div>
+                    <div class="ttd-nama">{{ strtoupper($rwName) }}</div>
                     <div class="ttd-nip">Token: {{ substr($letter->rw_signature_token ?? 'RW-VERIFIED', 0, 16) }}</div>
                 </div>
             </div>
@@ -607,7 +607,7 @@
                     </svg>
                 </div>
                 <div>
-                    <div style="font-weight: 700; color:#123766;">VERIFIKASI DIGITAL WARKAS MACHI</div>
+                    <div style="font-weight: 700; color:#123766;">VERIFIKASI DIGITAL HAVEN</div>
                     <div>Pindai QR Code untuk memvalidasi keaslian dokumen resmi ini secara daring.</div>
                     <div style="font-family: monospace; color:#64748b; font-size:7.5pt;">ID: {{ $letter->qr_verification_code }}</div>
                 </div>

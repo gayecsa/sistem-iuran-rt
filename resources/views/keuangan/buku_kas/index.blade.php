@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Buku Kas & Rekening Keuangan - Warkas Machi RW 013')
+@section('title', 'Buku Kas & Rekening Keuangan')
 
 @section('content')
-<!-- Tailwind CSS Setup dengan Preflight Disabled agar Selaras dengan Tema Warkas Machi -->
+<!-- Tailwind CSS Setup dengan Preflight Disabled agar Selaras dengan Tema Haven -->
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
     tailwind.config = {
@@ -30,7 +30,7 @@
 </script>
 
 <style>
-    /* Styling Terpadu Warkas Machi Financial Dashboard */
+    /* Styling Terpadu Haven Financial Dashboard */
     .fin-card {
         background-color: var(--wm-card, #FFFFFF);
         border: 1px solid var(--wm-border, #E2E8F0);
@@ -152,20 +152,22 @@
         <!-- 4 Kartu Statistik Keuangan Utama -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
-            <!-- 1. Total Saldo Seluruh Kas (Saldo Berjalan Akumulasi) -->
+            <!-- 1. Saldo Kas Utama (Kas Induk RW atau Kas RT) -->
             <div class="fin-card p-5 bg-white rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
                 <div class="flex items-center justify-between mb-3">
-                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Saldo Seluruh Kas</span>
+                    <span class="text-xs font-bold text-blue-700 uppercase tracking-wider">
+                        {{ $isRw ? 'Saldo Kas Induk RW' : 'Saldo Kas RT ' . $rtStr }}
+                    </span>
                     <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center shadow-xs">
                         <i data-lucide="landmark" class="w-5 h-5"></i>
                     </div>
                 </div>
                 <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                    Rp {{ number_format($totalSaldo, 0, ',', '.') }}
+                    Rp {{ number_format($isRw ? $saldoKasRw : $totalSaldo, 0, ',', '.') }}
                 </h3>
                 <div class="mt-2 flex items-center gap-1.5 text-xs text-slate-500 font-medium">
                     <span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
-                    <span>Saldo berjalan aktif di {{ $totalRekeningAktif }} rekening</span>
+                    <span>{{ $isRw ? 'Dana otonom milik RW 013' : 'Dana operasional Kas RT ' . $rtStr }}</span>
                 </div>
                 <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-blue-50/50 rounded-full pointer-events-none"></div>
             </div>
@@ -206,20 +208,22 @@
                 <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-rose-50/50 rounded-full pointer-events-none"></div>
             </div>
 
-            <!-- 4. Jumlah Rekening Aktif -->
+            <!-- 4. Total Dana Terpantau (Transparansi Lingkungan) -->
             <div class="fin-card p-5 bg-white rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
                 <div class="flex items-center justify-between mb-3">
-                    <span class="text-xs font-bold text-indigo-700 uppercase tracking-wider">Rekening Terdaftar</span>
+                    <span class="text-xs font-bold text-indigo-700 uppercase tracking-wider">
+                        {{ $isRw ? 'Total Dana Terpantau' : 'Rekening Terdaftar' }}
+                    </span>
                     <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center shadow-xs">
-                        <i data-lucide="credit-card" class="w-5 h-5"></i>
+                        <i data-lucide="{{ $isRw ? 'layers' : 'credit-card' }}" class="w-5 h-5"></i>
                     </div>
                 </div>
                 <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                    {{ $totalRekeningAktif }} <span class="text-sm font-semibold text-slate-500">Rekening</span>
+                    {{ $isRw ? 'Rp ' . number_format($totalDanaTerpantau, 0, ',', '.') : $totalRekeningAktif . ' Rekening' }}
                 </h3>
                 <div class="mt-2 text-xs text-slate-500 font-medium flex items-center gap-1">
                     <i data-lucide="check-circle" class="w-3.5 h-3.5 text-blue-600"></i>
-                    <span>Seluruh rekening berstatus aktif</span>
+                    <span>{{ $isRw ? 'Akumulasi ' . $totalRekeningAktif . ' rekening (Bukan Saldo RW)' : 'Seluruh rekening berstatus aktif' }}</span>
                 </div>
                 <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-indigo-50/50 rounded-full pointer-events-none"></div>
             </div>
@@ -341,7 +345,7 @@
                         {{ $kas->nama_kas }}
                     </h3>
                     <p class="text-xs text-slate-500 mt-0.5 line-clamp-2 leading-relaxed">
-                        {{ $kas->deskripsi ?: 'Buku kas perbendaharaan resmi warga Warkas Machi RW 013.' }}
+                        {{ $kas->deskripsi ?: 'Buku kas perbendaharaan resmi warga Haven RW 013.' }}
                     </p>
 
                     <!-- PIC & Bank Info -->

@@ -16,6 +16,7 @@ use App\Models\PosyanduJadwal;
 use App\Models\PosyanduKehadiran;
 use App\Models\PosyanduPengukuran;
 use App\Models\PosyanduLaporan;
+use App\Models\ActivityLog;
 
 class PosyanduController extends Controller
 {
@@ -233,14 +234,59 @@ class PosyanduController extends Controller
             ->get();
 
         // Calon Warga RT untuk Dropdown Tambah Peserta
+        $registeredRtUserIds = PosyanduPeserta::where('rt_number', $rtStr)
+            ->where('status_aktif', true)
+            ->pluck('user_id')
+            ->toArray();
+
         $wargaBelumTerdaftar = User::where('role', 'warga')
             ->where(function($q) use ($rtStr) {
                 $q->where('rt_number', $rtStr)->orWhere('rt_number', (string)intval($rtStr));
             })
-            ->whereNotIn('id', PosyanduPeserta::where('rt_number', $rtStr)->where('status_aktif', true)->pluck('user_id'))
+            ->whereNotIn('id', $registeredRtUserIds)
             ->orderBy('name')
             ->limit(100)
             ->get();
+
+        // Smart Auto-Detection: Warga RT Belum Terdaftar (0-5 th Balita & >= 60 th Lansia)
+        $autoDetectedRtWarga = [];
+        foreach ($wargaBelumTerdaftar as $w) {
+            if (!$w->tanggal_lahir) continue;
+            $dob = Carbon::parse($w->tanggal_lahir);
+            $diffMonths = (int) $dob->diffInMonths(Carbon::now());
+            $diffYears = (int) $dob->age;
+
+            if ($diffMonths < 60) {
+                $cat = $diffMonths < 12 ? 'bayi' : 'balita';
+                $autoDetectedRtWarga[] = [
+                    'user' => $w,
+                    'kategori' => $cat,
+                    'kategori_label' => $diffMonths < 12 ? 'Bayi (0-11 Bln)' : 'Balita (1-5 Thn)',
+                    'usia_text' => "{$diffMonths} Bulan",
+                    'badge_class' => 'bg-info-subtle text-info border border-info-subtle',
+                    'icon' => 'baby',
+                ];
+            } elseif ($diffYears >= 60) {
+                $autoDetectedRtWarga[] = [
+                    'user' => $w,
+                    'kategori' => 'lansia',
+                    'kategori_label' => 'Lansia (60+ Thn)',
+                    'usia_text' => "{$diffYears} Tahun",
+                    'badge_class' => 'bg-amber-subtle text-warning-emphasis border border-warning-subtle',
+                    'icon' => 'smile',
+                ];
+            }
+        }
+
+        // Cek pengingat pelaporan resmi dari RW dalam 7 hari terakhir
+        $rwReminder = ActivityLog::where('category', 'posyandu')
+            ->where('action', 'posyandu.reminder_sent')
+            ->where('created_at', '>=', Carbon::now()->subDays(7))
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->first(function($log) use ($rtStr) {
+                return isset($log->metadata['target_rt']) && (string)$log->metadata['target_rt'] === (string)$rtStr;
+            });
 
         return view('posyandu.index_rt', compact(
             'user',
@@ -258,7 +304,9 @@ class PosyanduController extends Controller
             'jadwalList',
             'kaderList',
             'tindakLanjutList',
-            'wargaBelumTerdaftar'
+            'wargaBelumTerdaftar',
+            'autoDetectedRtWarga',
+            'rwReminder'
         ));
     }
 
@@ -306,6 +354,36 @@ class PosyanduController extends Controller
             ->whereNotIn('id', PosyanduPeserta::whereIn('user_id', $familyUserIds)->where('status_aktif', true)->pluck('user_id'))
             ->get();
 
+        // Smart Auto-Detection: Balita (0-5 th / < 60 bulan) & Lansia (>= 60 th) dalam KK
+        $autoDetectedFamily = [];
+        foreach ($unregisteredFamilyMembers as $member) {
+            if (!$member->tanggal_lahir) continue;
+            $dob = Carbon::parse($member->tanggal_lahir);
+            $diffMonths = (int) $dob->diffInMonths(Carbon::now());
+            $diffYears = (int) $dob->age;
+
+            if ($diffMonths < 60) {
+                $category = $diffMonths < 12 ? 'bayi' : 'balita';
+                $autoDetectedFamily[] = [
+                    'user' => $member,
+                    'kategori' => $category,
+                    'kategori_label' => $diffMonths < 12 ? 'Bayi (0-11 Bln)' : 'Balita (1-5 Thn)',
+                    'usia_text' => "{$diffMonths} Bulan",
+                    'badge_class' => 'bg-info-subtle text-info border border-info-subtle',
+                    'icon' => 'baby',
+                ];
+            } elseif ($diffYears >= 60) {
+                $autoDetectedFamily[] = [
+                    'user' => $member,
+                    'kategori' => 'lansia',
+                    'kategori_label' => 'Lansia (60+ Thn)',
+                    'usia_text' => "{$diffYears} Tahun",
+                    'badge_class' => 'bg-amber-subtle text-warning-emphasis border border-warning-subtle',
+                    'icon' => 'smile',
+                ];
+            }
+        }
+
         // Riwayat Pengukuran Anggota Keluarga
         $pesertaIds = $myFamilyPeserta->pluck('id')->toArray();
         $riwayatPengukuran = PosyanduPengukuran::with(['peserta.user', 'jadwal'])
@@ -325,6 +403,7 @@ class PosyanduController extends Controller
             'pastEvents',
             'myFamilyPeserta',
             'unregisteredFamilyMembers',
+            'autoDetectedFamily',
             'riwayatPengukuran',
             'kaders'
         ));
@@ -337,7 +416,7 @@ class PosyanduController extends Controller
     {
         $user = Auth::user();
         if (!$user->isRt() && !$user->isRw()) {
-            return redirect()->back()->with('error', 'Hanya pengurus RT yang berhak mendaftarkan peserta Posyandu.');
+            abort(403, 'Akses ditolak. Fitur ini hanya untuk pengurus RT/RW.');
         }
 
         $rtStr = $this->getCleanRt($user->rt_number);
@@ -355,7 +434,7 @@ class PosyanduController extends Controller
         // Validasi: Warga harus berasal dari RT yang sama
         $wargaRt = $this->getCleanRt($calonPeserta->rt_number);
         if ($user->isRt() && $wargaRt !== $rtStr) {
-            return redirect()->back()->with('error', "Warga ini tercatat di RT {$wargaRt}. Anda hanya dapat mengelola peserta di RT {$rtStr}.");
+            abort(403, "Warga ini tercatat di RT {$wargaRt}. Anda hanya dapat mengelola peserta di RT {$rtStr}.");
         }
 
         // Cek duplikasi peserta aktif
@@ -367,7 +446,7 @@ class PosyanduController extends Controller
             return redirect()->back()->with('warning', 'Warga ini sudah terdaftar aktif sebagai peserta Posyandu.');
         }
 
-        PosyanduPeserta::create([
+        $peserta = PosyanduPeserta::create([
             'user_id' => $calonPeserta->id,
             'kartu_keluarga_id' => $calonPeserta->kartu_keluarga_id,
             'rt_number' => $wargaRt,
@@ -378,6 +457,19 @@ class PosyanduController extends Controller
             'catatan_khusus' => $validated['catatan_khusus'] ?? null,
             'tanggal_bergabung' => Carbon::now()->toDateString(),
         ]);
+
+        ActivityLog::record(
+            'posyandu',
+            'posyandu.peserta_added',
+            "Mendaftarkan peserta posyandu: {$calonPeserta->name} (RT {$wargaRt})",
+            [
+                'peserta_id' => $peserta->id,
+                'user_id' => $calonPeserta->id,
+                'kategori' => $peserta->kategori,
+                'rt_number' => $wargaRt,
+                'registered_by' => $user->name,
+            ]
+        );
 
         return redirect()->back()->with('success', "Peserta {$calonPeserta->name} berhasil didaftarkan ke Posyandu RT {$wargaRt}.");
     }
@@ -420,7 +512,7 @@ class PosyanduController extends Controller
     {
         $user = Auth::user();
         if (!$user->isRt() && !$user->isRw()) {
-            return redirect()->back()->with('error', 'Hanya pengurus RT yang berhak membuat jadwal kegiatan.');
+            abort(403, 'Akses ditolak. Fitur ini hanya untuk pengurus RT/RW.');
         }
 
         $rtStr = $this->getCleanRt($user->rt_number);
@@ -438,7 +530,7 @@ class PosyanduController extends Controller
 
         $unit = PosyanduKegiatan::where('rt_number', $rtStr)->first();
 
-        PosyanduJadwal::create([
+        $jadwal = PosyanduJadwal::create([
             'posyandu_unit_id' => $unit ? $unit->id : null,
             'rt_number' => $rtStr,
             'judul_kegiatan' => $validated['judul_kegiatan'],
@@ -453,6 +545,17 @@ class PosyanduController extends Controller
             'created_by' => $user->id,
         ]);
 
+        ActivityLog::record(
+            'posyandu',
+            'posyandu.schedule_created',
+            "Membuat jadwal posyandu RT {$rtStr}: {$jadwal->judul_kegiatan} ({$jadwal->tanggal})",
+            [
+                'jadwal_id' => $jadwal->id,
+                'rt_number' => $rtStr,
+                'created_by' => $user->name,
+            ]
+        );
+
         return redirect()->back()->with('success', 'Jadwal kegiatan Posyandu berhasil dibuat.');
     }
 
@@ -462,6 +565,10 @@ class PosyanduController extends Controller
     public function batalJadwal(Request $request, $id)
     {
         $user = Auth::user();
+        if (!$user->isRt() && !$user->isRw()) {
+            abort(403, 'Akses ditolak. Fitur ini hanya untuk pengurus RT/RW.');
+        }
+
         $jadwal = PosyanduJadwal::findOrFail($id);
 
         if ($user->isRt() && $this->getCleanRt($user->rt_number) !== $jadwal->rt_number) {
@@ -487,6 +594,10 @@ class PosyanduController extends Controller
     public function catatKehadiran(Request $request, $jadwalId)
     {
         $user = Auth::user();
+        if (!$user->isRt() && !$user->isRw()) {
+            abort(403, 'Akses ditolak. Fitur ini hanya untuk pengurus RT/RW.');
+        }
+
         $jadwal = PosyanduJadwal::findOrFail($jadwalId);
 
         if ($user->isRt() && $this->getCleanRt($user->rt_number) !== $jadwal->rt_number) {
@@ -523,6 +634,10 @@ class PosyanduController extends Controller
     public function storePengukuran(Request $request, $pesertaId)
     {
         $user = Auth::user();
+        if (!$user->isRt() && !$user->isRw()) {
+            abort(403, 'Akses ditolak. Fitur ini hanya untuk pengurus RT/RW.');
+        }
+
         $peserta = PosyanduPeserta::findOrFail($pesertaId);
 
         if ($user->isRt() && $this->getCleanRt($user->rt_number) !== $peserta->rt_number) {
@@ -545,7 +660,7 @@ class PosyanduController extends Controller
             'anjuran_rujukan' => 'nullable|string|max:500',
         ]);
 
-        PosyanduPengukuran::create([
+        $pengukuran = PosyanduPengukuran::create([
             'peserta_id' => $peserta->id,
             'jadwal_id' => $validated['jadwal_id'] ?? null,
             'rt_number' => $peserta->rt_number,
@@ -564,6 +679,19 @@ class PosyanduController extends Controller
             'petugas_pencatat_id' => $user->id,
         ]);
 
+        ActivityLog::record(
+            'posyandu',
+            'posyandu.measurement_recorded',
+            "Mencatat pengukuran fisik peserta {$peserta->user->name} (RT {$peserta->rt_number})",
+            [
+                'peserta_id' => $peserta->id,
+                'rt_number' => $peserta->rt_number,
+                'berat_badan' => $validated['berat_badan'] ?? null,
+                'tinggi_badan' => $validated['tinggi_badan'] ?? null,
+                'petugas' => $user->name,
+            ]
+        );
+
         return redirect()->back()->with('success', "Pengukuran untuk {$peserta->user->name} berhasil dicatat.");
     }
 
@@ -573,6 +701,10 @@ class PosyanduController extends Controller
     public function storeLaporan(Request $request, $jadwalId)
     {
         $user = Auth::user();
+        if (!$user->isRt() && !$user->isRw()) {
+            abort(403, 'Akses ditolak. Fitur ini hanya untuk pengurus RT/RW.');
+        }
+
         $jadwal = PosyanduJadwal::findOrFail($jadwalId);
 
         if ($user->isRt() && $this->getCleanRt($user->rt_number) !== $jadwal->rt_number) {
@@ -604,7 +736,7 @@ class PosyanduController extends Controller
 
         $nomorLaporan = 'LAP-POS-' . $jadwal->rt_number . '-' . Carbon::now()->format('Ym') . '-' . sprintf('%02d', rand(1, 99));
 
-        PosyanduLaporan::updateOrCreate(
+        $laporan = PosyanduLaporan::updateOrCreate(
             ['jadwal_id' => $jadwal->id],
             [
                 'rt_number' => $jadwal->rt_number,
@@ -625,6 +757,19 @@ class PosyanduController extends Controller
 
         // Update status jadwal menjadi selesai
         $jadwal->update(['status' => 'selesai']);
+
+        ActivityLog::record(
+            'posyandu',
+            'posyandu.report_submitted',
+            "Mengirimkan laporan kegiatan posyandu RT {$jadwal->rt_number}: {$jadwal->judul_kegiatan}",
+            [
+                'jadwal_id' => $jadwal->id,
+                'rt_number' => $jadwal->rt_number,
+                'nomor_laporan' => $nomorLaporan,
+                'total_hadir' => $totalHadir,
+                'penanggung_jawab' => $user->name,
+            ]
+        );
 
         return redirect()->back()->with('success', "Laporan kegiatan Posyandu berhasil disimpan dan dikirimkan ke RW 013.");
     }
@@ -683,6 +828,18 @@ class PosyanduController extends Controller
             'evaluator_rw_id' => $user->id,
         ]);
 
+        ActivityLog::record(
+            'posyandu',
+            'posyandu.report_evaluated',
+            "Mengevaluasi laporan kegiatan posyandu RT {$laporan->rt_number} ({$validated['status_laporan']})",
+            [
+                'laporan_id' => $laporan->id,
+                'rt_number' => $laporan->rt_number,
+                'status' => $validated['status_laporan'],
+                'evaluator' => $user->name,
+            ]
+        );
+
         return redirect()->back()->with('success', 'Catatan evaluasi RW berhasil disimpan.');
     }
 
@@ -693,11 +850,22 @@ class PosyanduController extends Controller
     {
         $user = Auth::user();
         if (!$user->isRw()) {
-            abort(403, 'Akses ditolak.');
+            abort(403, 'Hanya pengurus RW yang berhak mengirimkan pengingat laporan.');
         }
 
         $cleanRt = $this->getCleanRt($rtNumber);
         
+        ActivityLog::record(
+            'posyandu',
+            'posyandu.reminder_sent',
+            "Pengurus RW mengirimkan pengingat pelaporan kegiatan Posyandu ke Ketua RT {$cleanRt}",
+            [
+                'target_rt' => $cleanRt,
+                'sender' => $user->name,
+                'sent_at' => Carbon::now()->toDateTimeString(),
+            ]
+        );
+
         return redirect()->back()->with('success', "Notifikasi pengingat pengiriman laporan Posyandu berhasil diteruskan ke Pengurus RT {$cleanRt}.");
     }
 
@@ -708,7 +876,7 @@ class PosyanduController extends Controller
     {
         $user = Auth::user();
         if (!$user->isRt() && !$user->isRw()) {
-            abort(403, 'Hanya pengurus RT yang berhak mengelola kader.');
+            abort(403, 'Akses ditolak. Fitur ini hanya untuk pengurus RT/RW.');
         }
 
         $rtStr = $this->getCleanRt($user->rt_number);
@@ -756,7 +924,7 @@ class PosyanduController extends Controller
 
         $rtStr = $this->getCleanRt($calon->rt_number ?: $user->rt_number);
 
-        PosyanduPeserta::firstOrCreate(
+        $peserta = PosyanduPeserta::firstOrCreate(
             ['user_id' => $calon->id],
             [
                 'kartu_keluarga_id' => $calon->kartu_keluarga_id,
@@ -765,6 +933,19 @@ class PosyanduController extends Controller
                 'status_aktif' => true,
                 'catatan_khusus' => $validated['catatan_khusus'] ?? null,
                 'tanggal_bergabung' => Carbon::now()->toDateString(),
+            ]
+        );
+
+        ActivityLog::record(
+            'posyandu',
+            'posyandu.family_registered',
+            "Warga mendaftarkan anggota keluarga ke Posyandu: {$calon->name} (RT {$rtStr})",
+            [
+                'peserta_id' => $peserta->id,
+                'calon_id' => $calon->id,
+                'kategori' => $validated['kategori'],
+                'rt_number' => $rtStr,
+                'registered_by' => $user->name,
             ]
         );
 

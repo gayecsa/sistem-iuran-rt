@@ -18,13 +18,23 @@ use App\Models\PosyanduKegiatan;
 use App\Models\BankSampah;
 use App\Models\WilayahAdministratif;
 use App\Models\Umkm;
+use App\Models\BukuKas;
+use App\Models\TransaksiKeuangan;
+use App\Models\KartuKeluarga;
+use App\Models\TagihanKeluarga;
+use App\Models\PembayaranIuran;
+use App\Models\Cctv;
+use App\Models\CctvAccessRequest;
+use App\Models\ActivityLog;
 
 class DashboardController extends Controller
 {
     public function index()
     {
         $user = Auth::user();
-        if ($user->isRt()) {
+        if ($user->isSuperAdmin()) {
+            return redirect()->route('dashboard.super-admin');
+        } elseif ($user->isRt()) {
             return redirect()->route('dashboard.rt');
         } elseif ($user->isWarga()) {
             return redirect()->route('dashboard.warga');
@@ -48,9 +58,10 @@ class DashboardController extends Controller
 
         $rtNum = $user->clean_rt_number;
         $rtLabel = $user->clean_rt_label;
+        $rtStr = str_pad($rtNum, 3, '0', STR_PAD_LEFT);
 
         // Query data warga khusus RT sendiri (Keamanan data antar-RT)
-        $wargaRtQuery = User::where('role', 'warga')->where(function ($q) use ($rtNum) {
+        $wargaRtQuery = User::whereIn('role', ['warga', 'rt'])->where(function ($q) use ($rtNum) {
             $q->where('rt_number', $rtNum)
               ->orWhere('rt_number', str_pad($rtNum, 3, '0', STR_PAD_LEFT))
               ->orWhere('rt_number', 'RT ' . str_pad($rtNum, 3, '0', STR_PAD_LEFT))
@@ -61,7 +72,12 @@ class DashboardController extends Controller
         $totalWarga = (clone $wargaRtQuery)->count();
         $totalLaki = (clone $wargaRtQuery)->where('gender', 'Laki-laki')->count();
         $totalPerempuan = (clone $wargaRtQuery)->where('gender', 'Perempuan')->count();
-        $totalKk = (clone $wargaRtQuery)->whereNotNull('no_kk')->distinct('no_kk')->count('no_kk');
+        
+        // Sinkronisasi data Kepala Keluarga (KK) langsung dari tabel kartu_keluarga
+        $totalKk = KartuKeluarga::where('rt', $rtStr)->orWhere('rt', ltrim($rtStr, '0'))->count();
+        if ($totalKk === 0) {
+            $totalKk = (clone $wargaRtQuery)->whereNotNull('no_kk')->distinct('no_kk')->count('no_kk');
+        }
         $wargaAktif = (clone $wargaRtQuery)->where('is_active', true)->count();
 
         // Ambil Laporan & Monitoring RT dari data tersimpan
@@ -82,15 +98,87 @@ class DashboardController extends Controller
         // Jika DB warga belum terisi untuk RT ini, fallback ke data statistik laporan RT
         if ($totalWarga === 0) {
             $totalWarga = $myReport['administrasi']['jumlah_warga'] ?? 142;
-            $totalKk = $myReport['administrasi']['jumlah_kk'] ?? 45;
+            if ($totalKk === 0) {
+                $totalKk = $myReport['administrasi']['jumlah_kk'] ?? 45;
+            }
             $wargaAktif = $totalWarga;
             $totalLaki = round($totalWarga * 0.52);
             $totalPerempuan = $totalWarga - $totalLaki;
         }
 
-        // Keuangan & Iuran RT
-        $saldoKasRt = $myReport['keuangan']['saldo_akhir'] ?? 14850000;
-        $iuranTerkumpul = $myReport['keuangan']['pemasukan'] ?? 3850000;
+        // Keuangan & Iuran RT Sinkron 100% dengan Ledger Buku Kas & Manajemen Keuangan RT Asli
+        $bukuKasRt = BukuKas::where('jenis_kas', 'kas_rt')
+            ->where(function($q) use ($rtStr) {
+                $q->where('rt_number', $rtStr)->orWhere('rt_number', ltrim($rtStr, '0'));
+            })->first();
+
+        if (!$bukuKasRt) {
+            $bukuKasRt = BukuKas::firstOrCreate(
+                ['kode_kas' => 'KAS-RT-' . $rtStr],
+                [
+                    'nama_kas' => 'Buku Kas RT ' . $rtStr . ' RW 013',
+                    'jenis_kas' => 'kas_rt',
+                    'rt_number' => $rtStr,
+                    'saldo_awal' => 0,
+                    'saldo_sekarang' => 0,
+                    'penanggung_jawab_id' => $user->id,
+                    'nama_penanggung_jawab' => $user->name,
+                    'deskripsi' => 'Kas Operasional RT ' . $rtStr,
+                    'is_active' => true,
+                ]
+            );
+        }
+
+        // Rekening Pendukung Lingkungan RT (Kas Sampah & Kas Keamanan/Ronda)
+        $kasSampah = BukuKas::where('jenis_kas', 'kas_sampah')->first();
+        if ($kasSampah) {
+            $kasSampah->recalculateSaldo();
+        }
+
+        $kasKeamanan = BukuKas::where('kode_kas', 'KEG-RONDA')
+            ->orWhere('nama_kas', 'like', '%Keamanan%')
+            ->orWhere('nama_kas', 'like', '%Ronda%')
+            ->first();
+        if ($kasKeamanan) {
+            $kasKeamanan->recalculateSaldo();
+        }
+
+        $totalSaldoOtonomRt = floatval($bukuKasRt ? $bukuKasRt->saldo_sekarang : 0);
+        $saldoKasSampah = floatval($kasSampah ? $kasSampah->saldo_sekarang : 0);
+        $saldoKasKeamanan = floatval($kasKeamanan ? $kasKeamanan->saldo_sekarang : 0);
+        $totalSaldoKeseluruhanRt = $totalSaldoOtonomRt 
+            + $saldoKasSampah 
+            + $saldoKasKeamanan;
+
+        $saldoKasRt = $totalSaldoOtonomRt;
+
+        $now = Carbon::now();
+        $currentPeriode = $now->format('Y-m');
+        $currentMonth = $now->month;
+        $currentYear = $now->year;
+
+        // Pemasukan & Pengeluaran Bulan Ini (Kas RT Murni - 100% sinkron KeuanganController)
+        $pemasukanRtBulanIni = TransaksiKeuangan::where('buku_kas_id', $bukuKasRt->id)
+            ->where('status', 'selesai')
+            ->whereIn('jenis_transaksi', ['pemasukan', 'transfer_masuk'])
+            ->whereMonth('tanggal_transaksi', $currentMonth)
+            ->whereYear('tanggal_transaksi', $currentYear)
+            ->sum('nominal');
+
+        $pengeluaranRtBulanIni = TransaksiKeuangan::where('buku_kas_id', $bukuKasRt->id)
+            ->where('status', 'selesai')
+            ->whereIn('jenis_transaksi', ['pengeluaran', 'transfer_keluar'])
+            ->whereMonth('tanggal_transaksi', $currentMonth)
+            ->whereYear('tanggal_transaksi', $currentYear)
+            ->sum('nominal');
+
+        // Iuran RT Terkumpul (Bulan Berjalan): Diambil dari TagihanKeluarga status Lunas untuk porsi RT
+        $iuranTerkumpul = TagihanKeluarga::where('periode', $currentPeriode)
+            ->where(function($q) use ($rtStr) {
+                $q->where('rt_number', $rtStr)->orWhere('rt_number', ltrim($rtStr, '0'));
+            })
+            ->where('status', 'Lunas')
+            ->sum('nominal_rt');
 
         // Pengaduan Warga RT sendiri
         $pengaduanRt = array_values(array_filter($this->getPengaduanData(), function ($p) use ($rtNum) {
@@ -119,8 +207,9 @@ class DashboardController extends Controller
             ->orderBy('tanggal_aktif', 'desc')->limit(4)->get();
 
         return view('dashboard.rt', compact(
-            'user', 'rtNum', 'rtLabel', 'totalWarga', 'totalKk', 'wargaAktif',
-            'totalLaki', 'totalPerempuan', 'saldoKasRt', 'iuranTerkumpul',
+            'user', 'rtNum', 'rtLabel', 'rtStr', 'totalWarga', 'totalKk', 'wargaAktif',
+            'totalLaki', 'totalPerempuan', 'saldoKasRt', 'totalSaldoKeseluruhanRt', 'totalSaldoOtonomRt', 'iuranTerkumpul',
+            'pemasukanRtBulanIni', 'pengeluaranRtBulanIni', 'saldoKasSampah', 'saldoKasKeamanan',
             'myReport', 'pengaduanRt', 'permohonanSurat', 'kegiatanRt', 'pengumuman'
         ));
     }
@@ -128,12 +217,55 @@ class DashboardController extends Controller
     public function dashboardWarga()
     {
         $user = Auth::user();
-        $tagihan_saya = Iuran::where('status', 'aktif')->get();
-        $riwayat_bayar = Pembayaran::where('user_id', $user->id)
-            ->with('iuran')->orderBy('created_at', 'desc')->limit(5)->get();
-        $total_bayar = Pembayaran::where('user_id', $user->id)
-            ->where('status', 'lunas')->sum('jumlah_bayar');
-        $tagihan_belum_bayar = $this->getTagihanBelumBayar($user->id);
+
+        // 1. Ambil data Kartu Keluarga warga secara akurat
+        $kartuKeluarga = null;
+        if ($user->kartu_keluarga_id) {
+            $kartuKeluarga = KartuKeluarga::find($user->kartu_keluarga_id);
+        }
+        if (!$kartuKeluarga && $user->no_kk) {
+            $kartuKeluarga = KartuKeluarga::where('no_kk', $user->no_kk)->first();
+        }
+        if (!$kartuKeluarga && $user->nik) {
+            $kartuKeluarga = KartuKeluarga::whereHas('anggota', function($q) use ($user) {
+                $q->where('nik', $user->nik);
+            })->first();
+        }
+
+        $kkId = $kartuKeluarga ? $kartuKeluarga->id : -1;
+
+        // 2. Tagihan Belum Bayar (One Billing: hanya yang benar-benar belum lunas, sisa_tagihan > 0)
+        // Tidak menampilkan tagihan berstatus Lunas / Dibebaskan, dan tidak ada tagihan nominal Rp 0
+        $tagihan_belum_bayar = TagihanKeluarga::with(['items.bukuKas'])
+            ->where('kartu_keluarga_id', $kkId)
+            ->whereIn('status', ['Belum Dibayar', 'Terlambat', 'Dibayar Sebagian'])
+            ->where('sisa_tagihan', '>', 0)
+            ->orderBy('periode', 'desc')
+            ->get();
+
+        // 3. Seluruh Riwayat Tagihan Keluarga
+        $allTagihans = TagihanKeluarga::with(['items.bukuKas', 'pembayarans.penerima'])
+            ->where('kartu_keluarga_id', $kkId)
+            ->orderBy('periode', 'desc')
+            ->get();
+
+        // 4. Total Iuran Terbayar Sah
+        $total_bayar = $allTagihans->where('status', 'Lunas')->sum('total_dibayar');
+        if ($total_bayar == 0) {
+            $total_bayar = PembayaranIuran::where('kartu_keluarga_id', $kkId)
+                ->where('status', '!=', 'dibatalkan')
+                ->sum('nominal_bayar');
+        }
+
+        // 5. Riwayat Pembayaran Terbaru (PembayaranIuran & Tagihan Lunas/Bebas)
+        $riwayat_bayar = PembayaranIuran::with(['tagihanKeluarga', 'penerima'])
+            ->where('kartu_keluarga_id', $kkId)
+            ->where('status', '!=', 'dibatalkan')
+            ->orderBy('tanggal_bayar', 'desc')
+            ->limit(5)
+            ->get();
+
+        $riwayat_tagihan = $allTagihans->whereIn('status', ['Lunas', 'Dibebaskan', 'Dibayar Sebagian']);
 
         $pengumuman = Pengumuman::where('tanggal_aktif', '<=', Carbon::now())
             ->orderBy('tanggal_aktif', 'desc')->limit(5)->get();
@@ -147,7 +279,7 @@ class DashboardController extends Controller
         }));
 
         return view('dashboard.warga', compact(
-            'user', 'tagihan_saya', 'riwayat_bayar', 'total_bayar',
+            'user', 'kartuKeluarga', 'riwayat_bayar', 'riwayat_tagihan', 'total_bayar',
             'tagihan_belum_bayar', 'pengumuman', 'cctvs', 'admin_contact_phone', 'pengaduanSaya'
         ));
     }
@@ -157,23 +289,112 @@ class DashboardController extends Controller
         $user = $user ?? Auth::user();
         $data = [];
 
-        $baseWargaQuery = User::where('role', 'warga');
+        $baseWargaQuery = User::whereIn('role', ['warga', 'rt']);
         $data['total_warga'] = (clone $baseWargaQuery)->count(); 
         $data['total_laki'] = (clone $baseWargaQuery)->where('gender', 'Laki-laki')->count();
         $data['total_perempuan'] = (clone $baseWargaQuery)->where('gender', 'Perempuan')->count();
+        $data['total_kk'] = KartuKeluarga::count();
+        if ($data['total_kk'] === 0) {
+            $data['total_kk'] = (clone $baseWargaQuery)->whereNotNull('no_kk')->distinct('no_kk')->count('no_kk') ?: 348;
+        }
 
-        $kasData = KasRt::selectRaw('COALESCE(SUM(pemasukan), 0) as total_pemasukan, COALESCE(SUM(pengeluaran), 0) as total_pengeluaran')->first();
-        $data['total_pemasukan'] = $kasData->total_pemasukan ?? 0;
-        $data['total_pengeluaran'] = $kasData->total_pengeluaran ?? 0;
-        $data['saldo_kas'] = $data['total_pemasukan'] - $data['total_pengeluaran'];
+        // 1. Data Kas Induk RW 013 (Murni Entitas RW 013 - Tidak Mencampur Kas RT / Kas Unit)
+        $kasRw = BukuKas::where('jenis_kas', 'kas_rw')->first();
+        if (!$kasRw) {
+            $kasRw = BukuKas::firstOrCreate(
+                ['jenis_kas' => 'kas_rw'],
+                ['kode_kas' => 'KAS-RW-013', 'nama_kas' => 'Kas Induk RW 013 Sukamiskin', 'pemilik_dana' => 'rw', 'saldo_sekarang' => 0, 'is_active' => true]
+            );
+        }
+        $kasRw->recalculateSaldo();
+        $saldoKasRw = floatval($kasRw->saldo_sekarang ?? 0);
+
+        // Mutasi Kas RW Bulan Berjalan (Exclude internal transfer)
+        $now = Carbon::now();
+        $pemasukanRwBulanIni = TransaksiKeuangan::where('buku_kas_id', $kasRw->id)
+            ->where('status', 'selesai')
+            ->where('jenis_transaksi', 'pemasukan')
+            ->whereYear('tanggal_transaksi', $now->year)
+            ->whereMonth('tanggal_transaksi', $now->month)
+            ->sum('nominal');
+
+        $pengeluaranRwBulanIni = TransaksiKeuangan::where('buku_kas_id', $kasRw->id)
+            ->where('status', 'selesai')
+            ->where('jenis_transaksi', 'pengeluaran')
+            ->whereYear('tanggal_transaksi', $now->year)
+            ->whereMonth('tanggal_transaksi', $now->month)
+            ->sum('nominal');
+
+        // Akumulasi Historis Pemasukan & Pengeluaran Khusus Kas RW
+        $pemasukanRwTotal = TransaksiKeuangan::where('buku_kas_id', $kasRw->id)
+            ->where('status', 'selesai')
+            ->where('jenis_transaksi', 'pemasukan')
+            ->sum('nominal');
+
+        $pengeluaranRwTotal = TransaksiKeuangan::where('buku_kas_id', $kasRw->id)
+            ->where('status', 'selesai')
+            ->where('jenis_transaksi', 'pengeluaran')
+            ->sum('nominal');
+
+        // 2. Monitoring Saldo Otonom 8 RT (Milik RT masing-masing, Terpisah dari RW)
+        $allKasRt = BukuKas::where('jenis_kas', 'kas_rt')->orderBy('rt_number', 'asc')->get();
+        foreach ($allKasRt as $bRt) {
+            $bRt->recalculateSaldo();
+        }
+        $totalSaldoRt = floatval($allKasRt->sum('saldo_sekarang'));
+
+        // 3. Saldo Kas Pengelolaan Sampah RW 013 (Rekening Bersama Tingkat RW)
+        $kasSampah = BukuKas::where('jenis_kas', 'kas_sampah')->first();
+        if ($kasSampah) {
+            $kasSampah->recalculateSaldo();
+        }
+        $saldoKasSampah = floatval($kasSampah->saldo_sekarang ?? 0);
+
+        // 4. Saldo Kas Unit (Kas Sampah, Pos Ronda, Posyandu, Kegiatan)
+        $allKasUnit = BukuKas::where('pemilik_dana', 'unit')->get();
+        foreach ($allKasUnit as $bUnit) {
+            $bUnit->recalculateSaldo();
+        }
+        $totalSaldoUnit = floatval($allKasUnit->sum('saldo_sekarang'));
+
+        // Saldo Konsolidasi Wilayah (Kas Induk RW + Total Kas 8 RT + Kas Pengelolaan Sampah RW)
+        $saldoKonsolidasi = $saldoKasRw + $totalSaldoRt + $saldoKasSampah;
+
+        // Total Dana Terpantau (Transparansi Seluruh Rekening Wilayah RW 013, Bukan Milik Kas RW)
+        $totalDanaTerpantau = $saldoKasRw + $totalSaldoRt + $totalSaldoUnit;
+
+        // 5. Data Mutasi Legacy kas_rts (Total Rp 183.970.000) DITANDAI KHUSUS UNTUK REKONSILIASI ARSIP
+        $legacyKasData = KasRt::selectRaw('COALESCE(SUM(pemasukan), 0) as total_pemasukan, COALESCE(SUM(pengeluaran), 0) as total_pengeluaran')->first();
+        $saldoKasLegacy = floatval(($legacyKasData->total_pemasukan ?? 0) - ($legacyKasData->total_pengeluaran ?? 0));
+
+        // 6. Total Iuran Terkumpul Bulan Ini dari Database Tagihan Keluarga
+        $currentPeriode = $now->format('Y-m');
+        $tagihansRw = TagihanKeluarga::where('periode', $currentPeriode)->get();
+        $totalIuranTerkumpul = $tagihansRw->sum('total_dibayar');
+        if ($totalIuranTerkumpul == 0) {
+            $totalIuranTerkumpul = TagihanKeluarga::sum('total_dibayar') ?: 0;
+        }
+
+        // Set variabel keuangan murni ke view
+        $data['saldo_kas_rw'] = $saldoKasRw; // Menggunakan Saldo Kas Induk RW murni!
+        $data['pemasukan_rw'] = $pemasukanRwBulanIni > 0 ? $pemasukanRwBulanIni : $pemasukanRwTotal;
+        $data['pengeluaran_rw'] = $pengeluaranRwBulanIni > 0 ? $pengeluaranRwBulanIni : $pengeluaranRwTotal;
+        $data['pemasukan_rw_bulan_ini'] = $pemasukanRwBulanIni;
+        $data['pengeluaran_rw_bulan_ini'] = $pengeluaranRwBulanIni;
+        $data['pemasukan_rw_total'] = $pemasukanRwTotal;
+        $data['pengeluaran_rw_total'] = $pengeluaranRwTotal;
+        $data['kas_rw'] = $kasRw;
+
+        $data['total_saldo_rt'] = $totalSaldoRt;
+        $data['saldo_kas_sampah'] = $saldoKasSampah;
+        $data['saldo_konsolidasi'] = $saldoKonsolidasi;
+        $data['total_saldo_unit'] = $totalSaldoUnit;
+        $data['total_dana_terpantau'] = $totalDanaTerpantau;
+        $data['saldo_kas_legacy'] = $saldoKasLegacy;
 
         $data['total_rt'] = 8;
         $data['total_laporan_rt'] = 8;
-        $data['total_iuran_terkumpul'] = Pembayaran::where('status', 'lunas')->sum('jumlah_bayar') ?? 0;
-
-        $data['saldo_kas_rw'] = max(34500000, $data['saldo_kas']);
-        $data['pemasukan_rw'] = max(42800000, $data['total_pemasukan']);
-        $data['pengeluaran_rw'] = max(8300000, $data['total_pengeluaran']);
+        $data['total_iuran_terkumpul'] = $totalIuranTerkumpul;
 
         $data['rt_monitoring_list'] = $this->getRtMonitoringData();
 
@@ -220,21 +441,22 @@ class DashboardController extends Controller
     
     private function getTagihanBelumBayar($userId)
     {
-        $iuran_aktif = Iuran::where('status', 'aktif')->get();
-        $tagihan = [];
-        
-        foreach($iuran_aktif as $iuran) {
-            $sudahBayar = Pembayaran::where('user_id', $userId)
-                ->where('iuran_id', $iuran->id)
-                ->where('status', 'lunas')
-                ->exists();
-                
-            if(!$sudahBayar) {
-                $tagihan[] = $iuran;
-            }
-        }
-        
-        return $tagihan;
+        $user = User::find($userId);
+        if (!$user) return collect([]);
+
+        $kk = null;
+        if ($user->kartu_keluarga_id) $kk = KartuKeluarga::find($user->kartu_keluarga_id);
+        if (!$kk && $user->no_kk) $kk = KartuKeluarga::where('no_kk', $user->no_kk)->first();
+        if (!$kk && $user->nik) $kk = KartuKeluarga::whereHas('anggota', fn($q) => $q->where('nik', $user->nik))->first();
+
+        if (!$kk) return collect([]);
+
+        return TagihanKeluarga::with(['items.bukuKas'])
+            ->where('kartu_keluarga_id', $kk->id)
+            ->whereIn('status', ['Belum Dibayar', 'Terlambat', 'Dibayar Sebagian'])
+            ->where('sisa_tagihan', '>', 0)
+            ->orderBy('periode', 'desc')
+            ->get();
     }
 
     public function uploadFoto(Request $request)
@@ -727,16 +949,70 @@ class DashboardController extends Controller
                 'foto' => $u->foto_url,
                 'kategori' => 'UMKM Warga',
             ])->toArray(),
-            'pengaduan' => Pengaduan::with('pelapor')->get()->map(fn($ad) => [
-                'nama' => $ad->kategori . ' (' . $ad->status . ')',
-                'pelapor' => $ad->pelapor_name,
-                'alamat' => $ad->lokasi,
-                'lat' => (float)$ad->latitude,
-                'lng' => (float)$ad->longitude,
-                'deskripsi' => $ad->deskripsi,
-                'status' => $ad->status,
-                'kategori' => 'Titik Pengaduan',
-            ])->toArray(),
+            'pengaduan' => Pengaduan::with('pelapor')->get()->map(function($ad) use ($user) {
+                // PRIVASI: Jika pengguna adalah Warga, sembunyikan nama dan detail privat warga lain
+                $isOwn = ($ad->user_id === $user->id);
+                $pelaporLabel = $isOwn 
+                    ? ($ad->pelapor_name . ' (Laporan Anda)') 
+                    : ($user->isWarga() ? 'Warga Terdaftar (Disamarkan)' : $ad->pelapor_name);
+
+                // Cuplikan deskripsi disamarkan untuk warga lain demi privasi
+                $deskripsiClean = ($isOwn || !$user->isWarga()) 
+                    ? $ad->deskripsi 
+                    : 'Laporan warga dalam penanganan koordinasi pengurus lingkungan.';
+
+                return [
+                    'nama' => $ad->kategori . ' (' . $ad->status . ')',
+                    'pelapor' => $pelaporLabel,
+                    'alamat' => $ad->lokasi,
+                    'lat' => (float)$ad->latitude,
+                    'lng' => (float)$ad->longitude,
+                    'deskripsi' => $deskripsiClean,
+                    'status' => $ad->status,
+                    'kategori' => 'Titik Pengaduan',
+                ];
+            })->toArray(),
+            'cctv' => Cctv::where('aktif', true)->orderBy('rt')->get()->map(function($c) use ($user) {
+                // Tentukan hak akses pemantauan live CCTV untuk user saat ini
+                $canAccess = false;
+                if ($user->role === 'super_admin' || $user->role === 'admin' || $user->isRw()) {
+                    $canAccess = true;
+                } elseif ($user->isRt()) {
+                    $cleanRt = str_pad($user->clean_rt_number, 3, '0', STR_PAD_LEFT);
+                    $canAccess = ($c->rt === $cleanRt || intval($c->rt) === intval($cleanRt));
+                } else {
+                    $canAccess = CctvAccessRequest::where('user_id', $user->id)
+                        ->where('cctv_id', $c->id)
+                        ->where('status_rt', 'approved')
+                        ->where('status_rw', 'approved')
+                        ->where(function($q) {
+                            $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
+                        })
+                        ->exists();
+                }
+
+                $accessStatus = 'locked';
+                if ($canAccess) {
+                    $accessStatus = 'allowed';
+                } elseif ($user->isRt()) {
+                    $accessStatus = 'rt_restricted';
+                } else {
+                    $accessStatus = 'warga_no_permission';
+                }
+
+                return [
+                    'id' => $c->id,
+                    'nama' => $c->nama,
+                    'alamat' => $c->lokasi,
+                    'rt' => $c->clean_rt,
+                    'lat' => (float)$c->latitude,
+                    'lng' => (float)$c->longitude,
+                    'status' => $c->aktif ? 'Aktif 24 Jam' : 'Nonaktif',
+                    'kategori' => 'Titik CCTV Lingkungan',
+                    'access_status' => $accessStatus,
+                    'can_access' => $canAccess,
+                ];
+            })->toArray(),
         ];
 
         return view('peta', compact('user', 'markers'));
@@ -927,12 +1203,451 @@ class DashboardController extends Controller
         return view('bank-sampah', compact('user', 'bankSampahList'));
     }
 
-    public function ronda()
+    public function ronda(Request $request)
     {
         $user = Auth::user();
-        $cctvs = \App\Models\Cctv::where('aktif', true)->latest()->get();
+        $activeTab = in_array($request->query('tab'), ['cctv', 'lapor', 'riwayat']) ? $request->query('tab') : 'cctv';
+
+        $allCctvs = Cctv::where('aktif', true)->orderBy('rt')->get();
+
+        // Tentukan kamera yang BOLEH dipantau (live monitoring) oleh user saat ini
+        $allowedCctvIds = [];
+
+        if ($user->role === 'super_admin' || $user->role === 'admin' || $user->isRw()) {
+            // RW & Super Admin: Semua CCTV
+            $allowedCctvIds = $allCctvs->pluck('id')->toArray();
+        } elseif ($user->isRt()) {
+            // RT: HANYA CCTV di wilayah RT-nya sendiri
+            $cleanRt = str_pad($user->clean_rt_number, 3, '0', STR_PAD_LEFT);
+            $allowedCctvIds = $allCctvs->filter(function($c) use ($cleanRt) {
+                return $c->rt === $cleanRt || intval($c->rt) === intval($cleanRt);
+            })->pluck('id')->toArray();
+        } else {
+            // Warga: HANYA CCTV yang sudah disetujui penuh oleh RT DAN RW dan belum expired
+            $allowedCctvIds = CctvAccessRequest::where('user_id', $user->id)
+                ->where('status_rt', 'approved')
+                ->where('status_rw', 'approved')
+                ->where(function($q) {
+                    $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
+                })
+                ->pluck('cctv_id')
+                ->toArray();
+        }
+
+        // Koleksi kamera yang boleh diakses live
+        $monitoredCctvs = $allCctvs->whereIn('id', $allowedCctvIds)->values();
+
+        // Daftar permohonan akses CCTV
+        $accessRequests = collect();
+        if ($user->role === 'super_admin' || $user->role === 'admin' || $user->isRw()) {
+            $accessRequests = CctvAccessRequest::with(['user', 'cctv', 'approvedRtBy', 'approvedRwBy'])->latest()->get();
+        } elseif ($user->isRt()) {
+            $cleanRt = str_pad($user->clean_rt_number, 3, '0', STR_PAD_LEFT);
+            $accessRequests = CctvAccessRequest::with(['user', 'cctv', 'approvedRtBy', 'approvedRwBy'])
+                ->where(function($q) use ($cleanRt) {
+                    $q->whereHas('cctv', function($cq) use ($cleanRt) {
+                        $cq->where('rt', $cleanRt)->orWhere('rt', intval($cleanRt));
+                    })
+                    ->orWhereHas('user', function($uq) use ($cleanRt) {
+                        $uq->where('rt_number', $cleanRt)->orWhere('rt_number', intval($cleanRt));
+                    });
+                })
+                ->latest()
+                ->get();
+        } else {
+            // Warga: permohonan miliknya sendiri
+            $accessRequests = CctvAccessRequest::with(['cctv', 'approvedRtBy', 'approvedRwBy'])
+                ->where('user_id', $user->id)
+                ->latest()
+                ->get();
+        }
+
         $jadwalRonda = JadwalRonda::with(['coordinator1', 'coordinator2'])->orderBy('id')->get();
-        return view('ronda.index', compact('user', 'cctvs', 'jadwalRonda'));
+        $cctvs = $allCctvs;
+
+        // Query Laporan Peringatan Dini Urgent Lintas RT (Semua Role Berhak Melihat Peringatan)
+        $urgentWarnings = Pengaduan::where('kategori', 'Keamanan & Ketertiban')
+            ->whereNotIn('status', ['Selesai', 'Ditolak'])
+            ->where(function($q) {
+                $q->where('deskripsi', 'LIKE', '%[Tingkat Urgensi: Darurat]%')
+                  ->orWhere('deskripsi', 'LIKE', '%[Tingkat Urgensi: Segera]%');
+            })
+            ->with(['pelapor', 'petugas'])
+            ->orderByRaw("CASE WHEN deskripsi LIKE '%[Tingkat Urgensi: Darurat]%' THEN 1 WHEN deskripsi LIKE '%[Tingkat Urgensi: Segera]%' THEN 2 ELSE 3 END ASC")
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $daruratCount = $urgentWarnings->filter(fn($w) => $w->urgensi === 'Darurat')->count();
+        $segeraCount = $urgentWarnings->filter(fn($w) => $w->urgensi === 'Segera')->count();
+
+        // Query Peringatan Keamanan yang Dinyatakan Kondusif dalam 24 Jam Terakhir
+        $recentKondusifWarnings = Pengaduan::where('kategori', 'Keamanan & Ketertiban')
+            ->where('status', 'Selesai')
+            ->whereNotNull('rw_resolved_at')
+            ->where('rw_resolved_at', '>=', now()->subHours(24))
+            ->with(['rtChecker', 'rwResolver'])
+            ->latest('rw_resolved_at')
+            ->get();
+
+        // Query Laporan Keamanan untuk Tab 3 (Riwayat Laporan Keamanan)
+        $laporanKeamananQuery = Pengaduan::where('kategori', 'Keamanan & Ketertiban')->with(['pelapor', 'petugas'])->latest();
+        if ($user->role === 'super_admin' || $user->role === 'admin' || $user->isRw()) {
+            // RW & Super Admin: Semua laporan keamanan
+        } elseif ($user->isRt()) {
+            // RT: Laporan di wilayah RT-nya
+            $cleanRt = str_pad($user->clean_rt_number, 3, '0', STR_PAD_LEFT);
+            $laporanKeamananQuery->where(function($q) use ($cleanRt) {
+                $q->where('rt_number', $cleanRt)
+                  ->orWhere('rt_number', intval($cleanRt));
+            });
+        } else {
+            // Warga: Laporan miliknya sendiri
+            $laporanKeamananQuery->where('user_id', $user->id);
+        }
+        $laporanKeamananList = $laporanKeamananQuery->get();
+
+        return view('ronda.index', compact(
+            'user',
+            'cctvs',
+            'allCctvs',
+            'monitoredCctvs',
+            'allowedCctvIds',
+            'accessRequests',
+            'jadwalRonda',
+            'activeTab',
+            'laporanKeamananList',
+            'urgentWarnings',
+            'daruratCount',
+            'segeraCount',
+            'recentKondusifWarnings'
+        ));
+    }
+
+    public function storeLaporKeamanan(Request $request)
+    {
+        $request->validate([
+            'jenis_kejadian' => 'required|string|max:100',
+            'lokasi' => 'required|string|max:255',
+            'urgensi' => 'required|in:Normal,Segera,Darurat',
+            'kronologi' => 'required|string|min:10',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072'
+        ], [
+            'kronologi.min' => 'Deskripsi kronologi kejadian minimal 10 karakter.',
+            'foto.max' => 'Ukuran foto maksimal 3 MB.',
+            'foto.image' => 'File harus berupa gambar (JPEG, PNG, JPG, WEBP).',
+        ]);
+
+        $user = Auth::user();
+        $fotoPath = null;
+        if ($request->hasFile('foto')) {
+            $fotoPath = $request->file('foto')->store('pengaduan', 'public');
+        }
+
+        $cleanRt = str_pad(intval(preg_replace('/\D/', '', $user->clean_rt_number ?: '001')), 3, '0', STR_PAD_LEFT);
+        $ketuaRt = User::where('role', 'rt')->where(function($q) use ($cleanRt) {
+            $q->where('rt_number', $cleanRt)->orWhere('rt_number', intval($cleanRt));
+        })->first();
+
+        $deskripsiTersusun = "[Jenis Kejadian: {$request->jenis_kejadian}] [Tingkat Urgensi: {$request->urgensi}]\n\nKronologi Kejadian:\n{$request->kronologi}";
+
+        $laporan = Pengaduan::create([
+            'user_id' => $user->id,
+            'pelapor_nama' => $user->name,
+            'pelapor_phone' => $user->phone ?? '-',
+            'kategori' => 'Keamanan & Ketertiban',
+            'rt_number' => $cleanRt,
+            'rw_number' => '013',
+            'lokasi' => $request->lokasi,
+            'deskripsi' => $deskripsiTersusun,
+            'status' => 'Diproses',
+            'foto' => $fotoPath,
+            'catatan_tindak_lanjut' => 'Laporan keamanan terdaftar dan diteruskan ke Pengurus RT ' . $cleanRt . ' & Satgas Kamtibmas RW 013.',
+            'petugas_id' => $ketuaRt ? $ketuaRt->id : 1,
+            'latitude' => -6.9150,
+            'longitude' => 107.6790,
+        ]);
+
+        ActivityLog::record(
+            'keamanan',
+            'keamanan.laporan_created',
+            "Warga {$user->name} melaporkan kejadian keamanan [{$request->jenis_kejadian}] di {$request->lokasi} (Tingkat Urgensi: {$request->urgensi}).",
+            [
+                'laporan_id' => $laporan->id,
+                'jenis_kejadian' => $request->jenis_kejadian,
+                'urgensi' => $request->urgensi,
+                'lokasi' => $request->lokasi,
+                'rt' => $cleanRt,
+            ],
+            $user->id
+        );
+
+        return redirect()->route('ronda.index', ['tab' => 'riwayat'])->with('success', 'Laporan kejadian keamanan berhasil dikirimkan ke Satgas Kamtibmas & Pengurus RT/RW 013!');
+    }
+
+    public function konfirmasiPeringatanRt(Request $request, $id)
+    {
+        $request->validate([
+            'catatan' => 'required|string|min:5|max:1000',
+        ], [
+            'catatan.required' => 'Catatan hasil pengecekan lapangan wajib diisi.',
+            'catatan.min' => 'Catatan hasil pengecekan minimal 5 karakter.',
+        ]);
+
+        $user = Auth::user();
+        $pengaduan = Pengaduan::findOrFail($id);
+
+        if ($pengaduan->kategori !== 'Keamanan & Ketertiban') {
+            abort(404, 'Laporan bukan kategori keamanan.');
+        }
+
+        // RBAC Ketat: HANYA Ketua RT dari wilayah laporan tersebut atau Super Admin / Admin
+        $userCleanRt = str_pad(intval(preg_replace('/\D/', '', $user->clean_rt_number ?? '')), 3, '0', STR_PAD_LEFT);
+        $targetRt = str_pad(intval(preg_replace('/\D/', '', $pengaduan->rt_number ?? '')), 3, '0', STR_PAD_LEFT);
+        $isAuthorizedRt = ($user->isRt() || $user->role === 'rt') && ($userCleanRt === $targetRt);
+        $isAdmin = in_array($user->role, ['super_admin', 'admin']);
+
+        if (!$isAuthorizedRt && !$isAdmin) {
+            abort(403, 'Akses ditolak. Anda bukan Ketua RT wilayah ' . $pengaduan->rt_number . '.');
+        }
+
+        $pengaduan->rt_checked_by = $user->id;
+        $pengaduan->rt_checked_at = now();
+        $pengaduan->rt_check_note = $request->catatan;
+        if ($pengaduan->status === 'Menunggu') {
+            $pengaduan->status = 'Diproses';
+        }
+        $pengaduan->save();
+
+        ActivityLog::record(
+            'keamanan',
+            'keamanan.rt_confirmed_safe',
+            "Ketua RT {$targetRt} ({$user->name}) mengonfirmasi telah memeriksa lokasi kejadian [{$pengaduan->jenis_kejadian}]: {$request->catatan}",
+            [
+                'pengaduan_id' => $pengaduan->id,
+                'rt' => $targetRt,
+                'catatan' => $request->catatan,
+            ],
+            $user->id
+        );
+
+        return redirect()->route('ronda.index', ['tab' => 'riwayat'])->with('success', 'Konfirmasi hasil pengecekan lapangan berhasil disimpan dan diteruskan ke Ketua RW!');
+    }
+
+    public function umumkanPeringatanKondusif(Request $request, $id)
+    {
+        $request->validate([
+            'pesan_kondusif' => 'required|string|min:5|max:2000',
+            'terbitkan_pengumuman' => 'nullable|boolean',
+        ], [
+            'pesan_kondusif.required' => 'Pesan resmi kondisi kondusif wajib diisi.',
+            'pesan_kondusif.min' => 'Pesan resmi minimal 5 karakter.',
+        ]);
+
+        $user = Auth::user();
+
+        // RBAC Ketat: HANYA Ketua RW / Admin / Super Admin
+        if (!($user->isRw() || in_array($user->role, ['rw', 'admin', 'super_admin']))) {
+            abort(403, 'Akses ditolak. Hanya Ketua RW atau Pengurus Pusat yang berwenang menyatakan situasi kondusif.');
+        }
+
+        $pengaduan = Pengaduan::findOrFail($id);
+
+        if ($pengaduan->kategori !== 'Keamanan & Ketertiban') {
+            abort(404, 'Laporan bukan kategori keamanan.');
+        }
+
+        $pengaduan->status = 'Selesai';
+        $pengaduan->rw_resolved_by = $user->id;
+        $pengaduan->rw_resolved_at = now();
+        $pengaduan->rw_resolve_note = $request->pesan_kondusif;
+        $pengaduan->catatan_tindak_lanjut = "Situasi dinyatakan aman & kondusif oleh Pengurus RW 013: " . $request->pesan_kondusif;
+        $pengaduan->save();
+
+        $targetRt = str_pad(intval(preg_replace('/\D/', '', $pengaduan->rt_number ?? '001')), 3, '0', STR_PAD_LEFT);
+
+        // Opsi penerbitan ke tabel pengumuman
+        $shouldPublish = $request->has('terbitkan_pengumuman') ? $request->boolean('terbitkan_pengumuman') : true;
+        if ($shouldPublish) {
+            $judulPengumuman = "Situasi Keamanan Kembali Kondusif di Lingkungan RT {$targetRt}";
+            $isiPengumuman = "<p>Diberitahukan kepada seluruh warga RW 013, laporan peringatan keamanan terkait <strong>{$pengaduan->jenis_kejadian}</strong> di wilayah RT {$targetRt} telah selesai ditindaklanjuti dan diverifikasi kondusif di lapangan.</p>"
+                . "<p><strong>Pernyataan Resmi Pengurus RW 013:</strong><br><em>\"{$request->pesan_kondusif}\"</em></p>"
+                . "<p>Situasi lingkungan saat ini aman terkendali. Seluruh warga dipersilakan melanjutkan aktivitas seperti biasa dengan tetap menjaga kewaspadaan siskamling.</p>";
+
+            Pengumuman::create([
+                'judul' => $judulPengumuman,
+                'isi' => $isiPengumuman,
+                'kategori' => 'Keamanan',
+                'tanggal_aktif' => now(),
+            ]);
+        }
+
+        ActivityLog::record(
+            'keamanan',
+            'keamanan.rw_declared_safe',
+            "Ketua RW ({$user->name}) mencabut peringatan keamanan RT {$targetRt} dan menyatakan situasi aman kondusif.",
+            [
+                'pengaduan_id' => $pengaduan->id,
+                'rt' => $targetRt,
+                'pesan_kondusif' => $request->pesan_kondusif,
+                'terbitkan_pengumuman' => $shouldPublish,
+            ],
+            $user->id
+        );
+
+        return redirect()->route('ronda.index', ['tab' => 'riwayat'])->with('success', 'Peringatan keamanan berhasil dicabut dan situasi kondusif telah diumumkan!');
+    }
+
+    public function storeCctvRequest(Request $request)
+    {
+        $request->validate([
+            'cctv_id' => 'required|exists:cctvs,id',
+            'alasan' => 'required|string|min:5|max:1000',
+        ], [
+            'alasan.min' => 'Alasan permohonan minimal 5 karakter.',
+        ]);
+
+        $user = Auth::user();
+
+        $cctv = Cctv::find($request->cctv_id);
+
+        $accessReq = CctvAccessRequest::create([
+            'user_id' => $user->id,
+            'cctv_id' => $request->cctv_id,
+            'alasan' => $request->alasan,
+            'status_rt' => 'pending',
+            'status_rw' => 'pending',
+        ]);
+
+        ActivityLog::record(
+            'keamanan',
+            'cctv.requested',
+            "Warga {$user->name} mengajukan izin akses CCTV " . ($cctv ? $cctv->nama : "#{$request->cctv_id}") . ".",
+            [
+                'request_id' => $accessReq->id,
+                'cctv_id' => $request->cctv_id,
+                'cctv_nama' => $cctv?->nama,
+                'alasan' => $request->alasan,
+            ],
+            $user->id
+        );
+
+        return redirect()->route('ronda.index')->with('success', 'Permintaan izin akses CCTV berhasil dikirimkan ke Ketua RT setempat.');
+    }
+
+    public function approveCctvRequestRt($id)
+    {
+        $user = Auth::user();
+        if (!$user->isRt() && !$user->isRw() && !in_array($user->role, ['super_admin', 'admin'])) {
+            abort(403, 'Anda tidak memiliki hak akses untuk menyetujui izin CCTV pada tahap RT.');
+        }
+
+        $req = CctvAccessRequest::with('cctv', 'user')->findOrFail($id);
+
+        // Jika RT, pastikan CCTV atau pemohon berada di wilayah RT-nya
+        if ($user->isRt()) {
+            $cleanRt = str_pad($user->clean_rt_number, 3, '0', STR_PAD_LEFT);
+            $cctvRt = $req->cctv ? str_pad(intval($req->cctv->rt), 3, '0', STR_PAD_LEFT) : null;
+            $userRt = $req->user ? str_pad(intval($req->user->rt_number), 3, '0', STR_PAD_LEFT) : null;
+
+            if ($cctvRt !== $cleanRt && $userRt !== $cleanRt) {
+                abort(403, 'Anda hanya dapat menyetujui permintaan izin CCTV di wilayah RT Anda sendiri.');
+            }
+        }
+
+        $req->update([
+            'status_rt' => 'approved',
+            'approved_rt_by' => $user->id,
+            'approved_rt_at' => now(),
+        ]);
+
+        ActivityLog::record(
+            'keamanan',
+            'cctv.approved_rt',
+            "Pengurus {$user->name} ({$user->role}) menyetujui izin akses CCTV " . ($req->cctv?->nama ?: "#{$req->cctv_id}") . " untuk warga {$req->user?->name} pada tahap RT.",
+            [
+                'request_id' => $req->id,
+                'cctv_id' => $req->cctv_id,
+                'applicant_id' => $req->user_id,
+            ],
+            $user->id
+        );
+
+        return redirect()->route('ronda.index')->with('success', 'Permintaan izin akses CCTV berhasil disetujui pada tahap RT. Menunggu persetujuan Ketua RW.');
+    }
+
+    public function approveCctvRequestRw($id)
+    {
+        $user = Auth::user();
+        if (!$user->isRw() && !in_array($user->role, ['super_admin', 'admin'])) {
+            abort(403, 'Hanya Ketua RW atau Administrator yang dapat menyetujui izin CCTV tahap RW.');
+        }
+
+        $req = CctvAccessRequest::with('cctv', 'user')->findOrFail($id);
+
+        $req->update([
+            'status_rw' => 'approved',
+            'approved_rw_by' => $user->id,
+            'approved_rw_at' => now(),
+            'expires_at' => now()->addDays(7),
+        ]);
+
+        ActivityLog::record(
+            'keamanan',
+            'cctv.approved_rw',
+            "Pengurus {$user->name} ({$user->role}) menyetujui penuh izin akses CCTV " . ($req->cctv?->nama ?: "#{$req->cctv_id}") . " untuk warga {$req->user?->name}.",
+            [
+                'request_id' => $req->id,
+                'cctv_id' => $req->cctv_id,
+                'applicant_id' => $req->user_id,
+                'expires_at' => $req->expires_at?->toDateTimeString(),
+            ],
+            $user->id
+        );
+
+        return redirect()->route('ronda.index')->with('success', 'Permintaan izin akses CCTV telah disetujui penuh. Akses aktif selama 7 hari.');
+    }
+
+    public function rejectCctvRequest(Request $request, $id)
+    {
+        $user = Auth::user();
+        if (!$user->isRt() && !$user->isRw() && !in_array($user->role, ['super_admin', 'admin'])) {
+            abort(403, 'Anda tidak memiliki hak akses untuk menolak permohonan ini.');
+        }
+
+        $req = CctvAccessRequest::with('cctv', 'user')->findOrFail($id);
+
+        $note = $request->input('catatan_pengurus', 'Permintaan izin ditolak oleh pengurus.');
+
+        if ($user->isRt()) {
+            $req->update([
+                'status_rt' => 'rejected',
+                'approved_rt_by' => $user->id,
+                'approved_rt_at' => now(),
+                'catatan_pengurus' => $note,
+            ]);
+        } else {
+            $req->update([
+                'status_rw' => 'rejected',
+                'approved_rw_by' => $user->id,
+                'approved_rw_at' => now(),
+                'catatan_pengurus' => $note,
+            ]);
+        }
+
+        ActivityLog::record(
+            'keamanan',
+            'cctv.rejected',
+            "Pengurus {$user->name} ({$user->role}) menolak izin akses CCTV " . ($req->cctv?->nama ?: "#{$req->cctv_id}") . " untuk warga {$req->user?->name}.",
+            [
+                'request_id' => $req->id,
+                'cctv_id' => $req->cctv_id,
+                'applicant_id' => $req->user_id,
+                'catatan' => $note,
+            ],
+            $user->id
+        );
+
+        return redirect()->route('ronda.index')->with('success', 'Permintaan izin akses CCTV telah ditolak.');
     }
 
     public function pengaduan(Request $request)
@@ -944,26 +1659,39 @@ class DashboardController extends Controller
 
         $query = Pengaduan::with(['pelapor', 'petugas'])->latest();
 
+        // 1. ISOLASI DATA BERDASARKAN PERAN (WAJIB DI QUERY, BUKAN CUMA UI):
+        if ($user->isWarga()) {
+            // Warga HANYA boleh melihat daftar pengaduan miliknya sendiri
+            $query->where('user_id', $user->id);
+        } elseif ($user->isRt()) {
+            // Ketua RT HANYA boleh melihat pengaduan di wilayah RT-nya
+            $cleanRt = str_pad(intval(preg_replace('/\D/', '', $user->clean_rt_number ?: '1')), 3, '0', STR_PAD_LEFT);
+            $query->where(function($q) use ($cleanRt) {
+                $q->where('rt_number', $cleanRt)
+                  ->orWhere('rt_number', intval($cleanRt));
+            });
+        } elseif ($filterRt && ($user->isRw() || in_array($user->role, ['admin', 'super_admin', 'bendahara']))) {
+            // RW / Admin dapat memfilter spesifik RT jika diminta
+            $cleanFilter = str_pad(intval(preg_replace('/\D/', '', $filterRt)), 3, '0', STR_PAD_LEFT);
+            $query->where(function($q) use ($cleanFilter) {
+                $q->where('rt_number', $cleanFilter)
+                  ->orWhere('rt_number', intval($cleanFilter));
+            });
+        }
+
         if ($kategori) {
             $query->where('kategori', $kategori);
         }
         if ($status) {
             $query->where('status', $status);
         }
-        if ($filterRt) {
-            $query->where('rt_number', $filterRt);
-        }
 
-        // Isolasi RT jika yang login Ketua RT
-        if ($user->isRt()) {
-            $query->where('rt_number', $user->clean_rt_number);
-        }
-
-        $pengaduanList = $query->get()->map(function ($p) {
+        $pengaduanList = $query->get()->map(function ($p) use ($user) {
             return [
                 'id' => $p->id,
+                'user_id' => $p->user_id,
                 'kategori' => $p->kategori,
-                'rt' => 'RT ' . str_pad($p->rt_number, 3, '0', STR_PAD_LEFT),
+                'rt' => 'RT ' . str_pad(intval(preg_replace('/\D/', '', $p->rt_number)), 3, '0', STR_PAD_LEFT),
                 'lokasi' => $p->lokasi,
                 'deskripsi' => $p->deskripsi,
                 'pelapor' => $p->pelapor_name,
@@ -976,29 +1704,49 @@ class DashboardController extends Controller
             ];
         });
 
-        return view('pengaduan.index', compact('user', 'pengaduanList', 'kategori', 'status'));
+        // Hitung statistik ringkasan yang sinkron dengan hasil query yang diisolasi
+        $stats = [
+            'total' => $pengaduanList->count(),
+            'menunggu' => $pengaduanList->where('status', 'Menunggu')->count(),
+            'diproses' => $pengaduanList->where('status', 'Diproses')->count(),
+            'selesai' => $pengaduanList->where('status', 'Selesai')->count(),
+        ];
+
+        return view('pengaduan.index', compact('user', 'pengaduanList', 'kategori', 'status', 'filterRt', 'stats'));
     }
 
     public function storePengaduan(Request $request)
     {
-        $request->validate([
+        $user = Auth::user();
+
+        $rules = [
             'kategori' => 'required|string',
-            'rt' => 'required|string',
             'lokasi' => 'required|string|max:255',
             'deskripsi' => 'required|string|min:10',
             'foto' => 'nullable|image|max:3072'
-        ]);
+        ];
 
-        $user = Auth::user();
+        // Jika Warga, RT otomatis diambil dari profil user (tidak bisa spoofing RT lain)
+        // Jika Pengurus (RT/RW/Admin), RT dapat dipilih melalui dropdown
+        if ($user->isWarga()) {
+            $cleanRt = str_pad(intval(preg_replace('/\D/', '', $user->clean_rt_number ?: '1')), 3, '0', STR_PAD_LEFT);
+        } else {
+            $rules['rt'] = 'required|string';
+            $cleanRt = str_pad(intval(preg_replace('/\D/', '', $request->input('rt', $user->clean_rt_number ?: '1'))), 3, '0', STR_PAD_LEFT);
+        }
+
+        $request->validate($rules);
+
         $fotoPath = null;
         if ($request->hasFile('foto')) {
             $fotoPath = $request->file('foto')->store('pengaduan', 'public');
         }
 
-        $cleanRt = str_pad(intval(preg_replace('/\D/', '', $request->rt)), 3, '0', STR_PAD_LEFT);
-        $ketuaRt = User::where('role', 'rt')->where('rt_number', $cleanRt)->first();
+        $ketuaRt = User::where('role', 'rt')->where(function($q) use ($cleanRt) {
+            $q->where('rt_number', $cleanRt)->orWhere('rt_number', intval($cleanRt));
+        })->first();
 
-        Pengaduan::create([
+        $pengaduan = Pengaduan::create([
             'user_id' => $user->id,
             'pelapor_nama' => $user->name,
             'pelapor_phone' => $user->phone ?? '-',
@@ -1015,22 +1763,64 @@ class DashboardController extends Controller
             'longitude' => 107.6790,
         ]);
 
+        ActivityLog::record(
+            'layanan',
+            'pengaduan.created',
+            "Warga {$user->name} menyampaikan pengaduan [{$request->kategori}] di {$request->lokasi}.",
+            [
+                'pengaduan_id' => $pengaduan->id,
+                'kategori' => $request->kategori,
+                'rt' => $cleanRt,
+            ],
+            $user->id
+        );
+
         return redirect()->route('pengaduan.index')->with('success', 'Pengaduan berhasil disampaikan dan tercatat di sistem koordinasi RW 013!');
     }
 
     public function updateStatusPengaduan(Request $request, $id)
     {
+        $user = Auth::user();
+
+        // 1. Tolak keras jika peran Warga mencoba mengubah status
+        if ($user->isWarga()) {
+            abort(403, 'Warga tidak memiliki hak akses untuk mengubah status tindak lanjut pengaduan.');
+        }
+
+        $pengaduan = Pengaduan::findOrFail($id);
+
+        // 2. Jika Ketua RT, pastikan pengaduan ini berada di wilayah RT-nya
+        if ($user->isRt()) {
+            $cleanUserRt = str_pad(intval(preg_replace('/\D/', '', $user->clean_rt_number)), 3, '0', STR_PAD_LEFT);
+            $cleanPengaduanRt = str_pad(intval(preg_replace('/\D/', '', $pengaduan->rt_number)), 3, '0', STR_PAD_LEFT);
+
+            if ($cleanUserRt !== $cleanPengaduanRt) {
+                abort(403, 'Anda hanya berhak menindaklanjuti pengaduan di wilayah RT Anda sendiri.');
+            }
+        }
+
         $request->validate([
             'status' => 'required|string',
             'catatan_tindak_lanjut' => 'nullable|string'
         ]);
 
-        $pengaduan = Pengaduan::findOrFail($id);
         $pengaduan->update([
             'status' => $request->status,
             'catatan_tindak_lanjut' => $request->catatan_tindak_lanjut ?: $pengaduan->catatan_tindak_lanjut,
-            'petugas_id' => Auth::id(),
+            'petugas_id' => $user->id,
         ]);
+
+        ActivityLog::record(
+            'layanan',
+            'pengaduan.status_updated',
+            "Pengurus {$user->name} ({$user->role}) memperbarui status pengaduan #{$pengaduan->id} menjadi [{$request->status}].",
+            [
+                'pengaduan_id' => $pengaduan->id,
+                'status' => $request->status,
+                'rt' => $pengaduan->rt_number,
+            ],
+            $user->id
+        );
 
         return back()->with('success', 'Status dan catatan tindak lanjut pengaduan berhasil diperbarui!');
     }
@@ -1067,7 +1857,9 @@ class DashboardController extends Controller
             $kkCount = \App\Models\KartuKeluarga::where('rt', $rtStr)->orWhere('rt', (string)$rtN)->count();
             if ($kkCount > 0) $rtItem['jumlah_kk'] = $kkCount;
 
-            $wargaCount = \App\Models\User::where('rt_number', $rtStr)->orWhere('rt_number', (string)$rtN)->orWhere('rt_number', $rtN)->count();
+            $wargaCount = \App\Models\User::whereIn('role', ['warga', 'rt'])->where(function($q) use ($rtStr, $rtN) {
+                $q->where('rt_number', $rtStr)->orWhere('rt_number', (string)$rtN);
+            })->count();
             if ($wargaCount > 0) $rtItem['jumlah_warga'] = $wargaCount;
 
             $bukuKas = \App\Models\BukuKas::where('jenis_kas', 'kas_rt')
@@ -1272,15 +2064,90 @@ class DashboardController extends Controller
 
     public function getLaporanRtList()
     {
+        $data = null;
         if (Storage::disk('local')->exists('laporan_rt.json')) {
             $data = json_decode(Storage::disk('local')->get('laporan_rt.json'), true);
-            if (is_array($data) && count($data)) {
-                return $data;
-            }
         }
 
-        // Default Laporan 8 RT jika file belum ada
-        $defaults = [
+        if (!is_array($data) || count($data) === 0) {
+            $data = $this->getDefaultLaporanList();
+            Storage::disk('local')->put('laporan_rt.json', json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        }
+
+        return $this->syncLaporanRtWithDatabase($data);
+    }
+
+    public function syncLaporanRtWithDatabase(array $data)
+    {
+        $now = Carbon::now();
+        $currentPeriode = $now->format('Y-m');
+
+        foreach ($data as &$lap) {
+            $rtNum = (int)($lap['rt_number'] ?? 0);
+            $rtStr = str_pad($rtNum, 3, '0', STR_PAD_LEFT);
+
+            // Sinkronisasi data keuangan 100% dari database riil (anti-hardcode)
+            $bukuKas = BukuKas::where('jenis_kas', 'kas_rt')
+                ->where(function($q) use ($rtNum, $rtStr) {
+                    $q->where('rt_number', $rtNum)->orWhere('rt_number', $rtStr);
+                })->first();
+
+            if ($bukuKas) {
+                $bukuKas->recalculateSaldo();
+                $saldoAkhir = floatval($bukuKas->saldo_sekarang ?? 0);
+
+                $in = TransaksiKeuangan::where('buku_kas_id', $bukuKas->id)
+                    ->where('status', 'selesai')
+                    ->whereIn('jenis_transaksi', ['pemasukan', 'transfer_masuk'])
+                    ->whereYear('tanggal_transaksi', $now->year)
+                    ->whereMonth('tanggal_transaksi', $now->month)
+                    ->sum('nominal');
+
+                $out = TransaksiKeuangan::where('buku_kas_id', $bukuKas->id)
+                    ->where('status', 'selesai')
+                    ->whereIn('jenis_transaksi', ['pengeluaran', 'transfer_keluar'])
+                    ->whereYear('tanggal_transaksi', $now->year)
+                    ->whereMonth('tanggal_transaksi', $now->month)
+                    ->sum('nominal');
+
+                $saldoAwal = max(0, $saldoAkhir - $in + $out);
+
+                $tagihansRt = TagihanKeluarga::where('periode', $currentPeriode)
+                    ->where(function($q) use ($rtNum, $rtStr) {
+                        $q->where('rt_number', $rtNum)->orWhere('rt_number', $rtStr);
+                    })->get();
+
+                $totalKkRt = KartuKeluarga::where('rt', $rtStr)->orWhere('rt', (string)$rtNum)->count();
+                $totalLunas = $tagihansRt->where('status', 'Lunas')->count();
+                $persenKolektibilitas = $totalKkRt > 0 ? round(($totalLunas / $totalKkRt) * 100, 1) : 0;
+
+                $lap['keuangan'] = [
+                    'saldo_awal' => $saldoAwal,
+                    'pemasukan' => $in,
+                    'pengeluaran' => $out,
+                    'saldo_akhir' => $saldoAkhir,
+                    'iuran_terkumpul_persen' => $persenKolektibilitas,
+                ];
+
+                if ($totalKkRt > 0) {
+                    $lap['administrasi']['jumlah_kk'] = $totalKkRt;
+                }
+                $wargaRtCount = User::whereIn('role', ['warga', 'rt'])->where(function($q) use ($rtNum, $rtStr) {
+                    $q->where('rt_number', $rtNum)->orWhere('rt_number', $rtStr);
+                })->count();
+                if ($wargaRtCount > 0) {
+                    $lap['administrasi']['jumlah_warga'] = $wargaRtCount;
+                }
+            }
+        }
+        unset($lap);
+
+        return $data;
+    }
+
+    public function getDefaultLaporanList()
+    {
+        return [
             [
                 'id' => 1,
                 'rt_number' => 1,
@@ -1618,7 +2485,6 @@ class DashboardController extends Controller
             ],
         ];
 
-        Storage::disk('local')->put('laporan_rt.json', json_encode($defaults, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
         return $defaults;
     }
 
@@ -1799,7 +2665,7 @@ class DashboardController extends Controller
         $rtLabel = $user->clean_rt_label;
 
         // Query warga RT ini saja
-        $wargaList = User::where('role', 'warga')->where(function ($q) use ($rtNum) {
+        $wargaList = User::whereIn('role', ['warga', 'rt'])->where(function ($q) use ($rtNum) {
             $q->where('rt_number', $rtNum)
               ->orWhere('rt_number', str_pad($rtNum, 3, '0', STR_PAD_LEFT))
               ->orWhere('rt_number', 'RT ' . str_pad($rtNum, 3, '0', STR_PAD_LEFT))
@@ -1816,42 +2682,12 @@ class DashboardController extends Controller
 
     public function rtPendatang(Request $request)
     {
-        $user = Auth::user();
-        $rtNum = $user->clean_rt_number;
-        $rtLabel = $user->clean_rt_label;
-
-        $pendatang = User::where('role', 'warga')
-            ->where(function ($q) use ($rtNum) {
-                $q->where('rt_number', $rtNum)
-                  ->orWhere('rt_number', str_pad($rtNum, 3, '0', STR_PAD_LEFT))
-                  ->orWhere('rt_number', 'RT ' . str_pad($rtNum, 3, '0', STR_PAD_LEFT))
-                  ->orWhere('address', 'like', "%RT 00{$rtNum}%");
-            })
-            ->where(function($q) {
-                $q->where('status_rumah', 'like', '%kontrak%')
-                  ->orWhere('status_rumah', 'like', '%sewa%')
-                  ->orWhere('status_rumah', 'like', '%kos%')
-                  ->orWhereNull('status_rumah');
-            })
-            ->orderBy('name')
-            ->get();
-
-        return view('rt.pendatang', compact('user', 'rtNum', 'rtLabel', 'pendatang'));
+        return redirect()->route('kependudukan.index', array_merge(['tab' => 'pendatang'], $request->except(['tab'])));
     }
 
     public function rtMutasi(Request $request)
     {
-        $user = Auth::user();
-        $rtNum = $user->clean_rt_number;
-        $rtLabel = $user->clean_rt_label;
-
-        $mutasiList = [
-            ['nama' => 'Arthur Bennett', 'nik' => '3273230508820001', 'jenis' => 'Pindah Datang', 'tanggal' => '05 Nov 2026', 'asal_tujuan' => 'Kec. Coblong, Kota Bandung', 'status' => 'Disetujui RT'],
-            ['nama' => 'Emily Foster', 'nik' => '3273234409950003', 'jenis' => 'Pindah Keluar', 'tanggal' => '28 Okt 2026', 'asal_tujuan' => 'Kec. Lembang, Kab. Bandung Barat', 'status' => 'Selesai Pengantar'],
-            ['nama' => 'Baby Leo Williams', 'nik' => '-', 'jenis' => 'Kelahiran', 'tanggal' => '15 Okt 2026', 'asal_tujuan' => 'Keluarga Theodore Williams (RT 001)', 'status' => 'Tercatat'],
-        ];
-
-        return view('rt.mutasi', compact('user', 'rtNum', 'rtLabel', 'mutasiList'));
+        return redirect()->route('kependudukan.index', array_merge(['tab' => 'mutasi'], $request->except(['tab'])));
     }
 
     public function rtArsip(Request $request)
@@ -1975,9 +2811,7 @@ class DashboardController extends Controller
 
     public function agendaRw()
     {
-        $user = Auth::user();
-        $agendaList = $this->getAgendaRwData();
-        return view('agenda.index', compact('user', 'agendaList'));
+        return redirect()->route('agenda-rw.index');
     }
 
     public function kasRw()
@@ -2212,6 +3046,35 @@ class DashboardController extends Controller
                 $item['rekomendasi'] = $sessionEvals[$rtKey]['rekomendasi'];
                 $item['status_laporan'] = $sessionEvals[$rtKey]['status_laporan'];
                 $item['terakhir_update'] = 'Hari ini';
+            }
+
+            // Sinkronisasi saldo kas riil dari tabel buku_kas RT
+            $rtStr = str_pad($item['rt'], 3, '0', STR_PAD_LEFT);
+            $bukuKasRt = BukuKas::where('jenis_kas', 'kas_rt')
+                ->where(function($q) use ($rtStr, $item) {
+                    $q->where('rt_number', $rtStr)->orWhere('rt_number', (string)$item['rt']);
+                })->first();
+
+            if ($bukuKasRt) {
+                $bukuKasRt->recalculateSaldo();
+                $saldoRtVal = floatval($bukuKasRt->saldo_sekarang ?? 0);
+                $item['saldo_kas'] = $saldoRtVal;
+                $item['keuangan'] = 'Saldo Rp ' . number_format($saldoRtVal, 0, ',', '.');
+            } else {
+                $item['saldo_kas'] = 0;
+                $item['keuangan'] = 'Saldo Rp 0';
+            }
+
+            // Sinkronisasi data riil KK & Warga dari database
+            $kkCount = KartuKeluarga::where('rt', $rtStr)->orWhere('rt', (string)$item['rt'])->count();
+            if ($kkCount > 0) {
+                $item['jumlah_kk'] = $kkCount;
+            }
+            $wargaCount = User::whereIn('role', ['warga', 'rt'])->where(function($q) use ($rtStr, $item) {
+                $q->where('rt_number', $rtStr)->orWhere('rt_number', (string)$item['rt']);
+            })->count();
+            if ($wargaCount > 0) {
+                $item['jumlah_warga'] = $wargaCount;
             }
         }
 

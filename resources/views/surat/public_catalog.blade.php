@@ -54,8 +54,8 @@
                     <i data-lucide="building" style="width:20px;height:20px;"></i>
                 </div>
                 <div>
-                    <strong class="text-dark d-block" style="font-size: 1.05rem; line-height: 1.2;">Warkas Machi</strong>
-                    <span class="text-muted small" style="font-size: 0.75rem;">RW 013 Kelurahan Sukamiskin &bull; Kota Bandung</span>
+                    <strong class="text-dark d-block" style="font-size: 1.05rem; line-height: 1.2;">Haven</strong>
+                    <span class="text-muted small" style="font-size: 0.75rem;">Safe Space, Seamless Service &bull; RW 013 Sukamiskin</span>
                 </div>
             </a>
 
@@ -168,9 +168,9 @@
                         <p class="text-muted small mb-3 flex-grow-1" style="line-height: 1.45;">{{ $item->deskripsi }}</p>
 
                         {{-- Persyaratan --}}
-                        <div class="p-3 rounded-3 mb-3" style="background: #F8FAFC; border: 1px dashed #CBD5E1; font-size: 0.76rem;">
-                            <strong class="text-secondary d-block mb-1">Persyaratan Dokumen:</strong>
-                            <ul class="list-unstyled mb-0 text-muted">
+                        <div class="p-3 rounded-3 mb-3 surat-persyaratan-box" style="background: #F8FAFC; border: 1px dashed #CBD5E1; font-size: 0.76rem;">
+                            <strong class="text-secondary d-block mb-1 surat-persyaratan-title">Persyaratan Dokumen:</strong>
+                            <ul class="list-unstyled mb-0 text-muted surat-persyaratan-list">
                                 @if(!empty($item->persyaratan))
                                     @foreach(array_slice($item->persyaratan, 0, 3) as $syarat)
                                         <li class="d-flex align-items-start gap-1 mb-1">
@@ -178,6 +178,9 @@
                                             <span class="text-truncate">{{ $syarat }}</span>
                                         </li>
                                     @endforeach
+                                    @if(count($item->persyaratan) > 3)
+                                        <li class="fst-italic surat-persyaratan-extra" style="font-size: 0.7rem;">+ {{ count($item->persyaratan) - 3 }} syarat tambahan lainnya...</li>
+                                    @endif
                                 @else
                                     <li>KTP & Kartu Keluarga Terdaftar</li>
                                 @endif
@@ -198,12 +201,12 @@
                         {{-- Button CTA --}}
                         <div>
                             @auth
-                                <a href="{{ route('surat.create', ['jenis' => $item->kode]) }}" class="btn btn-outline-primary w-100 fw-semibold d-flex align-items-center justify-content-center gap-2 py-2 rounded-3" style="font-size: 0.88rem;">
+                                <a href="{{ route('surat.create', ['jenis' => $item->kode]) }}" class="btn btn-outline-primary w-100 fw-semibold d-flex align-items-center justify-content-center gap-2 py-2 rounded-3 btn-surat-ajukan" style="font-size: 0.88rem;">
                                     <span>Ajukan Permohonan</span>
                                     <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
                                 </a>
                             @else
-                                <a href="{{ route('login') }}" class="btn btn-outline-primary w-100 fw-semibold d-flex align-items-center justify-content-center gap-2 py-2 rounded-3" style="font-size: 0.88rem;">
+                                <a href="{{ route('login') }}" class="btn btn-outline-primary w-100 fw-semibold d-flex align-items-center justify-content-center gap-2 py-2 rounded-3 btn-surat-ajukan" style="font-size: 0.88rem;">
                                     <span>Masuk untuk Mengajukan</span>
                                     <i data-lucide="log-in" style="width:14px;height:14px;"></i>
                                 </a>
@@ -245,7 +248,7 @@
     {{-- FOOTER --}}
     <footer class="py-4 border-top bg-white text-center text-muted small">
         <div class="container">
-            &copy; 2026 Warkas Machi &bull; Sistem Koordinasi & Pelayanan Terpadu RW 013 Sukamiskin Arcamanik Kota Bandung. Seluruh hak cipta dilindungi.
+            &copy; 2026 Haven &bull; Safe Space, Seamless Service &bull; havenportal.id &bull; RW 013 Sukamiskin Arcamanik Kota Bandung. Seluruh hak cipta dilindungi.
         </div>
     </footer>
 

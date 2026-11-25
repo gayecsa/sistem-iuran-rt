@@ -69,6 +69,21 @@ class TagihanKeluarga extends Model
         return $this->hasMany(TransaksiKeuangan::class, 'tagihan_keluarga_id');
     }
 
+    public function items()
+    {
+        return $this->hasMany(TagihanItem::class, 'tagihan_keluarga_id');
+    }
+
+    public function pembayarans()
+    {
+        return $this->hasMany(PembayaranIuran::class, 'tagihan_keluarga_id')->orderBy('tanggal_bayar', 'desc');
+    }
+
+    public function alokasis()
+    {
+        return $this->hasMany(PembayaranAlokasi::class, 'tagihan_keluarga_id');
+    }
+
     public function getCleanRtAttribute()
     {
         return str_pad(preg_replace('/[^0-9]/', '', $this->rt_number), 3, '0', STR_PAD_LEFT);

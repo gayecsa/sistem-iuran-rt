@@ -46,7 +46,7 @@ class UmkmAuditLog extends Model
         return self::create([
             'umkm_id' => $umkmId,
             'user_id' => $user?->id,
-            'user_name' => $user?->name ?: 'Sistem Warkas Machi',
+            'user_name' => $user?->name ?: 'Sistem Haven',
             'role_saat_itu' => $user?->role ?: 'system',
             'action' => $action,
             'keterangan' => $keterangan,

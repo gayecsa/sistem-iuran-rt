@@ -11,8 +11,20 @@
                 <i data-lucide="user-plus" style="width: 24px; height: 24px;"></i>
             </div>
             <div>
-                <h3 class="fw-bold mb-1 text-dark" style="color: var(--wm-text) !important;">Pendaftaran Warga Baru</h3>
-                <p class="text-muted mb-0 small">Formulir administrasi kependudukan terpadu lingkungan RW 013 Kelurahan Sukamiskin.</p>
+                <h3 class="fw-bold mb-1 text-dark" style="color: var(--wm-text) !important;">
+                    @if(request('tipe') === 'pendatang')
+                        Pendaftaran Warga Pendatang / Kontrak
+                    @else
+                        Pendaftaran Warga Baru
+                    @endif
+                </h3>
+                <p class="text-muted mb-0 small">
+                    @if(request('tipe') === 'pendatang')
+                        Formulir registrasi warga domisili sementara / penyewa / kontrak di lingkungan RW 013.
+                    @else
+                        Formulir administrasi kependudukan terpadu lingkungan RW 013 Kelurahan Sukamiskin.
+                    @endif
+                </p>
             </div>
         </div>
 
@@ -315,14 +327,18 @@
                 </div>
 
                 {{-- Status Tempat Tinggal --}}
+                @php
+                    $defaultStatusRumah = request('tipe') === 'pendatang' ? 'Kontrak' : (request('status_rumah') ?: 'Milik Sendiri');
+                    $defaultStatusDomisili = request('tipe') === 'pendatang' ? 'Pendatang Baru' : (request('status_domisili') ?: 'Warga Tetap');
+                @endphp
                 <div class="col-12 col-md-6">
                     <label class="form-label fw-bold small mb-1">Status Kepemilikan Rumah <span class="text-danger">*</span></label>
                     <select name="status_rumah" id="input_status_rumah" class="form-select" required>
-                        <option value="Milik Sendiri" {{ old('status_rumah', 'Milik Sendiri') == 'Milik Sendiri' ? 'selected' : '' }}>Rumah Milik Sendiri</option>
-                        <option value="Kontrak" {{ old('status_rumah') == 'Kontrak' ? 'selected' : '' }}>Kontrak / Sewa</option>
-                        <option value="Kos" {{ old('status_rumah') == 'Kos' ? 'selected' : '' }}>Kos / Paviliun</option>
-                        <option value="Menumpang" {{ old('status_rumah') == 'Menumpang' ? 'selected' : '' }}>Menumpang (Keluarga/Kerabat)</option>
-                        <option value="Lainnya" {{ old('status_rumah') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
+                        <option value="Milik Sendiri" {{ old('status_rumah', $defaultStatusRumah) == 'Milik Sendiri' ? 'selected' : '' }}>Rumah Milik Sendiri</option>
+                        <option value="Kontrak" {{ old('status_rumah', $defaultStatusRumah) == 'Kontrak' ? 'selected' : '' }}>Kontrak / Sewa</option>
+                        <option value="Kos" {{ old('status_rumah', $defaultStatusRumah) == 'Kos' ? 'selected' : '' }}>Kos / Paviliun</option>
+                        <option value="Menumpang" {{ old('status_rumah', $defaultStatusRumah) == 'Menumpang' ? 'selected' : '' }}>Menumpang (Keluarga/Kerabat)</option>
+                        <option value="Lainnya" {{ old('status_rumah', $defaultStatusRumah) == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
                     </select>
                 </div>
 
@@ -330,12 +346,12 @@
                 <div class="col-12 col-md-6">
                     <label class="form-label fw-bold small mb-1">Status Domisili Kependudukan <span class="text-danger">*</span></label>
                     <select name="status_domisili" id="input_status_domisili" class="form-select" required>
-                        <option value="Warga Tetap" {{ old('status_domisili', 'Warga Tetap') == 'Warga Tetap' ? 'selected' : '' }}>Warga Tetap (KTP/KK RW 013)</option>
-                        <option value="Warga Sementara" {{ old('status_domisili') == 'Warga Sementara' ? 'selected' : '' }}>Warga Sementara (Domisili Non-KTP)</option>
-                        <option value="Pendatang Baru" {{ old('status_domisili') == 'Pendatang Baru' ? 'selected' : '' }}>Pendatang Baru</option>
-                        <option value="Akan Pindah" {{ old('status_domisili') == 'Akan Pindah' ? 'selected' : '' }}>Akan Pindah Keluar</option>
-                        <option value="Sudah Pindah" {{ old('status_domisili') == 'Sudah Pindah' ? 'selected' : '' }}>Sudah Pindah</option>
-                        <option value="Meninggal Dunia" {{ old('status_domisili') == 'Meninggal Dunia' ? 'selected' : '' }}>Meninggal Dunia</option>
+                        <option value="Warga Tetap" {{ old('status_domisili', $defaultStatusDomisili) == 'Warga Tetap' ? 'selected' : '' }}>Warga Tetap (KTP/KK RW 013)</option>
+                        <option value="Warga Sementara" {{ old('status_domisili', $defaultStatusDomisili) == 'Warga Sementara' ? 'selected' : '' }}>Warga Sementara (Domisili Non-KTP)</option>
+                        <option value="Pendatang Baru" {{ old('status_domisili', $defaultStatusDomisili) == 'Pendatang Baru' ? 'selected' : '' }}>Pendatang Baru</option>
+                        <option value="Akan Pindah" {{ old('status_domisili', $defaultStatusDomisili) == 'Akan Pindah' ? 'selected' : '' }}>Akan Pindah Keluar</option>
+                        <option value="Sudah Pindah" {{ old('status_domisili', $defaultStatusDomisili) == 'Sudah Pindah' ? 'selected' : '' }}>Sudah Pindah</option>
+                        <option value="Meninggal Dunia" {{ old('status_domisili', $defaultStatusDomisili) == 'Meninggal Dunia' ? 'selected' : '' }}>Meninggal Dunia</option>
                     </select>
                 </div>
 

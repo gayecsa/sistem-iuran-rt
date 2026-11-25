@@ -42,16 +42,6 @@ class RoleMiddleware
             return $next($request);
         }
 
-        // Tentukan rute dashboard tujuan sesuai role pengguna
-        $targetRoute = 'dashboard';
-        if (in_array($userRole, ['admin', 'rw', 'super_admin', 'bendahara'])) {
-            $targetRoute = 'dashboard.rw';
-        } elseif ($userRole === 'rt') {
-            $targetRoute = 'dashboard.rt';
-        } else {
-            $targetRoute = 'dashboard.warga';
-        }
-
-        return redirect()->route($targetRoute)->with('error', 'Akses ditolak: Anda tidak memiliki izin untuk mengakses halaman tersebut.');
+        abort(403, 'Akses ditolak: Anda tidak memiliki izin untuk mengakses halaman ini.');
     }
 }

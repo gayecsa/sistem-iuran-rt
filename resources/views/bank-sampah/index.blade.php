@@ -3,15 +3,15 @@
 @section('content')
 <div class="container-fluid p-0">
     <!-- 1. BANNER PROGRAM BANK SAMPAH TERPADU RW 013 -->
-    <div class="wm-card mb-4 overflow-hidden position-relative" style="background: linear-gradient(135deg, #0F5132 0%, #123766 100%); color: #fff; border: none; border-radius: 16px;">
+    <div class="wm-card mb-4 overflow-hidden position-relative sa-hero-card bank-sampah-hero" style="background: linear-gradient(135deg, #0F3966 0%, #1456A0 55%, #2878D0 100%) !important; color: #fff !important; border: none; border-radius: 16px;">
         <div class="p-4 p-md-5 position-relative" style="z-index: 2;">
             <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
                 <div style="max-width: 720px;">
                     <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
-                        <span class="badge bg-light text-success fw-bold px-3 py-1 rounded-pill" style="color: #0F5132 !important; font-size: 11px; letter-spacing: 0.5px;">
+                        <span class="badge px-3 py-1 rounded-pill fw-bold" style="background: rgba(255, 255, 255, 0.16) !important; color: #FFFFFF !important; border: 1px solid rgba(255, 255, 255, 0.28) !important; font-size: 11px; letter-spacing: 0.5px;">
                             <i data-lucide="leaf" style="width: 14px; height: 14px; vertical-align: middle;"></i> LINGKUNGAN HIJAU & SEJAHTERA
                         </span>
-                        <span class="badge bg-white text-dark fw-bold px-3 py-1 rounded-pill opacity-90" style="font-size: 11px;">
+                        <span class="badge fw-bold px-3 py-1 rounded-pill" style="background: rgba(255, 255, 255, 0.16) !important; color: #FFFFFF !important; border: 1px solid rgba(255, 255, 255, 0.28) !important; font-size: 11px;">
                             RW 013 Sukamiskin Arcamanik
                         </span>
                     </div>
@@ -21,11 +21,11 @@
                     </p>
                 </div>
                 <div class="d-flex align-items-center gap-2 flex-wrap">
-                    <a href="{{ route('dashboard') }}" class="btn btn-light rounded-pill px-3 py-2 fw-bold small text-success shadow-sm">
+                    <a href="{{ route('dashboard') }}" class="btn btn-light rounded-pill px-3 py-2 fw-bold small text-white shadow-sm hero-btn-light" style="background: rgba(255, 255, 255, 0.18) !important; color: #FFFFFF !important; border: 1px solid rgba(255, 255, 255, 0.35) !important;">
                         <i data-lucide="layout-grid" class="me-1" style="width: 16px; height: 16px; vertical-align: middle;"></i> Ke Dashboard
                     </a>
-                    <button type="button" class="btn btn-success rounded-pill px-4 py-2 fw-bold text-white shadow-sm" data-bs-toggle="modal" data-bs-target="#modalSetorSampah" style="background: #10B981; border: none;">
-                        <i data-lucide="plus-circle" class="me-1" style="width: 18px; height: 18px; vertical-align: middle;"></i> Setor Sampah
+                    <button type="button" class="btn btn-success rounded-pill px-4 py-2 fw-bold text-white shadow-sm hero-btn-success" data-bs-toggle="modal" data-bs-target="#modalSetorSampah" style="background: #16865D !important; border: none; color: #FFFFFF !important;">
+                        <i data-lucide="plus-circle" class="me-1" style="width: 18px; height: 18px; vertical-align: middle;"></i> + Setor Sampah
                     </button>
                 </div>
             </div>
@@ -280,7 +280,7 @@
             </div>
         </div>
 
-        <div class="p-3 rounded-3 border" style="background: #E8F5E9; border-color: #C8E6C9 !important;">
+        <div class="p-3 rounded-3 border bank-sampah-transparansi-box" style="background: #E8F5E9; border-color: #C8E6C9 !important;">
             <div class="d-flex align-items-center gap-2 text-success fw-bold mb-1">
                 <i data-lucide="shield-check" style="width: 18px; height: 18px;"></i> Transparansi & Akuntabilitas Finansial
             </div>

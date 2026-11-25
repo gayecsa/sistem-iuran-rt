@@ -212,7 +212,7 @@ class WargaController extends Controller
         ], [
             'nik.size' => 'Nomor Induk Kependudukan (NIK) harus tepat 16 digit angka.',
             'nik.regex' => 'NIK hanya boleh berupa deretan 16 digit angka.',
-            'nik.unique' => 'NIK sudah terdaftar dalam sistem Warkas Machi RW 013.',
+            'nik.unique' => 'NIK sudah terdaftar dalam sistem Haven RW 013.',
             'no_kk.size' => 'Nomor Kartu Keluarga (KK) harus tepat 16 digit angka.',
             'no_kk.regex' => 'Nomor KK hanya boleh berupa deretan 16 digit angka.',
             'tanggal_lahir.before_or_equal' => 'Tanggal lahir tidak boleh berada di masa depan.',
@@ -797,7 +797,7 @@ class WargaController extends Controller
         $email = $request->email;
         if (!$email) {
             $count = User::count() + 1;
-            $email = "warga{$count}_" . rand(100, 999) . "@warkasmachi.id";
+            $email = "warga{$count}_" . rand(100, 999) . "@havenportal.id";
         }
 
         DB::beginTransaction();

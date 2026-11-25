@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Rekening Koran - ' . $bukuKas->nama_kas . ' - Warkas Machi')
+@section('title', 'Rekening Koran - ' . $bukuKas->nama_kas)
 
 @section('content')
 <!-- Tailwind CDN dengan Preflight Disabled -->
@@ -48,6 +48,19 @@
                     <span class="font-mono text-xs font-black px-2.5 py-1 rounded-lg bg-blue-100 text-[#1456A0] border border-blue-200">
                         {{ $bukuKas->kode_kas }}
                     </span>
+                    @if($bukuKas->pemilik_dana === 'rw')
+                        <span class="px-2.5 py-1 rounded-full text-xs font-extrabold bg-blue-100 text-[#1456A0] border border-blue-200">
+                            Kas Induk RW 013
+                        </span>
+                    @elseif($bukuKas->pemilik_dana === 'rt')
+                        <span class="px-2.5 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                            Kas Otonom RT
+                        </span>
+                    @else
+                        <span class="px-2.5 py-1 rounded-full text-xs font-extrabold bg-purple-100 text-purple-800 border border-purple-200">
+                            Kas Otonom Unit
+                        </span>
+                    @endif
                     <span class="px-2.5 py-1 rounded-full text-xs font-bold {{ $bukuKas->jenis_kas === 'kas_rw' ? 'bg-blue-50 text-blue-800 border border-blue-200' : ($bukuKas->jenis_kas === 'kas_rt' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-indigo-50 text-indigo-800 border border-indigo-200') }}">
                         {{ $bukuKas->jenis_label }}
                     </span>
@@ -62,7 +75,7 @@
                     {{ $bukuKas->nama_kas }}
                 </h1>
                 <p class="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl leading-relaxed">
-                    {{ $bukuKas->deskripsi ?: 'Buku kas perbendaharaan resmi warga Warkas Machi RW 013.' }}
+                    {{ $bukuKas->deskripsi ?: 'Buku kas perbendaharaan resmi warga Haven RW 013.' }}
                 </p>
 
                 <div class="flex flex-wrap items-center gap-4 text-xs text-slate-600 mt-3 pt-3 border-t border-slate-100">
@@ -263,6 +276,9 @@
                                     <span>{{ $trx->nomor_transaksi }}</span>
                                     @if($trx->penyetor_penerima)
                                         <span class="text-slate-500">&bull; {{ $trx->penyetor_penerima }}</span>
+                                    @endif
+                                    @if($trx->referensi_pembayaran)
+                                        <span class="text-blue-600 font-mono text-[10px]">&bull; Ref: {{ $trx->referensi_pembayaran }}</span>
                                     @endif
                                 </div>
                                 @if($trx->status === 'dibatalkan')

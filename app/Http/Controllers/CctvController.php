@@ -35,8 +35,11 @@ class CctvController extends Controller
     {
         $data = $request->validate([
             'nama' => 'required|string|max:100',
+            'rt' => 'nullable|string|max:10',
             'lokasi' => 'nullable|string|max:150',
             'stream_url' => 'required|url|max:1000',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
         ]);
         $data['aktif'] = $request->boolean('aktif');
         return $data;

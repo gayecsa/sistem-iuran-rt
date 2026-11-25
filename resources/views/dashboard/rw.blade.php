@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Dashboard RW')
+
 @section('content')
 <div class="dashboard-container">
     
@@ -44,6 +46,88 @@
                 <a href="{{ route('kas-rw.index') }}" class="wm-btn-success">
                     <i data-lucide="wallet-cards" style="width: 17px; height: 17px;"></i> Kas RW
                 </a>
+            </div>
+        </div>
+    </div>
+
+    {{-- ======================================================================
+         RINGKASAN KEUANGAN KAS INDUK RW 013 & GABUNGAN KAS WILAYAH
+         ====================================================================== --}}
+    <div class="wm-card mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div>
+                <h5 class="fw-bold mb-1 text-dark">
+                    <i data-lucide="wallet-cards" class="me-2 text-primary" style="width: 20px; height: 20px; vertical-align: middle;"></i>
+                    Ringkasan Keuangan Kas Induk RW 013 & Monitoring Kas Lingkungan
+                </h5>
+                <p class="text-muted small mb-0">Pemisahan tegas: Saldo Kas Induk RW hanya milik RW 013. Saldo 8 RT dan Kas Unit dipantau terpisah tanpa penggabungan.</p>
+            </div>
+            <a href="{{ route('kas-rw.index') }}" class="wm-btn-success" style="padding: 7px 16px; font-size: 0.85rem;">
+                <i data-lucide="file-spreadsheet" style="width: 16px; height: 16px;"></i> Rekap Keuangan RW
+            </a>
+        </div>
+
+        <!-- 5 Kartu Keuangan Terpisah -->
+        <div class="row g-3">
+            <!-- 1. Pemasukan Kas RW -->
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="p-3 rounded-4 border bg-light text-center h-100">
+                    <span class="text-muted small fw-bold text-uppercase d-block" style="font-size: 0.72rem;">Pemasukan Kas RW</span>
+                    <h5 class="fw-bold text-success mt-2 mb-1">Rp {{ number_format($pemasukan_rw_total ?? $pemasukan_rw ?? 0, 0, ',', '.') }}</h5>
+                    <small class="text-muted" style="font-size: 0.7rem;">Iuran & Alokasi RW</small>
+                </div>
+            </div>
+            <!-- 2. Pengeluaran Kas RW -->
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="p-3 rounded-4 border bg-light text-center h-100">
+                    <span class="text-muted small fw-bold text-uppercase d-block" style="font-size: 0.72rem;">Pengeluaran Kas RW</span>
+                    <h5 class="fw-bold text-danger mt-2 mb-1">Rp {{ number_format($pengeluaran_rw_total ?? $pengeluaran_rw ?? 0, 0, ',', '.') }}</h5>
+                    <small class="text-muted" style="font-size: 0.7rem;">Operasional Wilayah</small>
+                </div>
+            </div>
+            <!-- 3. Saldo Kas Induk RW (Murni RW) -->
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="p-3 rounded-4 border h-100 text-center" style="background: #E3F5EC; border-color: rgba(22, 134, 93, 0.4) !important;">
+                    <span class="text-success small fw-bold text-uppercase d-block" style="font-size: 0.72rem;">Saldo Kas Induk RW</span>
+                    <h4 class="fw-bold text-success mt-2 mb-1">Rp {{ number_format($saldo_kas_rw ?? 0, 0, ',', '.') }}</h4>
+                    <span class="badge bg-success text-white px-2 py-1" style="font-size: 0.7rem;">Dana Murni RW 013</span>
+                </div>
+            </div>
+            <!-- 4. Total Saldo 8 RT (Otonom) -->
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="p-3 rounded-4 border h-100 text-center" style="background: #EFF6FF; border-color: rgba(59, 130, 246, 0.3) !important;">
+                    <span class="text-primary small fw-bold text-uppercase d-block" style="font-size: 0.72rem;">Total Saldo 8 RT (Monitoring)</span>
+                    <h4 class="fw-bold text-primary mt-2 mb-1">Rp {{ number_format($total_saldo_rt ?? 0, 0, ',', '.') }}</h4>
+                    <span class="badge bg-primary text-white px-2 py-1" style="font-size: 0.7rem;">Kas Otonom RT 001 - RT 008</span>
+                </div>
+            </div>
+            <!-- 5. Kas Pengelolaan Sampah RW -->
+            <div class="col-lg-2 col-md-6 col-sm-12">
+                <div class="p-3 rounded-4 border bg-light text-center h-100">
+                    <span class="text-muted small fw-bold text-uppercase d-block" style="font-size: 0.72rem;">Kas Sampah RW</span>
+                    <h5 class="fw-bold text-dark mt-2 mb-1">Rp {{ number_format($saldo_kas_sampah ?? 0, 0, ',', '.') }}</h5>
+                    <small class="text-muted" style="font-size: 0.7rem;">Rekening Bersama RW</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Banner Total Saldo Gabungan Kas Wilayah -->
+        <div class="mt-3 row g-2">
+            <div class="col-md-7">
+                <div class="p-2 px-3 rounded-3 border bg-white small text-muted d-flex align-items-center gap-2 h-100">
+                    <i data-lucide="shield-check" class="text-success flex-shrink-0" style="width: 18px; height: 18px;"></i>
+                    <span style="font-size: 0.78rem;">
+                        <strong>Total Gabungan Kas RW & RT:</strong> <strong class="text-dark">Rp {{ number_format($saldo_konsolidasi ?? ($saldo_kas_rw + $total_saldo_rt + ($saldo_kas_sampah ?? 0)), 0, ',', '.') }}</strong> (Kas Induk RW + Kas 8 RT + Kas Sampah)
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="p-2 px-3 rounded-3 border small d-flex align-items-center gap-2 h-100 banner-semua-dana" style="background: #FFFBEB; border-color: #FDE68A !important; color: #92400E;">
+                    <i data-lucide="layers" class="flex-shrink-0" style="width: 18px; height: 18px; color: #D97706;"></i>
+                    <span style="font-size: 0.75rem;">
+                        <strong>TOTAL SEMUA DANA (+ KEGIATAN):</strong> <strong>Rp {{ number_format($total_dana_terpantau ?? 0, 0, ',', '.') }}</strong> (Termasuk kas pos ronda, posyandu & sosial).
+                    </span>
+                </div>
             </div>
         </div>
     </div>
@@ -113,11 +197,11 @@
             </div>
         </div>
 
-        <!-- 5. Saldo Kas RW -->
+        <!-- 5. Saldo Kas Induk RW -->
         <div class="col-xl-2 col-md-4 col-sm-6">
             <div class="wm-stat-card h-100" style="border-top: 3px solid #16865D;">
                 <div class="d-flex justify-content-between align-items-start">
-                    <span class="wm-stat-lbl">Saldo Kas RW</span>
+                    <span class="wm-stat-lbl">Saldo Kas Induk RW</span>
                     <div class="wm-stat-icon-wrap" style="background: #E3F5EC; color: #16865D;">
                         <i data-lucide="wallet-cards"></i>
                     </div>
@@ -125,7 +209,10 @@
                 <div class="wm-stat-val text-success" style="font-size: 1.25rem;">
                     Rp {{ number_format($saldo_kas_rw ?? 0, 0, ',', '.') }}
                 </div>
-                <div class="small text-muted fw-semibold">Kas Tingkat RW</div>
+                <div class="small text-muted fw-semibold d-flex justify-content-between align-items-center">
+                    <span>Kas Murni RW 013</span>
+                    <span class="badge bg-light text-primary border" title="Total Saldo 8 RT (Otonom Terpisah)">8 RT: Rp {{ number_format(($total_saldo_rt ?? 0)/1000000, 1) }}M</span>
+                </div>
             </div>
         </div>
 
@@ -173,7 +260,7 @@
                                 <th>Warga</th>
                                 <th>Status Laporan</th>
                                 <th>Administrasi</th>
-                                <th>Keuangan</th>
+                                <th>Saldo Kas RT (Otonom)</th>
                                 <th class="text-end">Aksi</th>
                             </tr>
                         </thead>
@@ -305,56 +392,6 @@
                     </a>
                 </div>
             </div>
-        </div>
-    </div>
-
-    {{-- ======================================================================
-         BAGIAN 3: RINGKASAN PEMASUKAN DAN PENGELUARAN KEUANGAN RW
-         ====================================================================== --}}
-    <div class="wm-card mb-4">
-        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-            <div>
-                <h5 class="fw-bold mb-1 text-dark">
-                    <i data-lucide="wallet-cards" class="me-2 text-primary" style="width: 20px; height: 20px; vertical-align: middle;"></i>
-                    Ringkasan Keuangan RW 013 (Transparansi Kas & Iuran)
-                </h5>
-                <p class="text-muted small mb-0">Pemisahan jelas antara Kas RW, Rekap Iuran Warga per RT, dan Kas Operasional RT.</p>
-            </div>
-            <a href="{{ route('kas-rw.index') }}" class="wm-btn-success" style="padding: 7px 16px; font-size: 0.85rem;">
-                <i data-lucide="file-spreadsheet" style="width: 16px; height: 16px;"></i> Rekap Keuangan RW
-            </a>
-        </div>
-
-        <div class="row g-3">
-            <div class="col-md-4">
-                <div class="p-3 rounded-4 border bg-light text-center h-100">
-                    <span class="text-muted small fw-bold text-uppercase">Total Pemasukan Kas RW</span>
-                    <h4 class="fw-bold text-success mt-2 mb-1">Rp {{ number_format($pemasukan_rw ?? 42800000, 0, ',', '.') }}</h4>
-                    <small class="text-muted">Iuran Warga, Alokasi Kelurahan & Donasi</small>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="p-3 rounded-4 border bg-light text-center h-100">
-                    <span class="text-muted small fw-bold text-uppercase">Total Pengeluaran Kas RW</span>
-                    <h4 class="fw-bold text-danger mt-2 mb-1">Rp {{ number_format($pengeluaran_rw ?? 8300000, 0, ',', '.') }}</h4>
-                    <small class="text-muted">Operasional, Keamanan, Kebersihan & Sosial</small>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="p-3 rounded-4 border h-100 text-center" style="background: #E3F5EC; border-color: rgba(22, 134, 93, 0.3) !important;">
-                    <span class="text-success small fw-bold text-uppercase">Saldo Kas RW Saat Ini</span>
-                    <h4 class="fw-bold text-success mt-2 mb-1">Rp {{ number_format($saldo_kas_rw ?? 34500000, 0, ',', '.') }}</h4>
-                    <small class="text-success fw-semibold">Tersimpan Aman & Terverifikasi Pengurus</small>
-                </div>
-            </div>
-        </div>
-
-        <!-- Catatan Transparansi -->
-        <div class="mt-3 p-3 rounded-3 border bg-white small text-muted d-flex align-items-center gap-2">
-            <i data-lucide="shield-check" class="text-success flex-shrink-0" style="width: 20px; height: 20px;"></i>
-            <span>
-                <strong>Prinsip Transparansi RW 013:</strong> Saldo kas RT dikelola mandiri oleh masing-masing bendahara RT, sedangkan Kas RW dihimpun khusus untuk kegiatan lintas RT, sarana prasarana umum, serta penanganan tanggap darurat warga.
-            </span>
         </div>
     </div>
 
@@ -492,10 +529,10 @@
     {{-- ======================================================================
          BAGIAN 6: AGENDA KEGIATAN TERDEKAT RW 013 & PENGUMUMAN
          ====================================================================== --}}
-    <div class="row g-4 mb-4">
-        <!-- Agenda Kegiatan Terdekat RW 013 -->
+    <div class="row g-4 mb-4 align-items-start">
+        <!-- Agenda Kegiatan Terdekat RW 013 & Komposisi Gender Warga -->
         <div class="col-lg-7">
-            <div class="wm-card h-100">
+            <div class="wm-card">
                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                     <div>
                         <h5 class="fw-bold mb-1 text-dark">
@@ -533,9 +570,9 @@
             </div>
         </div>
 
-        <!-- Pengumuman Warga & Komposisi Warga -->
+        <!-- Pengumuman Warga RW 013 -->
         <div class="col-lg-5">
-            <div class="wm-card h-100">
+            <div class="wm-card">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-bold mb-0 text-dark">
                         <i data-lucide="megaphone" class="me-2 text-warning" style="width: 20px; height: 20px; vertical-align: middle;"></i>
@@ -544,7 +581,7 @@
                     <a href="{{ route('pengumuman.index') }}" class="small text-primary fw-bold text-decoration-none">Arsip</a>
                 </div>
 
-                <div class="d-flex flex-column gap-2 mb-4">
+                <div class="d-flex flex-column gap-2">
                     @forelse($pengumuman ?? [] as $p)
                         <div class="p-3 rounded-3 bg-light border">
                             <div class="d-flex justify-content-between align-items-center mb-1">
@@ -558,17 +595,6 @@
                         <div class="text-center py-3 text-muted small">Belum ada pengumuman baru.</div>
                     @endforelse
                 </div>
-
-                <!-- Grafik Komposisi Gender Warga (DIPERTAHANKAN) -->
-                <div class="p-3 rounded-4 border bg-light">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <strong class="text-dark small"><i class="fas fa-venus-mars text-primary me-1"></i>Komposisi Gender Warga</strong>
-                        <span class="badge bg-light text-dark border">{{ $total_warga }} Jiwa</span>
-                    </div>
-                    <div style="height: 140px; display: flex; align-items: center; justify-content: center;">
-                        <canvas id="genderChart"></canvas>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -577,36 +603,6 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Inisialisasi Chart Komposisi Gender
-    const totalLaki = {{ $total_laki ?? 0 }};
-    const totalPerempuan = {{ $total_perempuan ?? 0 }};
-    const ctx = document.getElementById('genderChart');
-    if (ctx) {
-        new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Laki-laki (' + totalLaki + ')', 'Perempuan (' + totalPerempuan + ')'],
-                datasets: [{
-                    data: [totalLaki, totalPerempuan],
-                    backgroundColor: ['#1456A0', '#EC4899'],
-                    borderWidth: 2,
-                    borderColor: '#FFFFFF'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: { boxWidth: 12, font: { size: 11, family: 'Plus Jakarta Sans' } }
-                    }
-                },
-                cutout: '65%'
-            }
-        });
-    }
-
     if (window.lucide) {
         lucide.createIcons();
     }

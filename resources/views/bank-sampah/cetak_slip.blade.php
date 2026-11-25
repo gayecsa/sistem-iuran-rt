@@ -129,7 +129,7 @@
             </div>
 
             <div class="text-center text-muted mt-4 pt-2 border-top" style="font-size: 11px;">
-                <em>Warkas Machi &bull; Sistem Terpadu Manajemen Lingkungan RW 013 Sukamiskin Arcamanik</em>
+                <em>Haven &bull; Safe Space, Seamless Service &bull; RW 013 Sukamiskin Arcamanik</em>
             </div>
         </div>
     </div>

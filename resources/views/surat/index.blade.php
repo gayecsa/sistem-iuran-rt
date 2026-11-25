@@ -32,13 +32,9 @@
                     <span>Inbox Verifikasi RT</span>
                 </a>
             @elseif(Auth::user()->isRw())
-                <a href="{{ route('rw.surat_master.index') }}" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2 shadow-sm" style="font-weight: 600; font-size: 0.88rem; border-radius: 10px;" title="Kelola Katalog, Biaya & Template Surat">
-                    <i data-lucide="settings-2" style="width:18px;height:18px;"></i>
-                    <span>Kelola Katalog & Template</span>
-                </a>
                 <a href="{{ route('rw.surat.index') }}" class="btn btn-outline-primary d-inline-flex align-items-center gap-2 shadow-sm" style="font-weight: 600; font-size: 0.88rem; border-radius: 10px;">
-                    <i data-lucide="file-badge-2" style="width:18px;height:18px;"></i>
-                    <span>Persetujuan Surat RW</span>
+                    <i data-lucide="file-text" style="width:18px;height:18px;"></i>
+                    <span>Manajemen Layanan Surat</span>
                 </a>
             @endif
 
@@ -292,12 +288,12 @@
                                 </p>
 
                                 {{-- Persyaratan Berkas --}}
-                                <div class="p-3 rounded-3 mb-3" style="background: #F8FAFC; border: 1px dashed #CBD5E1;">
-                                    <div class="fw-semibold text-secondary mb-2 d-flex align-items-center gap-1" style="font-size: 0.76rem;">
+                                <div class="p-3 rounded-3 mb-3 surat-persyaratan-box" style="background: #F8FAFC; border: 1px dashed #CBD5E1;">
+                                    <div class="fw-semibold text-secondary mb-2 d-flex align-items-center gap-1 surat-persyaratan-title" style="font-size: 0.76rem;">
                                         <i data-lucide="clipboard-list" style="width:13px;height:13px;"></i>
                                         <span>Persyaratan Dokumen:</span>
                                     </div>
-                                    <ul class="list-unstyled mb-0" style="font-size: 0.75rem; color: #475569;">
+                                    <ul class="list-unstyled mb-0 surat-persyaratan-list" style="font-size: 0.75rem; color: #475569;">
                                         @if(!empty($item->persyaratan))
                                             @foreach(array_slice($item->persyaratan, 0, 3) as $syarat)
                                                 <li class="d-flex align-items-start gap-1 mb-1">
@@ -306,7 +302,7 @@
                                                 </li>
                                             @endforeach
                                             @if(count($item->persyaratan) > 3)
-                                                <li class="text-muted fst-italic" style="font-size: 0.7rem;">+ {{ count($item->persyaratan) - 3 }} syarat tambahan lainnya...</li>
+                                                <li class="text-muted fst-italic surat-persyaratan-extra" style="font-size: 0.7rem;">+ {{ count($item->persyaratan) - 3 }} syarat tambahan lainnya...</li>
                                             @endif
                                         @else
                                             <li class="text-muted">KTP & Kartu Keluarga Terdaftar</li>
@@ -328,7 +324,7 @@
 
                             {{-- Action Button --}}
                             <div class="p-3 pt-0">
-                                <a href="{{ route('surat.create', ['jenis' => $item->kode]) }}" class="btn btn-outline-primary w-100 fw-semibold d-flex align-items-center justify-content-center gap-2 py-2 rounded-3 transition-all" style="font-size: 0.88rem;">
+                                <a href="{{ route('surat.create', ['jenis' => $item->kode]) }}" class="btn btn-outline-primary w-100 fw-semibold d-flex align-items-center justify-content-center gap-2 py-2 rounded-3 transition-all btn-surat-ajukan" style="font-size: 0.88rem;">
                                     <span>Ajukan Permohonan Ini</span>
                                     <i data-lucide="arrow-right" style="width:15px;height:15px;"></i>
                                 </a>

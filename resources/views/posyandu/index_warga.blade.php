@@ -3,15 +3,15 @@
 @section('content')
 <div class="container-fluid p-0">
     <!-- Top Hero Banner Portal Posyandu Warga -->
-    <div class="wm-card mb-4 overflow-hidden position-relative" style="background: linear-gradient(135deg, #16865D 0%, #123766 100%); color: #fff; border: none; border-radius: 16px;">
+    <div class="wm-card mb-4 overflow-hidden position-relative sa-hero-card" style="background: linear-gradient(135deg, #0F3966 0%, #1456A0 55%, #2878D0 100%) !important; color: #fff !important; border: none !important; border-radius: 16px;">
         <div class="p-4 p-md-5 position-relative" style="z-index: 2;">
             <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
                 <div style="max-width: 720px;">
                     <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
-                        <span class="badge bg-light text-success fw-bold px-3 py-1 rounded-pill" style="color: #16865D !important; font-size: 11px; letter-spacing: 0.5px;">
-                            <i data-lucide="heart" style="width: 14px; height: 14px; vertical-align: middle;"></i> LAYANAN KESEHATAN KELUARGA WARGA
+                        <span class="badge px-3 py-1 rounded-pill fw-bold hero-badge" style="background: rgba(255, 255, 255, 0.18) !important; color: #FFFFFF !important; border: 1px solid rgba(255, 255, 255, 0.30) !important; font-size: 11px; letter-spacing: 0.5px;">
+                            <i data-lucide="heart-pulse" style="width: 14px; height: 14px; vertical-align: middle;"></i> LAYANAN KESEHATAN KELUARGA WARGA
                         </span>
-                        <span class="badge bg-white text-dark fw-bold px-3 py-1 rounded-pill opacity-90" style="font-size: 11px;">
+                        <span class="badge fw-bold px-3 py-1 rounded-pill hero-badge" style="background: rgba(255, 255, 255, 0.18) !important; color: #FFFFFF !important; border: 1px solid rgba(255, 255, 255, 0.30) !important; font-size: 11px;">
                             Posyandu RT {{ $rtStr }} RW 013
                         </span>
                     </div>
@@ -37,33 +37,6 @@
         <!-- Decorative Circle Background -->
         <div class="position-absolute rounded-circle" style="width: 320px; height: 320px; background: rgba(255,255,255,0.05); top: -80px; right: -60px; pointer-events: none;"></div>
     </div>
-
-    <!-- Alert Notifikasi Session Flash -->
-    @if(session('success'))
-        <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center gap-3 p-3">
-            <div class="rounded-circle bg-success text-white p-2 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                <i data-lucide="check" style="width: 20px; height: 20px;"></i>
-            </div>
-            <div class="flex-grow-1">
-                <strong class="text-success d-block">Berhasil!</strong>
-                <span class="small text-dark">{{ session('success') }}</span>
-            </div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="alert alert-danger border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center gap-3 p-3">
-            <div class="rounded-circle bg-danger text-white p-2 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                <i data-lucide="alert-circle" style="width: 20px; height: 20px;"></i>
-            </div>
-            <div class="flex-grow-1">
-                <strong class="text-danger d-block">Peringatan</strong>
-                <span class="small text-dark">{{ session('error') }}</span>
-            </div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
 
     <!-- 3 KARTU INFORMASI UTAMA: JADWAL BERIKUTNYA, LOKASI & KADER -->
     <div class="row g-3 mb-4">
@@ -115,6 +88,61 @@
             </div>
         </div>
     </div>
+
+    <!-- DETEKSI CERDAS ANGGOTA KELUARGA (BALITA & LANSIA) -->
+    @if(!empty($autoDetectedFamily))
+        <div class="wm-card bg-white border border-success-subtle rounded-4 shadow-sm p-4 mb-4" style="border-left: 4px solid #16865D !important;">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                        <span class="badge px-3 py-1 rounded-pill fw-bold text-white" style="background: #16865D; font-size: 11px;">
+                            <i data-lucide="sparkles" style="width: 12px; height: 12px; vertical-align: middle;"></i> AUTO-DETEKSI SIKLUS HIDUP
+                        </span>
+                        <h5 class="fw-bold mb-0 text-dark">Deteksi Cerdas Anggota Keluarga (Belum Terdaftar)</h5>
+                    </div>
+                    <p class="text-muted small mb-0">
+                        Berdasarkan data tanggal lahir pada Kartu Keluarga Anda, anggota keluarga berikut memenuhi kualifikasi sasaran pelayanan berkala Posyandu Melati 13 RT {{ $rtStr }}.
+                    </p>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                @foreach($autoDetectedFamily as $item)
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="p-3 border rounded-3 bg-light-subtle h-100 d-flex flex-column justify-content-between shadow-xs">
+                            <div>
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <strong class="text-dark fs-6 d-block">{{ $item['user']->name }}</strong>
+                                        <span class="badge {{ $item['badge_class'] }} px-2 py-1 rounded-pill" style="font-size: 11px;">
+                                            <i data-lucide="{{ $item['icon'] }}" style="width: 12px; height: 12px; vertical-align: middle;" class="me-1"></i>
+                                            {{ $item['kategori_label'] }}
+                                        </span>
+                                    </div>
+                                    <span class="badge bg-white text-secondary border px-2 py-1" style="font-size: 11px;">
+                                        Usia: {{ $item['usia_text'] }}
+                                    </span>
+                                </div>
+                                <small class="text-muted d-block mb-3">
+                                    Jenis Kelamin: {{ $item['user']->gender ?? '-' }} &bull; NIK: {{ $item['user']->masked_nik ?? $item['user']->nik }}
+                                </small>
+                            </div>
+                            <div class="pt-2 border-top">
+                                <form action="{{ route('posyandu.daftar_keluarga') }}" method="POST" class="d-grid">
+                                    @csrf
+                                    <input type="hidden" name="user_id" value="{{ $item['user']->id }}">
+                                    <input type="hidden" name="kategori" value="{{ $item['kategori'] }}">
+                                    <button type="submit" class="btn btn-sm btn-success rounded-pill fw-bold py-2 shadow-xs">
+                                        <i data-lucide="user-plus" style="width: 14px; height: 14px; vertical-align: middle;" class="me-1"></i> Daftarkan ke Posyandu
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
 
     <!-- ANGGOTA KELUARGA TERDAFTAR POSYANDU -->
     <div class="wm-card bg-white border rounded-4 shadow-sm p-4 mb-4">
@@ -183,14 +211,30 @@
                     </div>
                 </div>
             @empty
-                <div class="col-12 py-4 text-center text-muted">
-                    <i data-lucide="user-x" class="mb-2" style="width: 32px; height: 32px;"></i>
-                    <p class="mb-2">Belum ada anggota keluarga Anda yang terdaftar sebagai peserta Posyandu RT {{ $rtStr }}.</p>
-                    @if($unregisteredFamilyMembers->count() > 0)
-                        <button type="button" class="btn btn-sm btn-success rounded-pill px-4 fw-bold" data-bs-toggle="modal" data-bs-target="#modalDaftarKeluarga">
-                            Daftarkan Balita / Ibu Hamil / Lansia Sekarang
-                        </button>
-                    @endif
+                <div class="col-12 py-3">
+                    <div class="p-4 rounded-4 bg-light text-center border">
+                        <div class="mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle" style="width: 56px; height: 56px; background: #E8F5E9; color: #16865D;">
+                            <i data-lucide="heart-handshake" style="width: 28px; height: 28px;"></i>
+                        </div>
+                        <h5 class="fw-bold text-dark mb-1">Saat ini tidak ada Balita (0–5 th) atau Lansia (≥60 th) yang terdeteksi di KK Anda</h5>
+                        <p class="text-muted small mx-auto mb-3" style="max-width: 620px;">
+                            Keluarga Anda tetap berhak memanfaatkan seluruh fasilitas promotif & preventif Posyandu Melati 13 RT {{ $rtStr }}, seperti konsultasi gizi, cek tekanan darah berkala, senam sehat, dan penyuluhan kesehatan keluarga.
+                        </p>
+                        <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
+                            @if($unregisteredFamilyMembers->count() > 0)
+                                <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-2 fw-bold" data-bs-toggle="modal" data-bs-target="#modalDaftarKeluarga" onclick="setTimeout(() => { let sel = document.querySelector('#modalDaftarKeluarga select[name=kategori]'); if(sel) sel.value='ibu_hamil'; }, 200);">
+                                    <i data-lucide="heart" style="width: 14px; height: 14px; vertical-align: middle;" class="me-1"></i> Daftar Layanan Ibu Hamil
+                                </button>
+                                <button type="button" class="btn btn-sm btn-success rounded-pill px-3 py-2 fw-bold" data-bs-toggle="modal" data-bs-target="#modalDaftarKeluarga" onclick="setTimeout(() => { let sel = document.querySelector('#modalDaftarKeluarga select[name=kategori]'); if(sel) sel.value='bayi'; }, 200);">
+                                    <i data-lucide="baby" style="width: 14px; height: 14px; vertical-align: middle;" class="me-1"></i> Lapor Kelahiran / Tambah Bayi
+                                </button>
+                            @else
+                                <span class="badge bg-secondary-subtle text-secondary border px-3 py-2 rounded-pill small">
+                                    Seluruh Anggota KK Terdaftar Aktif
+                                </span>
+                            @endif
+                        </div>
+                    </div>
                 </div>
             @endforelse
         </div>

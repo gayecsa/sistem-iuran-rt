@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard Keuangan RW 013 - Warkas Machi')
+@section('title', 'Dashboard Keuangan RW 013')
 
 @section('content')
 <!-- Tailwind CDN with Preflight Disabled to Prevent Conflict with Bootstrap & Warkas Theme -->
@@ -45,18 +45,6 @@
     .wm-fin-header h1, .wm-fin-header h2, .wm-fin-header p, .wm-fin-header span {
         color: #FFFFFF !important;
     }
-    .wm-text-main {
-        color: var(--wm-text) !important;
-    }
-    .wm-text-sub {
-        color: var(--wm-muted) !important;
-    }
-    .wm-bg-subtle {
-        background-color: var(--wm-bg) !important;
-    }
-    .wm-border-subtle {
-        border-color: var(--wm-border) !important;
-    }
     .wm-input-fin {
         background-color: var(--wm-card) !important;
         color: var(--wm-text) !important;
@@ -99,11 +87,11 @@
     .chart-container-wrap {
         position: relative;
         width: 100%;
-        height: 280px;
+        height: 270px;
     }
     @media (max-width: 768px) {
         .chart-container-wrap {
-            height: 230px;
+            height: 220px;
         }
     }
 </style>
@@ -111,7 +99,8 @@
 <div class="container-fluid p-0 space-y-6">
 
     {{-- ======================================================================
-         A. HEADER DASHBOARD KEUANGAN RW 013
+         1. HEADER DASHBOARD KEUANGAN RW 013 (SALDO UTAMA: KAS INDUK RW)
+         Prinsip: SEPARATE FINANCIAL ACCOUNT, CENTRALIZED MONITORING
          ====================================================================== --}}
     <div class="wm-fin-header p-6 md:p-8 relative overflow-hidden shadow-lg">
         <!-- Background Icon Watermark -->
@@ -123,18 +112,18 @@
             <div>
                 <div class="flex items-center gap-2 mb-2 flex-wrap">
                     <span class="px-3 py-1 rounded-full text-xs font-bold bg-white/20 backdrop-blur-md border border-white/30 tracking-wide">
-                        PERBENDAHARAAN & KAS TERPADU
+                        PERBENDAHARAAN KAS INDUK RW 013
                     </span>
                     <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/30 text-emerald-100 border border-emerald-400/30 flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Kas Aktif & Transparan
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Rekening Otonom Terpisah
                     </span>
                     <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-400/25 text-blue-100 border border-white/20">
-                        8 RT &bull; 68 KK
+                        Monitoring 8 RT &bull; {{ \App\Models\KartuKeluarga::count() }} KK
                     </span>
                 </div>
                 <h1 class="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight">Dashboard Keuangan RW 013</h1>
                 <p class="text-blue-100 text-xs sm:text-sm mt-1 max-w-2xl">
-                    <i data-lucide="map-pin" class="w-3.5 h-3.5 inline text-emerald-300"></i> Kelurahan Sukamiskin, Kecamatan Arcamanik, Kota Bandung 40293 &bull; Periode Laporan: <strong>{{ \Carbon\Carbon::parse($currentPeriode . '-01')->translatedFormat('F Y') }}</strong>
+                    <i data-lucide="map-pin" class="w-3.5 h-3.5 inline text-emerald-300"></i> Kelurahan Sukamiskin, Kecamatan Arcamanik, Kota Bandung &bull; Periode: <strong>{{ \Carbon\Carbon::parse($currentPeriode . '-01')->translatedFormat('F Y') }}</strong>
                 </p>
             </div>
 
@@ -143,41 +132,42 @@
                 <form method="GET" action="{{ route('keuangan.dashboard') }}" class="flex items-center gap-2 bg-white/15 backdrop-blur-md px-3 py-2 rounded-xl border border-white/25">
                     <label for="filter_periode" class="text-xs font-medium text-white mb-0 whitespace-nowrap">Periode:</label>
                     <input type="month" name="periode" id="filter_periode" value="{{ $currentPeriode }}" onchange="this.form.submit()" 
-                           class="bg-white text-slate-800 text-xs font-bold rounded-lg px-2.5 py-1.5 border-0 focus:ring-2 focus:ring-blue-300 outline-none cursor-pointer">
+                           class="text-xs font-bold rounded-lg px-2.5 py-1.5 outline-none cursor-pointer"
+                           style="background: rgba(255, 255, 255, 0.18) !important; color: #FFFFFF !important; border: 1px solid rgba(255, 255, 255, 0.35) !important; color-scheme: dark;">
                 </form>
 
-                <a href="{{ route('keuangan.transaksi.create') }}" class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-md transition duration-150">
-                    <i data-lucide="plus-circle" class="w-4 h-4"></i> Tambah Transaksi
+                <a href="{{ route('keuangan.transaksi.create') }}" class="inline-flex items-center gap-2 font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-md transition duration-150" style="background: #16A34A !important; color: #FFFFFF !important; border: none !important;">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i> Catat Transaksi RW
                 </a>
 
                 <a href="{{ route('keuangan.laporan.cetak', ['start_date' => $currentPeriode . '-01', 'end_date' => Carbon\Carbon::parse($currentPeriode . '-01')->endOfMonth()->toDateString()]) }}" target="_blank" class="inline-flex items-center gap-1.5 bg-white/20 hover:bg-white/30 border border-white/30 text-white font-semibold text-xs sm:text-sm px-3.5 py-2.5 rounded-xl transition duration-150">
-                    <i data-lucide="printer" class="w-4 h-4"></i> Cetak Laporan
+                    <i data-lucide="printer" class="w-4 h-4"></i> Cetak Laporan RW
                 </a>
             </div>
         </div>
 
-        <!-- Banner Akumulasi Likuid RW -->
+        <!-- Banner Saldo Utama RW (Murni Kas Induk RW, Bukan Total Likuid RT) -->
         <div class="mt-6 pt-5 border-t border-white/20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-                <span class="text-xs text-blue-200 font-semibold uppercase tracking-wider">Total Kekayaan Likuid Kas</span>
+                <span class="text-xs text-blue-200 font-semibold uppercase tracking-wider">Saldo Kas Induk RW 013</span>
                 <p class="text-2xl sm:text-3xl font-black text-white mt-0.5">
-                    Rp {{ number_format($totalLikuidRw, 0, ',', '.') }}
+                    Rp {{ number_format($saldoKasRw, 0, ',', '.') }}
                 </p>
-                <span class="text-[11px] text-blue-200/90">Konsolidasi 1 Kas RW + 8 Kas RT + Sampah + Kegiatan</span>
+                <span class="text-[11px] text-blue-200/90">{{ $kasRw->nama_bank ?? 'Kas Tunai' }} &bull; {{ $kasRw->no_rekening ?? '-' }}</span>
             </div>
             <div>
-                <span class="text-xs text-emerald-200 font-semibold uppercase tracking-wider">Pemasukan Periode Ini</span>
+                <span class="text-xs text-emerald-200 font-semibold uppercase tracking-wider">Pemasukan RW Bulan Ini</span>
                 <p class="text-xl sm:text-2xl font-bold text-emerald-300 mt-0.5">
-                    +Rp {{ number_format($totalPemasukanPeriode, 0, ',', '.') }}
+                    +Rp {{ number_format($pemasukanRwBulanIni, 0, ',', '.') }}
                 </p>
-                <span class="text-[11px] text-blue-200/90">Iuran keluarga, donasi & sumbangan warga</span>
+                <span class="text-[11px] text-blue-200/90">Iuran RW & Donasi Terverifikasi (Exclude Transfer)</span>
             </div>
             <div>
-                <span class="text-xs text-rose-200 font-semibold uppercase tracking-wider">Pengeluaran Periode Ini</span>
+                <span class="text-xs text-rose-200 font-semibold uppercase tracking-wider">Pengeluaran RW Bulan Ini</span>
                 <p class="text-xl sm:text-2xl font-bold text-rose-300 mt-0.5">
-                    -Rp {{ number_format($totalPengeluaranPeriode, 0, ',', '.') }}
+                    -Rp {{ number_format($pengeluaranRwBulanIni, 0, ',', '.') }}
                 </p>
-                <span class="text-[11px] text-blue-200/90">Honor satpam, cator sampah, listrik & ATK</span>
+                <span class="text-[11px] text-blue-200/90">Operasional Balai, Satpam, CCTV & Konsumsi</span>
             </div>
             <div>
                 <span class="text-xs text-blue-200 font-semibold uppercase tracking-wider">Kolektibilitas Iuran Bulanan</span>
@@ -210,332 +200,538 @@
         </div>
     @endif
 
+    {{-- Banner Notifikasi Titipan Tunai RT Menunggu Setoran --}}
+    @if(($totalTitipanMenunggu ?? 0) > 0)
+        <div class="p-4 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-300 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div class="flex items-start gap-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center flex-shrink-0 shadow">
+                    <i data-lucide="banknote" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-amber-900 uppercase tracking-wider">Titipan Iuran Tunai di Pengurus RT</span>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-200 text-amber-900">{{ count($titipanRtList ?? []) }} Alokasi Menunggu</span>
+                    </div>
+                    <p class="text-xs text-amber-800 mt-0.5 mb-0">
+                        Terdapat dana titipan tunai sebesar <strong>Rp {{ number_format($totalTitipanMenunggu, 0, ',', '.') }}</strong> yang telah dibayar warga ke Pengurus RT untuk pos RW, Sampah & Kegiatan. Dana ini tidak tercampur ke kas RT dan menunggu disetor ke kas RW/Unit.
+                    </p>
+                </div>
+            </div>
+
+            <a href="{{ route('rw.audit.index', ['tab' => 'monitoring_iuran']) }}" class="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow flex items-center gap-2 transition whitespace-nowrap text-decoration-none">
+                <i data-lucide="check-square" class="w-4 h-4"></i> Tinjau & Cek Setoran
+            </a>
+        </div>
+    @endif
+
     {{-- ======================================================================
-         B. RINGKASAN KEUANGAN (7 KARTU TERPISAH DENGAN WARNA & AKSEN TEGAS)
+         1. PARAMETER RINGKASAN & GABUNGAN SALDO WILAYAH
          ====================================================================== --}}
     <div>
         <div class="flex items-center justify-between mb-3">
-            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2 mb-0">
-                <i data-lucide="layout-grid" class="w-4 h-4 text-[#1456A0]"></i> Ringkasan Parameter Finansial RW 013
-            </h2>
-            <span class="text-xs text-slate-400">Update Real-Time Database</span>
+            <div>
+                <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2 mb-0">
+                    <i data-lucide="layout-grid" class="w-4 h-4 text-[#1456A0]"></i> Ringkasan & Gabungan Saldo Wilayah
+                </h2>
+                <p class="text-[11px] text-slate-400 mt-0.5 mb-0">Pemisahan kepemilikan dana otonom: Kas Induk RW, Otonomi 8 RT, dan Kas Unit Kerja/Kegiatan</p>
+            </div>
+            <span class="text-xs text-slate-400 font-mono">Separate Accounts, Centralized Monitoring</span>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-3.5">
-            <!-- 1. Saldo Kas RW -->
-            <div class="wm-fin-card p-4 flex flex-col justify-between">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            <!-- 1. Saldo Kas Induk RW -->
+            <div class="wm-fin-card p-4 flex flex-col justify-between border-l-4 border-l-[#1456A0]">
                 <div class="flex items-center justify-between">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-blue-600">Kas Induk RW</span>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-blue-700">Kas Induk RW</span>
                     <div class="w-8 h-8 rounded-lg bg-blue-50 text-[#1456A0] flex items-center justify-center font-bold">
                         <i data-lucide="landmark" class="w-4 h-4"></i>
                     </div>
                 </div>
-                <p class="text-lg font-black text-slate-800 mt-2 mb-0">
-                    Rp {{ number_format($kasRw->saldo_sekarang ?? 0, 0, ',', '.') }}
+                <p class="text-xl font-black text-slate-900 mt-2 mb-0">
+                    Rp {{ number_format($saldoKasRw, 0, ',', '.') }}
                 </p>
                 <div class="text-[10px] text-slate-400 mt-1 flex items-center justify-between border-t border-slate-100 pt-1.5">
-                    <span>Sentral RW</span>
-                    <a href="{{ route('keuangan.buku_kas.show', $kasRw->id ?? 1) }}" class="text-[#1456A0] font-bold hover:underline">Detail</a>
+                    <span class="text-blue-700 font-semibold">Dana Murni RW 013</span>
+                    <a href="{{ route('keuangan.buku_kas.show', $kasRw->id ?? 1) }}" class="text-[#1456A0] font-bold hover:underline">Detail &rarr;</a>
                 </div>
             </div>
 
-            <!-- 2. Total Kas RT 001 - 008 -->
-            <div class="wm-fin-card p-4 flex flex-col justify-between">
+            <!-- 2. Total Saldo 8 RT (MONITORING KAS RT) -->
+            <div class="wm-fin-card p-4 flex flex-col justify-between border-l-4 border-l-emerald-500 bg-emerald-50/20 card-total-kas-rt">
                 <div class="flex items-center justify-between">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-600">Total Kas 8 RT</span>
-                    <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700 lbl-kas-rt">Total Kas 8 RT</span>
+                    <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
                         <i data-lucide="users" class="w-4 h-4"></i>
                     </div>
                 </div>
-                <p class="text-lg font-black text-emerald-600 mt-2 mb-0">
+                <p class="text-xl font-black text-emerald-700 mt-2 mb-0 val-kas-rt">
                     Rp {{ number_format($totalSaldoRt, 0, ',', '.') }}
                 </p>
                 <div class="text-[10px] text-slate-400 mt-1 flex items-center justify-between border-t border-slate-100 pt-1.5">
-                    <span>RT 001 - RT 008</span>
-                    <a href="{{ route('keuangan.buku_kas.index', ['jenis' => 'kas_rt']) }}" class="text-emerald-700 font-bold hover:underline">8 Akun</a>
+                    <span class="text-emerald-800 font-bold bg-emerald-100 px-1.5 py-0.2 rounded tag-kas-rt">Monitoring 8 RT</span>
+                    <a href="#tabel-monitoring-rt" class="text-emerald-700 font-bold hover:underline link-kas-rt">Rincian &darr;</a>
                 </div>
             </div>
 
-            <!-- 3. Kas Operasional Sampah -->
-            <div class="wm-fin-card p-4 flex flex-col justify-between">
+            <!-- 3. Kas Pengelolaan Sampah RW -->
+            <div class="wm-fin-card p-4 flex flex-col justify-between border-l-4 border-l-amber-500 bg-amber-50/20 card-kas-sampah-rw">
                 <div class="flex items-center justify-between">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-teal-600">Kas Sampah</span>
-                    <div class="w-8 h-8 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center font-bold">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-amber-800 lbl-kas-sampah">Kas Sampah RW</span>
+                    <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
                         <i data-lucide="trash-2" class="w-4 h-4"></i>
                     </div>
                 </div>
-                <p class="text-lg font-black text-teal-700 mt-2 mb-0">
-                    Rp {{ number_format($kasSampah->saldo_sekarang ?? 0, 0, ',', '.') }}
+                <p class="text-xl font-black text-amber-900 mt-2 mb-0 val-kas-sampah">
+                    Rp {{ number_format($saldoKasSampah ?? 0, 0, ',', '.') }}
                 </p>
                 <div class="text-[10px] text-slate-400 mt-1 flex items-center justify-between border-t border-slate-100 pt-1.5">
-                    <span>Satgas Kebersihan</span>
-                    <a href="{{ route('keuangan.buku_kas.show', $kasSampah->id ?? 2) }}" class="text-teal-700 font-bold hover:underline">Detail</a>
+                    <span class="text-amber-800 font-semibold tag-kas-sampah">Rekening Bersama RW</span>
+                    <a href="#tabel-keuangan-unit" class="text-amber-700 font-bold hover:underline link-kas-sampah">Detail &darr;</a>
                 </div>
             </div>
 
-            <!-- 4. Total Pemasukan -->
-            <div class="wm-fin-card p-4 flex flex-col justify-between">
+            <!-- 4. Total Saldo Gabungan -->
+            <div class="wm-fin-card p-4 flex flex-col justify-between border-l-4 border-l-indigo-600 bg-indigo-50/20">
                 <div class="flex items-center justify-between">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-600">Pemasukan Bulan</span>
-                    <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-                        <i data-lucide="arrow-down-left" class="w-4 h-4"></i>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-700">Total Saldo Gabungan</span>
+                    <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
+                        <i data-lucide="calculator" class="w-4 h-4"></i>
                     </div>
                 </div>
-                <p class="text-lg font-black text-emerald-600 mt-2 mb-0">
-                    +Rp {{ number_format($totalPenerimaanBulanIni, 0, ',', '.') }}
+                <p class="text-xl font-black text-indigo-900 mt-2 mb-0">
+                    Rp {{ number_format($saldoKonsolidasi ?? ($saldoKasRw + $totalSaldoRt + ($saldoKasSampah ?? 0)), 0, ',', '.') }}
                 </p>
                 <div class="text-[10px] text-slate-400 mt-1 flex items-center justify-between border-t border-slate-100 pt-1.5">
-                    <span>{{ $totalKkLunas }} KK Telah Bayar</span>
-                    <span class="text-emerald-600 font-bold">Inflow</span>
+                    <span class="text-indigo-800 font-bold">Kas RW + 8 RT + Sampah</span>
+                    <span class="text-indigo-600 font-mono">Tepat Cocok</span>
                 </div>
             </div>
 
-            <!-- 5. Total Pengeluaran -->
-            <div class="wm-fin-card p-4 flex flex-col justify-between">
+            <!-- 5. Total Semua Dana (+ Kegiatan) -->
+            <div class="wm-fin-card p-4 flex flex-col justify-between border-l-4 border-l-slate-600 bg-slate-50/50">
                 <div class="flex items-center justify-between">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-rose-600">Pengeluaran Bulan</span>
-                    <div class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center font-bold">
-                        <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-700">Total Semua Dana (+ Kegiatan)</span>
+                    <div class="w-8 h-8 rounded-lg bg-slate-200 text-slate-700 flex items-center justify-center font-bold">
+                        <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
                     </div>
                 </div>
-                <p class="text-lg font-black text-rose-600 mt-2 mb-0">
-                    -Rp {{ number_format($totalPengeluaranPeriode, 0, ',', '.') }}
+                <p class="text-xl font-black text-slate-900 mt-2 mb-0">
+                    Rp {{ number_format($totalDanaTerpantau, 0, ',', '.') }}
                 </p>
                 <div class="text-[10px] text-slate-400 mt-1 flex items-center justify-between border-t border-slate-100 pt-1.5">
-                    <span>Belanja Operasional</span>
-                    <span class="text-rose-600 font-bold">Outflow</span>
-                </div>
-            </div>
-
-            <!-- 6. Total Piutang Iuran -->
-            <div class="wm-fin-card p-4 flex flex-col justify-between">
-                <div class="flex items-center justify-between">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-amber-600">Piutang Iuran</span>
-                    <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
-                        <i data-lucide="clock" class="w-4 h-4"></i>
-                    </div>
-                </div>
-                <p class="text-lg font-black text-amber-700 mt-2 mb-0">
-                    Rp {{ number_format($sisaPiutangBulanIni, 0, ',', '.') }}
-                </p>
-                <div class="text-[10px] text-slate-400 mt-1 flex items-center justify-between border-t border-slate-100 pt-1.5">
-                    <span>{{ $totalKkBelum }} KK Belum Bayar</span>
-                    <a href="{{ route('tagihan.index', ['status' => 'Belum Dibayar']) }}" class="text-amber-700 font-bold hover:underline">Tagih</a>
-                </div>
-            </div>
-
-            <!-- 7. Persentase Pembayaran Warga -->
-            <div class="wm-fin-card p-4 flex flex-col justify-between">
-                <div class="flex items-center justify-between">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-purple-600">Kolektibilitas</span>
-                    <div class="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
-                        <i data-lucide="percent" class="w-4 h-4"></i>
-                    </div>
-                </div>
-                <p class="text-lg font-black text-purple-700 mt-2 mb-0">
-                    {{ $persenKolektibilitas }}%
-                </p>
-                <div class="text-[10px] text-slate-400 mt-1 flex items-center justify-between border-t border-slate-100 pt-1.5">
-                    <span>{{ $totalKkDibebaskan }} KK Bebas (Dhuafa)</span>
-                    <span class="text-purple-700 font-bold">Rate</span>
+                    <span class="text-slate-600 font-semibold">+ Kas Kegiatan Sosial</span>
+                    <span class="text-slate-400 font-mono">Transparansi</span>
                 </div>
             </div>
         </div>
     </div>
 
     {{-- ======================================================================
-         C. KARTU REKENING DAN KAS (KAS RW, KAS SAMPAH, 8 KAS RT, DANA KEGIATAN)
+         2. KELOMPOK A. KEUANGAN RW (RINGKASAN LENGKAP KAS INDUK RW 013)
+         Sesuai Poin 4A: Saldo Awal, Total Pemasukan, Total Pengeluaran, Saldo Akhir
          ====================================================================== --}}
     <div class="wm-fin-card p-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-4">
             <div>
-                <h2 class="text-base font-bold text-slate-800 flex items-center gap-2 mb-0">
-                    <i data-lucide="wallet-cards" class="w-5 h-5 text-[#1456A0]"></i> Entitas Rekening & Buku Kas RW 013
-                </h2>
-                <p class="text-xs text-slate-500 mt-1 mb-0">Setiap kas memiliki akun terpisah, nomor rekening resmi, peruntukan spesifik, dan rekapitulasi mutasi</p>
+                <div class="flex items-center gap-2">
+                    <h2 class="text-base font-bold text-slate-800 flex items-center gap-2 mb-0">
+                        <i data-lucide="landmark" class="w-5 h-5 text-[#1456A0]"></i> Kelompok A: Keuangan Kas Induk RW 013 (Periode {{ $currentPeriode }})
+                    </h2>
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-100 text-[#1456A0] border border-blue-200">
+                        Khusus Kas RW 013
+                    </span>
+                </div>
+                <p class="text-xs text-slate-500 mt-1 mb-0">
+                    Pencatatan mutasi kas yang murni dimiliki oleh Pengurus RW 013 Sukamiskin. Bebas dari pencampuran kas RT maupun unit kerja.
+                </p>
             </div>
             <div class="flex items-center gap-2">
-                <a href="{{ route('keuangan.buku_kas.index') }}" class="wm-btn-outline" style="font-size: 0.8rem; padding: 6px 14px;">
-                    Lihat Semua 18 Buku Kas <i data-lucide="arrow-right" class="w-3.5 h-3.5 ml-1"></i>
-                </a>
+                <span class="text-xs font-bold px-3 py-1.5 rounded-xl bg-blue-50 text-[#1456A0] border border-blue-200">
+                    Rekening: <strong>{{ $kasRw->masked_rekening }}</strong>
+                </span>
             </div>
         </div>
 
-        <!-- 3 Pilar Kas Utama: RW, Sampah, dan Ringkasan RT -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <!-- Card Kas RW -->
-            <div class="p-4 rounded-2xl border border-slate-200 bg-gradient-to-b from-white to-blue-50/30 flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold bg-blue-100 text-[#1456A0]">
-                            {{ $kasRw->kode_kas ?? 'KAS-RW-013' }}
-                        </span>
-                        <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-800 border border-blue-200">
-                            Sentral RW
-                        </span>
-                    </div>
-                    <h3 class="text-base font-bold text-slate-800 mb-1">{{ $kasRw->nama_kas ?? 'Kas Induk RW 013' }}</h3>
-                    <p class="text-xs text-slate-500 mb-3">{{ $kasRw->deskripsi ?? 'Operasional balai, honor satpam kawasan, CCTV' }}</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-3.5">
+            <!-- Saldo Awal RW -->
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between card-saldo-awal-rw">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-600">Saldo Awal RW</span>
+                <p class="text-lg font-black text-slate-800 mt-2 mb-0 val-saldo-awal">
+                    Rp {{ number_format($saldoAwalRw, 0, ',', '.') }}
+                </p>
+                <span class="text-[10px] text-slate-400 mt-1 pt-1 border-t border-slate-200/60 sub-saldo-awal">Posisi awal bulan</span>
+            </div>
 
-                    <div class="p-3 bg-white rounded-xl border border-slate-200 mb-3">
-                        <span class="text-[10px] font-bold uppercase text-slate-400">Saldo Rekening Saat Ini</span>
-                        <p class="text-2xl font-black text-slate-900 mt-0.5 mb-0">
-                            Rp {{ number_format($kasRw->saldo_sekarang ?? 0, 0, ',', '.') }}
-                        </p>
-                        <p class="text-[11px] text-slate-500 font-mono mt-1 mb-0">
-                            {{ $kasRw->nama_bank ?? 'Bank Mandiri' }}: <strong>{{ $kasRw->no_rekening ?? '130-00-1928374-1' }}</strong>
-                        </p>
-                    </div>
+            <!-- Total Pemasukan RW -->
+            <div class="p-4 rounded-xl bg-emerald-50/60 border border-emerald-200 flex flex-col justify-between">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700">Total Pemasukan RW</span>
+                <p class="text-lg font-black text-emerald-600 mt-2 mb-0">
+                    +Rp {{ number_format($pemasukanRwBulanIni, 0, ',', '.') }}
+                </p>
+                <span class="text-[10px] text-emerald-700/80 mt-1 pt-1 border-t border-emerald-200/60">Inflow riil Kas RW</span>
+            </div>
 
-                    <div class="grid grid-cols-2 gap-2 text-xs mb-3">
-                        <div class="p-2 rounded-lg bg-emerald-50 text-emerald-800">
-                            <span class="text-[10px] block text-emerald-600 font-semibold">Total Masuk</span>
-                            <strong class="font-extrabold">+Rp {{ number_format($kasRwMasuk ?? 0, 0, ',', '.') }}</strong>
-                        </div>
-                        <div class="p-2 rounded-lg bg-rose-50 text-rose-800">
-                            <span class="text-[10px] block text-rose-600 font-semibold">Total Keluar</span>
-                            <strong class="font-extrabold">-Rp {{ number_format($kasRwKeluar ?? 0, 0, ',', '.') }}</strong>
-                        </div>
-                    </div>
-                </div>
+            <!-- Total Pengeluaran RW -->
+            <div class="p-4 rounded-xl bg-rose-50/60 border border-rose-200 flex flex-col justify-between">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-rose-700">Total Pengeluaran RW</span>
+                <p class="text-lg font-black text-rose-600 mt-2 mb-0">
+                    -Rp {{ number_format($pengeluaranRwBulanIni, 0, ',', '.') }}
+                </p>
+                <span class="text-[10px] text-rose-700/80 mt-1 pt-1 border-t border-rose-200/60">Outflow operasional RW</span>
+            </div>
 
-                <div class="pt-3 border-t border-slate-200 flex items-center justify-between">
-                    <span class="text-[11px] text-slate-500">PIC: {{ $kasRw->nama_penanggung_jawab ?? 'Ketua RW' }}</span>
-                    <a href="{{ route('keuangan.buku_kas.show', $kasRw->id ?? 1) }}" class="wm-btn-primary" style="font-size: 0.78rem; padding: 6px 12px;">
-                        Buka Buku Kas &rarr;
-                    </a>
+            <!-- Saldo Akhir RW -->
+            <div class="p-4 rounded-xl bg-blue-50/60 border-2 border-blue-300 flex flex-col justify-between">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-blue-900">Saldo Akhir RW</span>
+                <p class="text-lg font-black text-[#1456A0] mt-2 mb-0">
+                    Rp {{ number_format($saldoAkhirRw, 0, ',', '.') }}
+                </p>
+                <span class="text-[10px] text-blue-700 font-semibold mt-1 pt-1 border-t border-blue-200/60">Formula: Awal + Masuk - Keluar</span>
+            </div>
+
+            <!-- Piutang Iuran RW -->
+            <div class="p-4 rounded-xl bg-amber-50/60 border border-amber-200 flex flex-col justify-between">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-amber-700">Piutang Iuran RW</span>
+                <p class="text-lg font-black text-amber-800 mt-2 mb-0">
+                    Rp {{ number_format($piutangIuranRw, 0, ',', '.') }}
+                </p>
+                <div class="text-[10px] text-amber-700 mt-1 pt-1 border-t border-amber-200/60 flex items-center justify-between">
+                    <span>{{ $totalKkBelum }} KK Belum Bayar</span>
+                    <a href="{{ route('tagihan.index', ['status' => 'Belum Dibayar']) }}" class="text-amber-800 font-bold hover:underline">Lihat &rarr;</a>
                 </div>
             </div>
 
-            <!-- Card Kas Sampah -->
-            <div class="p-4 rounded-2xl border border-slate-200 bg-gradient-to-b from-white to-teal-50/30 flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold bg-teal-100 text-teal-800">
-                            {{ $kasSampah->kode_kas ?? 'KAS-SAMPAH' }}
-                        </span>
-                        <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200">
-                            Kebersihan Lingkungan
-                        </span>
-                    </div>
-                    <h3 class="text-base font-bold text-slate-800 mb-1">{{ $kasSampah->nama_kas ?? 'Kas Pengelolaan Sampah' }}</h3>
-                    <p class="text-xs text-slate-500 mb-3">{{ $kasSampah->deskripsi ?? 'Cator motor sampah, BBM, servis berkala, TPS' }}</p>
-
-                    <div class="p-3 bg-white rounded-xl border border-slate-200 mb-3">
-                        <span class="text-[10px] font-bold uppercase text-slate-400">Saldo Kas Sampah</span>
-                        <p class="text-2xl font-black text-teal-700 mt-0.5 mb-0">
-                            Rp {{ number_format($kasSampah->saldo_sekarang ?? 0, 0, ',', '.') }}
-                        </p>
-                        <p class="text-[11px] text-slate-500 font-mono mt-1 mb-0">
-                            {{ $kasSampah->nama_bank ?? 'Bank BJB' }}: <strong>{{ $kasSampah->no_rekening ?? '008-219-4820-101' }}</strong>
-                        </p>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2 text-xs mb-3">
-                        <div class="p-2 rounded-lg bg-emerald-50 text-emerald-800">
-                            <span class="text-[10px] block text-emerald-600 font-semibold">Total Masuk</span>
-                            <strong class="font-extrabold">+Rp {{ number_format($kasSampahMasuk ?? 0, 0, ',', '.') }}</strong>
-                        </div>
-                        <div class="p-2 rounded-lg bg-rose-50 text-rose-800">
-                            <span class="text-[10px] block text-rose-600 font-semibold">Total Keluar</span>
-                            <strong class="font-extrabold">-Rp {{ number_format($kasSampahKeluar ?? 0, 0, ',', '.') }}</strong>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="pt-3 border-t border-slate-200 flex items-center justify-between">
-                    <span class="text-[11px] text-slate-500">PIC: Satgas Kebersihan</span>
-                    <a href="{{ route('keuangan.buku_kas.show', $kasSampah->id ?? 2) }}" class="wm-btn-primary" style="font-size: 0.78rem; padding: 6px 12px; background: #0D9488; border-color: #0D9488;">
-                        Buka Buku Kas &rarr;
-                    </a>
-                </div>
-            </div>
-
-            <!-- Card Total 8 RT & Progres Penagihan -->
-            <div class="p-4 rounded-2xl border border-slate-200 bg-gradient-to-b from-white to-emerald-50/30 flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold bg-emerald-100 text-emerald-800">
-                            KAS-RT-001 s/d 008
-                        </span>
-                        <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
-                            8 Rukun Tetangga
-                        </span>
-                    </div>
-                    <h3 class="text-base font-bold text-slate-800 mb-1">Konsolidasi Kas Lingkungan RT</h3>
-                    <p class="text-xs text-slate-500 mb-3">Akun otonom operasional kerja bakti & perbaikan lokal RT</p>
-
-                    <div class="p-3 bg-white rounded-xl border border-slate-200 mb-3">
-                        <span class="text-[10px] font-bold uppercase text-slate-400">Total Saldo 8 RT</span>
-                        <p class="text-2xl font-black text-emerald-600 mt-0.5 mb-0">
-                            Rp {{ number_format($totalSaldoRt, 0, ',', '.') }}
-                        </p>
-                        <p class="text-[11px] text-slate-500 mt-1 mb-0">
-                            Terkumpul Iuran RT: <strong>Rp {{ number_format($tagihans->sum('nominal_rt'), 0, ',', '.') }}</strong>
-                        </p>
-                    </div>
-
-                    <div class="space-y-1 text-xs mb-3">
-                        <div class="flex justify-between text-slate-600">
-                            <span>Target KK RW 013:</span>
-                            <strong>{{ $totalKkTerdaftar }} KK (Rp 45.000/KK)</strong>
-                        </div>
-                        <div class="flex justify-between text-slate-600">
-                            <span>Status Lunas:</span>
-                            <strong class="text-emerald-700">{{ $totalKkLunas }} KK ({{ $persenKolektibilitas }}%)</strong>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="pt-3 border-t border-slate-200 flex items-center justify-between">
-                    <span class="text-[11px] text-slate-500">8 Buku Kas Terpisah</span>
-                    <a href="{{ route('keuangan.buku_kas.index', ['jenis' => 'kas_rt']) }}" class="wm-btn-success" style="font-size: 0.78rem; padding: 6px 12px;">
-                        Kelola 8 Kas RT &rarr;
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Grid 8 Kas RT (001 s/d 008) -->
-        <div class="pt-3">
-            <div class="flex items-center justify-between mb-3">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-600">Daftar Buku Kas RT 001 - RT 008</span>
-                <span class="text-[11px] text-slate-400">Pemberdayaan Wilayah Rukun Tetangga</span>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5">
-                @foreach($kasRtList as $rtKas)
-                    <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-emerald-300 transition text-center shadow-sm">
-                        <span class="px-2 py-0.5 text-[10px] font-extrabold rounded bg-emerald-100 text-emerald-800">
-                            RT {{ $rtKas->rt_number }}
-                        </span>
-                        <p class="text-xs sm:text-sm font-extrabold text-slate-800 mt-2 mb-0 truncate">
-                            Rp {{ number_format($rtKas->saldo_sekarang, 0, ',', '.') }}
-                        </p>
-                        <a href="{{ route('keuangan.buku_kas.show', $rtKas->id) }}" class="text-[10px] font-bold text-[#1456A0] hover:underline mt-1.5 inline-block">
-                            Mutasi &rarr;
-                        </a>
-                    </div>
-                @endforeach
+            <!-- Kolektibilitas Iuran Bulanan -->
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between card-kolektibilitas-rw">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-700">Kolektibilitas Iuran</span>
+                <p class="text-lg font-black text-[#1456A0] mt-2 mb-0 val-kolektibilitas">
+                    {{ $persenKolektibilitas }}%
+                </p>
+                <span class="text-[10px] text-slate-500 mt-1 pt-1 border-t border-slate-200/60 sub-kolektibilitas">{{ $totalKkLunas }}/{{ $totalKkTerdaftar }} KK Lunas</span>
             </div>
         </div>
     </div>
 
     {{-- ======================================================================
-         D. GRAFIK KEUANGAN (CHART.JS: ARUS KAS, SALDO, SUMBER IN & OUT)
+         3. MONITORING RT 001 - RT 008 (RINCIAN LENGKAP & INDEPENDENSI KAS)
+         Sesuai Poin 3: Saldo Awal, Pemasukan, Pengeluaran, Saldo Akhir, Iuran, Tunggakan, Status Lapor
+         ====================================================================== --}}
+    <div id="tabel-monitoring-rt" class="wm-fin-card p-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-4">
+            <div>
+                <div class="flex items-center gap-2">
+                    <h2 class="text-base font-bold text-slate-800 flex items-center gap-2 mb-0">
+                        <i data-lucide="building-2" class="w-5 h-5 text-emerald-600"></i> Monitoring Keuangan RT 001 s/d RT 008 (Periode {{ $currentPeriode }})
+                    </h2>
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-100 text-[#1456A0] border border-blue-200">
+                        Read-Only & Audit
+                    </span>
+                </div>
+                <p class="text-xs text-slate-500 mt-1 mb-0">
+                    Kewenangan Ketua RW adalah memantau dan mengaudit akuntabilitas lingkungan. Kas RT merupakan dana otonom milik masing-masing RT.
+                </p>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-xs font-bold px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200">
+                    Total Kas 8 RT: <strong>Rp {{ number_format($totalSaldoRt, 0, ',', '.') }}</strong>
+                </span>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table wm-table mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th class="py-3 px-3">Wilayah & PIC RT</th>
+                        <th class="py-3 px-3 text-end">Saldo Awal</th>
+                        <th class="py-3 px-3 text-end text-success">Pemasukan (+)</th>
+                        <th class="py-3 px-3 text-end text-danger">Pengeluaran (-)</th>
+                        <th class="py-3 px-3 text-end font-bold">Saldo Akhir</th>
+                        <th class="py-3 px-3 text-end">Iuran Terkumpul</th>
+                        <th class="py-3 px-3 text-end">Tunggakan</th>
+                        <th class="py-3 px-3 text-center">Status Laporan</th>
+                        <th class="py-3 px-3 text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($monitoringRtList as $rtData)
+                        <tr>
+                            <td class="py-3 px-3">
+                                <div class="font-bold text-slate-800 flex items-center gap-1.5">
+                                    <span class="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-emerald-100 text-emerald-800">
+                                        {{ $rtData['rt_label'] }}
+                                    </span>
+                                    <span>{{ $rtData['pic_name'] }}</span>
+                                </div>
+                                <span class="text-[11px] text-slate-400 font-mono">Buku Kas RT {{ $rtData['rt_number'] }}</span>
+                            </td>
+                            <td class="py-3 px-3 text-end font-mono text-slate-600">
+                                Rp {{ number_format($rtData['saldo_awal'], 0, ',', '.') }}
+                            </td>
+                            <td class="py-3 px-3 text-end font-mono font-bold text-success text-nowrap">
+                                +Rp {{ number_format($rtData['pemasukan'], 0, ',', '.') }}
+                            </td>
+                            <td class="py-3 px-3 text-end font-mono font-bold text-danger text-nowrap">
+                                -Rp {{ number_format($rtData['pengeluaran'], 0, ',', '.') }}
+                            </td>
+                            <td class="py-3 px-3 text-end font-mono font-black text-slate-900 text-nowrap bg-slate-50/60">
+                                Rp {{ number_format($rtData['saldo_akhir'], 0, ',', '.') }}
+                            </td>
+                            <td class="py-3 px-3 text-end font-mono text-emerald-700 font-semibold text-nowrap">
+                                Rp {{ number_format($rtData['iuran_terkumpul'], 0, ',', '.') }}
+                            </td>
+                            <td class="py-3 px-3 text-end font-mono text-nowrap {{ $rtData['tunggakan'] > 0 ? 'text-amber-600 font-semibold' : 'text-slate-400' }}">
+                                Rp {{ number_format($rtData['tunggakan'], 0, ',', '.') }}
+                            </td>
+                            <td class="py-3 px-3 text-center text-nowrap">
+                                @if($rtData['status_laporan'] === 'Terkirim')
+                                    <span class="px-2.5 py-1 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+                                        Terkirim
+                                    </span>
+                                @elseif($rtData['status_laporan'] === 'Terverifikasi')
+                                    <span class="px-2.5 py-1 text-[10px] font-bold rounded-full bg-blue-100 text-blue-800 border border-blue-300">
+                                        Terverifikasi
+                                    </span>
+                                @else
+                                    <span class="px-2.5 py-1 text-[10px] font-bold rounded-full bg-amber-100 text-amber-800 border border-amber-300">
+                                        {{ $rtData['status_laporan'] }}
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="py-3 px-3 text-center text-nowrap">
+                                @if($rtData['buku_kas_id'])
+                                    <a href="{{ route('keuangan.buku_kas.show', $rtData['buku_kas_id']) }}" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 font-semibold text-[11px]">
+                                        <i data-lucide="eye" class="w-3.5 h-3.5 inline mr-1"></i> Audit RT
+                                    </a>
+                                @else
+                                    <span class="text-slate-400 text-xs">-</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+                <tfoot class="bg-slate-50/90 font-extrabold text-slate-800 border-t border-slate-200">
+                    <tr>
+                        <td class="py-3 px-3">TOTAL GABUNGAN KAS 8 RT:</td>
+                        <td class="py-3 px-3 text-end font-mono text-slate-700">
+                            Rp {{ number_format(collect($monitoringRtList)->sum('saldo_awal'), 0, ',', '.') }}
+                        </td>
+                        <td class="py-3 px-3 text-end font-mono text-success">
+                            +Rp {{ number_format(collect($monitoringRtList)->sum('pemasukan'), 0, ',', '.') }}
+                        </td>
+                        <td class="py-3 px-3 text-end font-mono text-danger">
+                            -Rp {{ number_format(collect($monitoringRtList)->sum('pengeluaran'), 0, ',', '.') }}
+                        </td>
+                        <td class="py-3 px-3 text-end font-mono text-slate-900 bg-slate-100">
+                            Rp {{ number_format($totalSaldoRt, 0, ',', '.') }}
+                        </td>
+                        <td class="py-3 px-3 text-end font-mono text-emerald-800">
+                            Rp {{ number_format(collect($monitoringRtList)->sum('iuran_terkumpul'), 0, ',', '.') }}
+                        </td>
+                        <td class="py-3 px-3 text-end font-mono text-amber-800">
+                            Rp {{ number_format(collect($monitoringRtList)->sum('tunggakan'), 0, ',', '.') }}
+                        </td>
+                        <td colspan="2" class="text-center text-[11px] text-slate-500 italic">
+                            *Saldo milik masing-masing RT
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    {{-- ======================================================================
+         KELOMPOK C. KEUANGAN UNIT (SAMPAH, KEAMANAN, POSYANDU & KEGIATAN)
+         Sesuai Poin 4C: Saldo setiap unit, Pemasukan dan Pengeluaran Unit, Riwayat
+         ====================================================================== --}}
+    <div id="tabel-keuangan-unit" class="wm-fin-card p-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-4">
+            <div>
+                <div class="flex items-center gap-2">
+                    <h2 class="text-base font-bold text-slate-800 flex items-center gap-2 mb-0">
+                        <i data-lucide="layers" class="w-5 h-5 text-purple-600"></i> Kelompok C: Keuangan Kas Unit Lingkungan (Periode {{ $currentPeriode }})
+                    </h2>
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-purple-100 text-purple-800 border border-purple-200">
+                        Otonomi Unit Kerja
+                    </span>
+                </div>
+                <p class="text-xs text-slate-500 mt-1 mb-0">
+                    Pencatatan dan saldo terpisah untuk unit kebersihan, keamanan lingkungan, posyandu, peringatan hari besar, dan dana sosial.
+                </p>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-xs font-bold px-3 py-1.5 rounded-xl bg-purple-50 text-purple-900 border border-purple-200">
+                    Total Kas Unit: <strong>Rp {{ number_format($totalSaldoUnit, 0, ',', '.') }}</strong>
+                </span>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table wm-table mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th class="py-3 px-3">Unit Kerja & Akun Kas</th>
+                        <th class="py-3 px-3">Penanggung Jawab</th>
+                        <th class="py-3 px-3">Rekening / Penyimpanan</th>
+                        <th class="py-3 px-3 text-end">Saldo Awal</th>
+                        <th class="py-3 px-3 text-end text-success">Pemasukan (+)</th>
+                        <th class="py-3 px-3 text-end text-danger">Pengeluaran (-)</th>
+                        <th class="py-3 px-3 text-end font-bold">Saldo Akhir</th>
+                        <th class="py-3 px-3 text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($monitoringUnitList as $unit)
+                        <tr>
+                            <td class="py-3 px-3">
+                                <div class="font-bold text-slate-800 flex items-center gap-1.5">
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-purple-100 text-purple-800">
+                                        {{ $unit['kode_kas'] }}
+                                    </span>
+                                    <span>{{ $unit['nama_kas'] }}</span>
+                                </div>
+                            </td>
+                            <td class="py-3 px-3 text-xs text-slate-600 font-medium">
+                                {{ $unit['penanggung_jawab'] }}
+                            </td>
+                            <td class="py-3 px-3 text-xs font-mono text-slate-500">
+                                {{ $unit['rekening'] }}
+                            </td>
+                            <td class="py-3 px-3 text-end font-mono text-slate-600 text-nowrap">
+                                Rp {{ number_format($unit['saldo_awal'], 0, ',', '.') }}
+                            </td>
+                            <td class="py-3 px-3 text-end font-mono font-bold text-success text-nowrap">
+                                +Rp {{ number_format($unit['pemasukan'], 0, ',', '.') }}
+                            </td>
+                            <td class="py-3 px-3 text-end font-mono font-bold text-danger text-nowrap">
+                                -Rp {{ number_format($unit['pengeluaran'], 0, ',', '.') }}
+                            </td>
+                            <td class="py-3 px-3 text-end font-mono font-black text-purple-900 text-nowrap bg-purple-50/40">
+                                Rp {{ number_format($unit['saldo_akhir'], 0, ',', '.') }}
+                            </td>
+                            <td class="py-3 px-3 text-center text-nowrap">
+                                <a href="{{ route('keuangan.buku_kas.show', $unit['id']) }}" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 font-semibold text-[11px]">
+                                    <i data-lucide="book-open" class="w-3.5 h-3.5 inline mr-1"></i> Buka Buku Kas
+                                </a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+                <tfoot class="bg-slate-50/90 font-extrabold text-slate-800 border-t border-slate-200">
+                    <tr>
+                        <td colspan="3" class="py-3 px-3">TOTAL GABUNGAN KAS UNIT LINGKUNGAN:</td>
+                        <td class="py-3 px-3 text-end font-mono text-slate-700">
+                            Rp {{ number_format(collect($monitoringUnitList)->sum('saldo_awal'), 0, ',', '.') }}
+                        </td>
+                        <td class="py-3 px-3 text-end font-mono text-success">
+                            +Rp {{ number_format(collect($monitoringUnitList)->sum('pemasukan'), 0, ',', '.') }}
+                        </td>
+                        <td class="py-3 px-3 text-end font-mono text-danger">
+                            -Rp {{ number_format(collect($monitoringUnitList)->sum('pengeluaran'), 0, ',', '.') }}
+                        </td>
+                        <td class="py-3 px-3 text-end font-mono text-purple-900 bg-purple-100/60">
+                            Rp {{ number_format($totalSaldoUnit, 0, ',', '.') }}
+                        </td>
+                        <td class="text-center text-[11px] text-slate-500 italic">
+                            *Saldo unit tersimpan independen
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    {{-- ======================================================================
+         4. STATUS INTEGRASI PEMBAGIAN IURAN & PEMBUKUAN MULTI-AKUN
+         Sesuai Poin 5: Satu Invoice, Alokasi Otomatis, Transparansi Gateway
+         ====================================================================== --}}
+    <div class="wm-fin-card p-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-4">
+            <div>
+                <div class="flex items-center gap-2">
+                    <h2 class="text-base font-bold text-slate-800 flex items-center gap-2 mb-0">
+                        <i data-lucide="split" class="w-5 h-5 text-[#1456A0]"></i> Status Integrasi Pembagian Iuran & Pembukuan Kas
+                    </h2>
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                        One Billing Aktif
+                    </span>
+                </div>
+                <p class="text-xs text-slate-500 mt-1 mb-0">
+                    Sistem mendistribusikan satu tagihan gabungan keluarga secara otomatis ke rekening kas masing-masing pemilik dana tanpa saldo bercampur.
+                </p>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-xs font-semibold px-3 py-1.5 rounded-xl bg-blue-50 text-blue-900 border border-blue-200">
+                    Status Gateway: <strong>Sandbox Ready (Transfer & QRIS Statis Aktif)</strong>
+                </span>
+            </div>
+        </div>
+
+        <!-- Rincian Alokasi Split Settlement Komponen Iuran -->
+        <div class="table-responsive">
+            <table class="table wm-table mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th class="py-2.5 px-3">Komponen Iuran</th>
+                        <th class="py-2.5 px-3">Rekening Akun Tujuan</th>
+                        <th class="py-2.5 px-3 text-end">Teralokasi Bulan Ini</th>
+                        <th class="py-2.5 px-3 text-center">Metode Settlement</th>
+                        <th class="py-2.5 px-3 text-center">Status Pembukuan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($rekapAlokasiSplit as $split)
+                        <tr>
+                            <td class="py-3 px-3 font-bold text-slate-800">
+                                {{ $split['nama'] }}
+                            </td>
+                            <td class="py-3 px-3 text-xs text-slate-600 font-medium">
+                                {{ $split['target_kas'] }}
+                            </td>
+                            <td class="py-3 px-3 text-end font-mono font-bold text-slate-900">
+                                Rp {{ number_format($split['nominal'], 0, ',', '.') }}
+                            </td>
+                            <td class="py-3 px-3 text-center text-xs">
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">
+                                    {{ $split['status_settlement'] }}
+                                </span>
+                            </td>
+                            <td class="py-3 px-3 text-center">
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 flex items-center justify-center gap-1 w-max mx-auto">
+                                    <i data-lucide="check" class="w-3 h-3"></i> {{ $split['rekonsiliasi'] }}
+                                </span>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="p-3 bg-blue-50/60 rounded-xl border border-blue-200 text-xs text-blue-900 mt-4 flex items-center justify-between">
+            <span class="flex items-center gap-2">
+                <i data-lucide="shield-check" class="w-4 h-4 text-[#1456A0] flex-shrink-0"></i>
+                <span><strong>Catatan Split Settlement:</strong> Pembayaran transfer rekening langsung mengkredit buku kas tujuan. Pembayaran tunai via RT berstatus <em>Titipan RT</em> sampai disetorkan ke RW tanpa manipulasi saldo.</span>
+            </span>
+            <a href="{{ route('tagihan.index') }}" class="text-[#1456A0] font-bold hover:underline whitespace-nowrap ml-3">Kelola Tagihan &rarr;</a>
+        </div>
+    </div>
+
+    {{-- ======================================================================
+         5. GRAFIK KEUANGAN KHUSUS KAS INDUK RW 013 (CHART.JS)
          ====================================================================== --}}
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <!-- 1. Grafik Pemasukan vs Pengeluaran Bulanan (7 Kolom) -->
+        <!-- 1. Grafik Pemasukan vs Pengeluaran Kas RW (7 Kolom) -->
         <div class="lg:col-span-7 wm-fin-card p-6 flex flex-col justify-between">
             <div>
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
                     <div>
                         <h2 class="text-base font-bold text-slate-800 flex items-center gap-2 mb-0">
-                            <i data-lucide="bar-chart-3" class="w-5 h-5 text-emerald-600"></i> Tren Arus Kas Masuk vs Keluar
+                            <i data-lucide="bar-chart-3" class="w-5 h-5 text-emerald-600"></i> Tren Arus Kas Induk RW (6 Bulan)
                         </h2>
-                        <p class="text-xs text-slate-500 mt-0.5 mb-0">Pergerakan riil pemasukan dan pengeluaran 6 bulan terakhir</p>
+                        <p class="text-xs text-slate-500 mt-0.5 mb-0">Hanya mutasi riil Kas RW 013 (tidak mencampur kas RT atau unit)</p>
                     </div>
                     <span class="badge" style="background:#E3F5EC;color:#16865D;border-radius:999px;font-size:0.75rem;padding:6px 12px;">
-                        6 Bulan Terakhir
+                        Khusus Kas RW
                     </span>
                 </div>
 
@@ -545,20 +741,20 @@
             </div>
 
             <div class="flex items-center justify-center gap-6 pt-3 border-t border-slate-100 text-xs font-semibold text-slate-600 mt-2">
-                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-500"></span> Total Pemasukan (+Debit)</span>
-                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-rose-500"></span> Total Pengeluaran (-Kredit)</span>
+                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-500"></span> Pemasukan Kas RW (+Debit)</span>
+                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-rose-500"></span> Pengeluaran Kas RW (-Kredit)</span>
             </div>
         </div>
 
-        <!-- 2. Grafik Perkembangan Saldo Kas (5 Kolom) -->
+        <!-- 2. Grafik Perkembangan Saldo Kas Induk RW (5 Kolom) -->
         <div class="lg:col-span-5 wm-fin-card p-6 flex flex-col justify-between">
             <div>
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
                     <div>
                         <h2 class="text-base font-bold text-slate-800 flex items-center gap-2 mb-0">
-                            <i data-lucide="trending-up" class="w-5 h-5 text-[#1456A0]"></i> Perkembangan Saldo Likuid
+                            <i data-lucide="trending-up" class="w-5 h-5 text-[#1456A0]"></i> Perkembangan Saldo Kas RW
                         </h2>
-                        <p class="text-xs text-slate-500 mt-0.5 mb-0">Pertumbuhan kekayaan kas konsolidasi RW 013</p>
+                        <p class="text-xs text-slate-500 mt-0.5 mb-0">Kurva saldo Kas Induk RW 013 Sukamiskin</p>
                     </div>
                 </div>
 
@@ -568,26 +764,24 @@
             </div>
 
             <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 mt-2">
-                <span>Posisi Saldo Saat Ini:</span>
-                <strong class="text-slate-900 font-extrabold text-sm">Rp {{ number_format($totalLikuidRw, 0, ',', '.') }}</strong>
+                <span>Posisi Saldo Kas RW Saat Ini:</span>
+                <strong class="text-slate-900 font-extrabold text-sm">Rp {{ number_format($saldoKasRw, 0, ',', '.') }}</strong>
             </div>
         </div>
 
-        <!-- 3. Ringkasan Sumber Pemasukan (6 Kolom) -->
+        <!-- 3. Ringkasan Sumber Pemasukan Kas RW (6 Kolom) -->
         <div class="lg:col-span-6 wm-fin-card p-6">
             <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
                 <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-0">
-                    <i data-lucide="pie-chart" class="w-4 h-4 text-emerald-600"></i> Sumber Pemasukan Terbesar
+                    <i data-lucide="pie-chart" class="w-4 h-4 text-emerald-600"></i> Sumber Pemasukan Kas RW Terbesar
                 </h3>
-                <span class="text-xs text-slate-400">Top 5 Kategori</span>
+                <span class="text-xs text-slate-400">Kas Induk RW</span>
             </div>
 
             <div class="space-y-3">
+                @php $totRwIn = max($kasRwMasuk, 1); @endphp
                 @forelse($sumberPemasukan as $sp)
-                    @php
-                        $totIn = max($totalPemasukanPeriode, 1);
-                        $pctIn = min(100, round(($sp->total / $totIn) * 100));
-                    @endphp
+                    @php $pctIn = min(100, round(($sp->total / $totRwIn) * 100)); @endphp
                     <div>
                         <div class="flex justify-between items-center text-xs mb-1">
                             <span class="font-bold text-slate-800">{{ $sp->kategori }}</span>
@@ -598,26 +792,24 @@
                         </div>
                     </div>
                 @empty
-                    <p class="text-center text-slate-400 text-xs py-4 mb-0">Belum ada kategori pemasukan tercatat.</p>
+                    <p class="text-center text-slate-400 text-xs py-4 mb-0">Belum ada kategori pemasukan Kas RW tercatat.</p>
                 @endforelse
             </div>
         </div>
 
-        <!-- 4. Ringkasan Kategori Pengeluaran (6 Kolom) -->
+        <!-- 4. Ringkasan Kategori Pengeluaran Kas RW (6 Kolom) -->
         <div class="lg:col-span-6 wm-fin-card p-6">
             <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
                 <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-0">
-                    <i data-lucide="pie-chart" class="w-4 h-4 text-rose-600"></i> Kategori Pengeluaran Terbesar
+                    <i data-lucide="pie-chart" class="w-4 h-4 text-rose-600"></i> Kategori Pengeluaran Kas RW Terbesar
                 </h3>
-                <span class="text-xs text-slate-400">Top 5 Kategori</span>
+                <span class="text-xs text-slate-400">Kas Induk RW</span>
             </div>
 
             <div class="space-y-3">
+                @php $totRwOut = max($kasRwKeluar, 1); @endphp
                 @forelse($kategoriPengeluaran as $kp)
-                    @php
-                        $totOut = max($totalPengeluaranPeriode, 1);
-                        $pctOut = min(100, round(($kp->total / $totOut) * 100));
-                    @endphp
+                    @php $pctOut = min(100, round(($kp->total / $totRwOut) * 100)); @endphp
                     <div>
                         <div class="flex justify-between items-center text-xs mb-1">
                             <span class="font-bold text-slate-800">{{ $kp->kategori }}</span>
@@ -628,22 +820,22 @@
                         </div>
                     </div>
                 @empty
-                    <p class="text-center text-slate-400 text-xs py-4 mb-0">Belum ada kategori pengeluaran tercatat.</p>
+                    <p class="text-center text-slate-400 text-xs py-4 mb-0">Belum ada kategori pengeluaran Kas RW tercatat.</p>
                 @endforelse
             </div>
         </div>
     </div>
 
     {{-- ======================================================================
-         E. RIWAYAT TRANSAKSI KEUANGAN DENGAN FILTER MULTI-KRITERIA
+         6. JURNAL RIWAYAT TRANSAKSI KEUANGAN DENGAN FILTER MULTI-KRITERIA
          ====================================================================== --}}
     <div class="wm-fin-card p-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 mb-5">
             <div>
                 <h2 class="text-base font-bold text-slate-800 flex items-center gap-2 mb-0">
-                    <i data-lucide="history" class="w-5 h-5 text-[#1456A0]"></i> Jurnal Riwayat Transaksi Keuangan RW 013
+                    <i data-lucide="history" class="w-5 h-5 text-[#1456A0]"></i> Jurnal Riwayat Transaksi Keuangan Lingkungan
                 </h2>
-                <p class="text-xs text-slate-500 mt-1 mb-0">Mutasi kas lengkap dengan nomor transaksi otomatis, verifikasi saldo, dan bukti lampiran</p>
+                <p class="text-xs text-slate-500 mt-1 mb-0">Setiap transaksi teridentifikasi akun pemilik buku kas, nomor unik otomatis, dan bukti verifikasi</p>
             </div>
             <a href="{{ route('keuangan.transaksi.create') }}" class="wm-btn-primary" style="font-size: 0.8rem; padding: 7px 16px;">
                 <i data-lucide="plus" class="w-4 h-4 mr-1"></i> Catat Transaksi Baru
@@ -652,7 +844,7 @@
 
         <!-- Filter Bar -->
         <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 mb-5">
-            <form method="GET" action="{{ route('keuangan.dashboard') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
+            <form method="GET" action="{{ route('keuangan.dashboard') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 text-xs">
                 <input type="hidden" name="periode" value="{{ $currentPeriode }}">
                 
                 <div>
@@ -662,14 +854,34 @@
                 </div>
 
                 <div>
-                    <label class="block font-semibold text-slate-700 mb-1">Buku Kas</label>
+                    <label class="block font-semibold text-slate-700 mb-1">Pemilik Dana</label>
+                    <select name="pemilik_dana" class="w-full wm-input-fin px-3 py-2 text-xs">
+                        <option value="">Semua Pemilik Dana</option>
+                        <option value="rw" {{ request('pemilik_dana') === 'rw' ? 'selected' : '' }}>Kas Induk RW 013</option>
+                        <option value="rt" {{ request('pemilik_dana') === 'rt' ? 'selected' : '' }}>Kas Otonom RT (8 RT)</option>
+                        <option value="unit" {{ request('pemilik_dana') === 'unit' ? 'selected' : '' }}>Kas Unit Lingkungan</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Buku Kas (Rekening)</label>
                     <select name="buku_kas_id" class="w-full wm-input-fin px-3 py-2 text-xs">
                         <option value="">Semua Buku Kas</option>
-                        @foreach($allBukuKas as $buku)
-                            <option value="{{ $buku->id }}" {{ request('buku_kas_id') == $buku->id ? 'selected' : '' }}>
-                                {{ $buku->nama_kas }}
-                            </option>
-                        @endforeach
+                        <optgroup label="--- KAS INDUK RW ---">
+                            @foreach($allBukuKas->where('pemilik_dana', 'rw') as $buku)
+                                <option value="{{ $buku->id }}" {{ request('buku_kas_id') == $buku->id ? 'selected' : '' }}>{{ $buku->nama_kas }}</option>
+                            @endforeach
+                        </optgroup>
+                        <optgroup label="--- KAS OTONOM 8 RT ---">
+                            @foreach($allBukuKas->where('pemilik_dana', 'rt') as $buku)
+                                <option value="{{ $buku->id }}" {{ request('buku_kas_id') == $buku->id ? 'selected' : '' }}>{{ $buku->nama_kas }}</option>
+                            @endforeach
+                        </optgroup>
+                        <optgroup label="--- KAS UNIT LINGKUNGAN ---">
+                            @foreach($allBukuKas->where('pemilik_dana', 'unit') as $buku)
+                                <option value="{{ $buku->id }}" {{ request('buku_kas_id') == $buku->id ? 'selected' : '' }}>{{ $buku->nama_kas }}</option>
+                            @endforeach
+                        </optgroup>
                     </select>
                 </div>
 
@@ -679,8 +891,8 @@
                         <option value="">Semua Jenis</option>
                         <option value="pemasukan" {{ request('jenis_transaksi') === 'pemasukan' ? 'selected' : '' }}>Pemasukan</option>
                         <option value="pengeluaran" {{ request('jenis_transaksi') === 'pengeluaran' ? 'selected' : '' }}>Pengeluaran</option>
-                        <option value="transfer_keluar" {{ request('jenis_transaksi') === 'transfer_keluar' ? 'selected' : '' }}>Transfer Keluar</option>
-                        <option value="transfer_masuk" {{ request('jenis_transaksi') === 'transfer_masuk' ? 'selected' : '' }}>Transfer Masuk</option>
+                        <option value="transfer_keluar" {{ request('jenis_transaksi') === 'transfer_keluar' ? 'selected' : '' }}>Transfer Keluar (Internal)</option>
+                        <option value="transfer_masuk" {{ request('jenis_transaksi') === 'transfer_masuk' ? 'selected' : '' }}>Transfer Masuk (Internal)</option>
                     </select>
                 </div>
 
@@ -714,8 +926,9 @@
                     <tr>
                         <th class="py-3 px-3">Tanggal</th>
                         <th class="py-3 px-3">No. Transaksi</th>
+                        <th class="py-3 px-3">Pemilik Dana</th>
                         <th class="py-3 px-3">Kategori & Uraian</th>
-                        <th class="py-3 px-3">Buku Kas (Sumber Dana)</th>
+                        <th class="py-3 px-3">Buku Kas (Pemilik Rekening)</th>
                         <th class="py-3 px-3">Pihak / Penyetor</th>
                         <th class="py-3 px-3 text-end">Pemasukan</th>
                         <th class="py-3 px-3 text-end">Pengeluaran</th>
@@ -734,6 +947,18 @@
                                 {{ $trx->nomor_transaksi }}
                                 @if($trx->status === 'dibatalkan')
                                     <span class="badge bg-danger ms-1" style="font-size: 0.65rem;">BATAL</span>
+                                @endif
+                                @if($trx->referensi_pembayaran)
+                                    <div class="text-slate-400 font-mono font-normal" style="font-size: 0.68rem;">Ref: {{ $trx->referensi_pembayaran }}</div>
+                                @endif
+                            </td>
+                            <td class="py-3 px-3 text-nowrap">
+                                @if($trx->pemilik_dana === 'rw')
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-[#1456A0] border border-blue-200">KAS RW</span>
+                                @elseif($trx->pemilik_dana === 'rt')
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">KAS {{ $trx->bukuKas->clean_rt ? 'RT '.$trx->bukuKas->clean_rt : 'RT' }}</span>
+                                @else
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-800 border border-purple-200">UNIT</span>
                                 @endif
                             </td>
                             <td class="py-3 px-3">
@@ -789,7 +1014,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="10" class="py-5 text-center text-muted">
+                            <td colspan="11" class="py-5 text-center text-muted">
                                 Tidak ada catatan transaksi yang sesuai dengan kriteria filter.
                             </td>
                         </tr>
@@ -849,7 +1074,7 @@ function bukaModalBatal(id, nomor, nominal) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    // 1. Chart Arus Kas Bulanan (Bar Chart)
+    // 1. Chart Arus Kas Bulanan Kas Induk RW (Bar Chart)
     const ctxArusKas = document.getElementById('chartArusKas');
     if (ctxArusKas) {
         new Chart(ctxArusKas, {
@@ -858,7 +1083,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 labels: {!! json_encode($labelsChart) !!},
                 datasets: [
                     {
-                        label: 'Pemasukan (+)',
+                        label: 'Pemasukan Kas RW (+)',
                         data: {!! json_encode($dataPemasukanChart) !!},
                         backgroundColor: '#16865D',
                         borderRadius: 8,
@@ -866,7 +1091,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         categoryPercentage: 0.8
                     },
                     {
-                        label: 'Pengeluaran (-)',
+                        label: 'Pengeluaran Kas RW (-)',
                         data: {!! json_encode($dataPengeluaranChart) !!},
                         backgroundColor: '#DC2626',
                         borderRadius: 8,
@@ -907,7 +1132,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // 2. Chart Saldo Perkembangan (Line Chart)
+    // 2. Chart Saldo Perkembangan Kas Induk RW (Line Chart)
     const ctxSaldo = document.getElementById('chartSaldoPerkembangan');
     if (ctxSaldo) {
         new Chart(ctxSaldo, {
@@ -915,7 +1140,7 @@ document.addEventListener('DOMContentLoaded', function () {
             data: {
                 labels: {!! json_encode($labelsChart) !!},
                 datasets: [{
-                    label: 'Saldo Kas',
+                    label: 'Saldo Kas RW',
                     data: {!! json_encode($dataSaldoChart) !!},
                     borderColor: '#1456A0',
                     backgroundColor: 'rgba(20, 86, 160, 0.12)',
@@ -934,7 +1159,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     tooltip: {
                         callbacks: {
                             label: function(context) {
-                                return 'Saldo: Rp ' + context.parsed.y.toLocaleString('id-ID');
+                                return 'Saldo Kas RW: Rp ' + context.parsed.y.toLocaleString('id-ID');
                             }
                         }
                     }

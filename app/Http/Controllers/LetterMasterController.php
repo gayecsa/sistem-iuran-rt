@@ -6,43 +6,93 @@ use Illuminate\Http\Request;
 use App\Models\LetterType;
 use App\Models\LetterRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class LetterMasterController extends Controller
 {
     /**
-     * Master Katalog Jenis & Template Surat RW 013
+     * Master Katalog Jenis & Template Surat RW 013 (Redirect ke Halaman All-in-One)
      */
     public function index(Request $request)
     {
         $user = Auth::user();
         abort_unless($user->isRw(), 403, 'Akses khusus Ketua RW / Administrator.');
 
-        $query = LetterType::query()->orderBy('urutan');
+        return redirect()->route('rw.surat.index', [
+            'tab' => 'daftar_layanan',
+            'kategori' => $request->query('kategori'),
+            'search' => $request->query('search'),
+        ]);
+    }
 
-        if ($request->filled('kategori') && $request->kategori !== 'semua') {
-            $query->where('kategori', $request->kategori);
+    /**
+     * Simpan Jenis Surat Baru
+     */
+    public function store(Request $request)
+    {
+        $user = Auth::user();
+        abort_unless($user->isRw(), 403, 'Akses khusus Ketua RW / Administrator.');
+
+        $request->validate([
+            'nama' => 'required|string|max:150',
+            'singkatan' => 'required|string|max:30',
+            'kategori' => 'required|string|in:kependudukan,sosial_keluarga,usaha_ekonomi,lingkungan_keamanan,internal',
+            'kode' => 'nullable|string|max:60|unique:letter_types,kode',
+            'deskripsi' => 'required|string|max:1000',
+            'tujuan' => 'nullable|string|max:255',
+            'alur_persetujuan' => 'required|string|in:rt_then_rw,rt_only,pengantar_kelurahan,internal_rw',
+            'biaya' => 'required|string|max:50',
+            'estimasi_hari' => 'required|string|max:50',
+            'kode_klasifikasi' => 'required|string|max:20',
+            'template_body' => 'nullable|string',
+            'persyaratan_text' => 'nullable|string',
+            'is_active' => 'nullable|boolean',
+        ]);
+
+        $kode = $request->filled('kode') ? Str::slug($request->kode, '_') : Str::slug($request->singkatan, '_');
+        // Pastikan kode unik
+        $baseKode = $kode;
+        $counter = 1;
+        while (LetterType::where('kode', $kode)->exists()) {
+            $kode = "{$baseKode}_{$counter}";
+            $counter++;
         }
 
-        if ($request->filled('search')) {
-            $s = $request->search;
-            $query->where(function($q) use ($s) {
-                $q->where('nama', 'like', "%{$s}%")
-                  ->orWhere('singkatan', 'like', "%{$s}%")
-                  ->orWhere('deskripsi', 'like', "%{$s}%")
-                  ->orWhere('kode', 'like', "%{$s}%");
-            });
+        $persyaratanClean = [];
+        if ($request->filled('persyaratan_text')) {
+            $lines = explode("\n", str_replace("\r", "", $request->persyaratan_text));
+            foreach ($lines as $line) {
+                $trimmed = trim($line);
+                if (!empty($trimmed)) {
+                    $persyaratanClean[] = ltrim($trimmed, "-*0123456789. ");
+                }
+            }
         }
 
-        $types = $query->paginate(20)->withQueryString();
+        $defaultTemplate = $request->filled('template_body') 
+            ? $request->template_body 
+            : "Menerangkan dengan sebenarnya bahwa warga yang bersangkutan adalah penduduk resmi RW 013 Kelurahan Sukamiskin Kecamatan Arcamanik Kota Bandung, dan surat ini dibuat untuk keperluan [KEPERLUAN].";
 
-        $stats = [
-            'total' => LetterType::count(),
-            'active' => LetterType::where('is_active', true)->count(),
-            'inactive' => LetterType::where('is_active', false)->count(),
-            'total_requests' => LetterRequest::count(),
-        ];
+        $maxUrutan = LetterType::max('urutan') ?: 0;
 
-        return view('surat.master_index', compact('user', 'types', 'stats'));
+        $type = LetterType::create([
+            'kategori' => $request->kategori,
+            'kode' => $kode,
+            'nama' => $request->nama,
+            'singkatan' => $request->singkatan,
+            'deskripsi' => $request->deskripsi,
+            'tujuan' => $request->tujuan,
+            'alur_persetujuan' => $request->alur_persetujuan,
+            'biaya' => $request->biaya,
+            'estimasi_hari' => $request->estimasi_hari,
+            'kode_klasifikasi' => $request->kode_klasifikasi,
+            'template_body' => $defaultTemplate,
+            'persyaratan' => !empty($persyaratanClean) ? array_values($persyaratanClean) : ['Surat Pengantar RT', 'KTP Pemohon', 'Kartu Keluarga'],
+            'is_active' => $request->boolean('is_active', true),
+            'urutan' => $maxUrutan + 1,
+        ]);
+
+        return redirect()->route('rw.surat.index', ['tab' => 'daftar_layanan'])->with('success', "Jenis layanan surat \"{$type->nama}\" berhasil ditambahkan.");
     }
 
     /**
@@ -109,7 +159,28 @@ class LetterMasterController extends Controller
             'is_active' => $request->boolean('is_active'),
         ]);
 
-        return redirect()->route('rw.surat_master.index')->with('success', "Konfigurasi layanan \"{$type->nama}\" berhasil diperbarui.");
+        $redirectTab = $request->input('redirect_tab', 'daftar_layanan');
+        return redirect()->route('rw.surat.index', ['tab' => $redirectTab])->with('success', "Konfigurasi layanan \"{$type->nama}\" berhasil diperbarui.");
+    }
+
+    /**
+     * Update Cepat Alur Persetujuan (Tab D)
+     */
+    public function updateAlur(Request $request, $id)
+    {
+        $user = Auth::user();
+        abort_unless($user->isRw(), 403, 'Akses khusus Ketua RW / Administrator.');
+
+        $request->validate([
+            'alur_persetujuan' => 'required|string|in:rt_then_rw,rt_only,pengantar_kelurahan,internal_rw',
+        ]);
+
+        $type = LetterType::findOrFail($id);
+        $type->update([
+            'alur_persetujuan' => $request->alur_persetujuan,
+        ]);
+
+        return redirect()->route('rw.surat.index', ['tab' => 'alur'])->with('success', "Alur persetujuan untuk \"{$type->nama}\" berhasil diperbarui menjadi {$type->alur_label}.");
     }
 
     /**

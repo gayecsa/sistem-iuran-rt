@@ -67,24 +67,65 @@ class AuditTemuan extends Model
         return 'RT ' . str_pad(preg_replace('/[^0-9]/', '', $this->rt_number), 3, '0', STR_PAD_LEFT);
     }
 
-    public function getPrioritasBadgeAttribute()
+    public function getPrioritasBadgeAttribute(): array
     {
-        return match($this->tingkat_prioritas) {
-            'kritis' => ['bg' => 'bg-rose-100 text-rose-800 border-rose-300', 'label' => 'Kritis'],
-            'tinggi' => ['bg' => 'bg-amber-100 text-amber-800 border-amber-300', 'label' => 'Tinggi'],
-            'sedang' => ['bg' => 'bg-blue-100 text-blue-800 border-blue-300', 'label' => 'Sedang'],
-            default => ['bg' => 'bg-slate-100 text-slate-800 border-slate-300', 'label' => 'Rendah'],
+        return match(strtolower(trim((string)$this->tingkat_prioritas))) {
+            'kritis' => [
+                'bg' => 'wm-badge-prioritas-kritis',
+                'label' => 'Kritis',
+                'style' => 'background-color: #FEE2E2; color: #991B1B; border: 1px solid #F87171;',
+            ],
+            'tinggi' => [
+                'bg' => 'wm-badge-prioritas-tinggi',
+                'label' => 'Tinggi',
+                'style' => 'background-color: #FFEDD5; color: #9A3412; border: 1px solid #FDBA74;',
+            ],
+            'sedang' => [
+                'bg' => 'wm-badge-prioritas-sedang',
+                'label' => 'Sedang',
+                'style' => 'background-color: #FEF3C7; color: #92400E; border: 1px solid #FDE68A;',
+            ],
+            'rendah' => [
+                'bg' => 'wm-badge-prioritas-rendah',
+                'label' => 'Rendah',
+                'style' => 'background-color: #E2E8F0; color: #334155; border: 1px solid #CBD5E1;',
+            ],
+            default => [
+                'bg' => 'wm-badge-netral',
+                'label' => !empty($this->tingkat_prioritas) ? ucfirst($this->tingkat_prioritas) : 'Belum Ditentukan',
+                'style' => 'background-color: #F1F5F9; color: #475569; border: 1px solid #CBD5E1;',
+            ],
         };
     }
 
-    public function getStatusBadgeAttribute()
+    public function getStatusBadgeAttribute(): array
     {
-        return match($this->status) {
-            'selesai' => ['bg' => 'bg-emerald-100 text-emerald-800 border-emerald-300', 'label' => 'Selesai'],
-            'perlu_tindak_lanjut' => ['bg' => 'bg-rose-100 text-rose-800 border-rose-300', 'label' => 'Perlu Tindak Lanjut'],
-            'menunggu_klarifikasi' => ['bg' => 'bg-amber-100 text-amber-800 border-amber-300', 'label' => 'Menunggu Klarifikasi'],
-            'dalam_pemeriksaan' => ['bg' => 'bg-blue-100 text-blue-800 border-blue-300', 'label' => 'Dalam Pemeriksaan'],
-            default => ['bg' => 'bg-slate-100 text-slate-800 border-slate-300', 'label' => 'Perlu Diperiksa'],
+        return match(strtolower(trim((string)$this->status))) {
+            'selesai' => [
+                'bg' => 'wm-badge-status-selesai',
+                'label' => 'Selesai',
+                'style' => 'background-color: #DCFCE7; color: #166534; border: 1px solid #BBF7D0;',
+            ],
+            'menunggu_verifikasi', 'menunggu_klarifikasi', 'menunggu klarifikasi' => [
+                'bg' => 'wm-badge-status-verifikasi',
+                'label' => 'Menunggu Verifikasi',
+                'style' => 'background-color: #FEF3C7; color: #92400E; border: 1px solid #FDE68A;',
+            ],
+            'dalam_proses', 'dalam_pemeriksaan', 'dalam pemeriksaan' => [
+                'bg' => 'wm-badge-status-proses',
+                'label' => 'Dalam Proses',
+                'style' => 'background-color: #E0F2FE; color: #0369A1; border: 1px solid #BAE6FD;',
+            ],
+            'terbuka', 'perlu_tindak_lanjut', 'perlu_diperiksa', 'perlu tindak lanjut', 'perlu diperiksa' => [
+                'bg' => 'wm-badge-status-terbuka',
+                'label' => 'Terbuka',
+                'style' => 'background-color: #FEE2E2; color: #991B1B; border: 1px solid #FECACA;',
+            ],
+            default => [
+                'bg' => 'wm-badge-netral',
+                'label' => !empty($this->status) ? ucwords(str_replace('_', ' ', $this->status)) : 'Belum Ditentukan',
+                'style' => 'background-color: #F1F5F9; color: #475569; border: 1px solid #CBD5E1;',
+            ],
         };
     }
 

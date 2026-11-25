@@ -27,10 +27,22 @@
         </div>
 
         <div class="d-flex flex-wrap gap-2">
-            <a href="{{ route('surat.index') }}" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2 shadow-sm rounded-3" style="font-size: 0.88rem;">
-                <i data-lucide="arrow-left" style="width:16px;height:16px;"></i>
-                <span>Kembali</span>
-            </a>
+            @if(Auth::user()->isRw())
+                <a href="{{ route('rw.surat.index') }}" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2 shadow-sm rounded-3" style="font-size: 0.88rem;">
+                    <i data-lucide="arrow-left" style="width:16px;height:16px;"></i>
+                    <span>Kembali ke Manajemen Surat</span>
+                </a>
+            @elseif(Auth::user()->isRt())
+                <a href="{{ route('rt.surat.index') }}" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2 shadow-sm rounded-3" style="font-size: 0.88rem;">
+                    <i data-lucide="arrow-left" style="width:16px;height:16px;"></i>
+                    <span>Kembali ke Verifikasi RT</span>
+                </a>
+            @else
+                <a href="{{ route('surat.index') }}" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2 shadow-sm rounded-3" style="font-size: 0.88rem;">
+                    <i data-lucide="arrow-left" style="width:16px;height:16px;"></i>
+                    <span>Kembali</span>
+                </a>
+            @endif
 
             @if($letter->canPrint())
                 <a href="{{ route('surat.cetak', $letter->id) }}" target="_blank" class="btn text-white d-inline-flex align-items-center gap-2 shadow-sm rounded-3" style="background: linear-gradient(135deg, #1456A0 0%, #123766 100%); font-weight: 600; font-size: 0.88rem;">
@@ -272,7 +284,7 @@
                         </div>
                         <div class="col-12 col-md-4">
                             <span class="text-muted small">Nama Lengkap:</span>
-                            <div class="fw-bold text-dark">{{ $letter->nama_lengkap }}</div>
+                            <div class="fw-bold text-dark text-uppercase">{{ $letter->nama_lengkap }}</div>
                         </div>
                         <div class="col-6 col-md-4">
                             <span class="text-muted small">Tempat, Tgl Lahir:</span>
@@ -332,7 +344,7 @@
                                 @foreach($letter->detail_khusus as $k => $v)
                                     <div class="col-12 col-md-6">
                                         <span class="text-muted">{{ ucwords(str_replace('_', ' ', $k)) }}:</span>
-                                        <span class="fw-semibold text-dark">{{ is_array($v) ? json_encode($v) : $v }}</span>
+                                        <span class="text-dark {{ \App\Models\LetterRequest::isPersonNameField($k) ? 'fw-bold text-uppercase' : 'fw-semibold' }}">{{ is_array($v) ? json_encode($v) : $v }}</span>
                                     </div>
                                 @endforeach
                             </div>

@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\KartuKeluarga;
 use App\Models\KkVerifikasiHistory;
 use App\Models\WargaStatusHistory;
+use App\Models\WargaMutasi;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
@@ -39,7 +40,7 @@ class DataKependudukanController extends Controller
         abort_unless($user->isRw() || $user->isRt() || $user->isBendahara(), 403, 'Akses khusus pengurus wilayah.');
 
         $activeTab = $request->input('tab', 'individu');
-        if (!in_array($activeTab, ['individu', 'keluarga', 'dokumen'])) {
+        if (!in_array($activeTab, ['individu', 'keluarga', 'dokumen', 'pendatang', 'mutasi'])) {
             $activeTab = 'individu';
         }
 
@@ -49,8 +50,18 @@ class DataKependudukanController extends Controller
         $wargaBase = User::whereIn('role', ['warga', 'rt']);
         $kkBase = KartuKeluarga::query();
 
+        // Query Dasar Pendatang (Kontrak / Sewa / Kos / Domisili Non-Tetap)
+        $pendatangBase = User::whereIn('role', ['warga', 'rt'])->where(function ($q) {
+            $q->whereIn('status_rumah', ['kontrak', 'sewa', 'kos', 'Kontrak', 'Sewa', 'Kos', 'Menumpang'])
+              ->orWhereIn('status_domisili', ['Warga Sementara', 'Pendatang Baru', 'Akan Pindah']);
+        });
+
+        // Query Dasar Mutasi
+        $mutasiBase = WargaMutasi::query();
+
         if ($user->isRt()) {
             $cleanRt = str_pad($user->clean_rt_number, 3, '0', STR_PAD_LEFT);
+            $rtInt = intval($cleanRt);
             $wargaBase->where(function ($q) use ($cleanRt, $user) {
                 $q->where('rt_number', $cleanRt)
                   ->orWhere('rt_number', intval($cleanRt))
@@ -61,20 +72,33 @@ class DataKependudukanController extends Controller
                   ->orWhere('rt', intval($cleanRt))
                   ->orWhere('rt', 'RT ' . $cleanRt);
             });
+            $pendatangBase->where(function ($q) use ($cleanRt, $rtInt, $user) {
+                $q->where('rt_number', $cleanRt)
+                  ->orWhere('rt_number', $rtInt)
+                  ->orWhere('address', 'like', "%RT 00{$user->clean_rt_number}%");
+            });
+            $mutasiBase->where(function ($q) use ($cleanRt, $rtInt) {
+                $q->where('rt_asal', $cleanRt)
+                  ->orWhere('rt_asal', $rtInt)
+                  ->orWhere('rt_asal', 'RT ' . $cleanRt)
+                  ->orWhere('rt_tujuan', $cleanRt)
+                  ->orWhere('rt_tujuan', $rtInt)
+                  ->orWhere('rt_tujuan', 'RT ' . $cleanRt);
+            });
         }
 
         $totalWarga = (clone $wargaBase)->count();
         $totalKk = (clone $kkBase)->count();
         $totalLaki = (clone $wargaBase)->where('gender', 'Laki-laki')->count();
         $totalPerempuan = (clone $wargaBase)->where('gender', 'Perempuan')->count();
+        $totalPendatang = (clone $pendatangBase)->count();
+        $totalMutasi = (clone $mutasiBase)->count();
 
         $kkTerverifikasi = (clone $kkBase)->where('status_verifikasi_dukcapil', 'Terverifikasi')->count();
         $kkMenunggu = (clone $kkBase)->where('status_verifikasi_dukcapil', 'Menunggu Verifikasi')->count();
         $kkPerluPembaruan = (clone $kkBase)->where(function ($q) {
-            $q->where('status_verifikasi_dukcapil', 'Belum Ada Dokumen')
-              ->orWhere('status_verifikasi_dukcapil', 'Belum Diverifikasi')
-              ->orWhere('status_dokumen', 'Perlu Pembaruan')
-              ->orWhereNull('dokumen_kk_path');
+            $q->whereNotIn('status_verifikasi_dukcapil', ['Terverifikasi', 'Menunggu Verifikasi'])
+              ->orWhereNull('status_verifikasi_dukcapil');
         })->count();
 
         // Distribusi Warga per RT (RT 001 - RT 008)
@@ -108,6 +132,8 @@ class DataKependudukanController extends Controller
         $wargas = null;
         $keluargas = null;
         $dokumens = null;
+        $pendatangs = null;
+        $mutasis = null;
 
         if ($activeTab === 'individu') {
             $queryWarga = User::whereIn('role', ['warga', 'rt'])->with('kartuKeluarga');
@@ -180,7 +206,7 @@ class DataKependudukanController extends Controller
             }
 
             $keluargas = $queryKk->orderBy('rt')->orderBy('nomor_rumah')->paginate(25)->withQueryString();
-        } else {
+        } elseif ($activeTab === 'dokumen') {
             // Tab Dokumen KK
             $queryDokumen = KartuKeluarga::with(['kepalaKeluarga', 'verifikator'])->withCount('anggota');
 
@@ -214,6 +240,94 @@ class DataKependudukanController extends Controller
             }
 
             $dokumens = $queryDokumen->orderBy('rt')->orderBy('nomor_rumah')->paginate(25)->withQueryString();
+        } elseif ($activeTab === 'pendatang') {
+            // Tab D: Data Warga Pendatang / Kontrak
+            $queryPendatang = User::whereIn('role', ['warga', 'rt'])->with('kartuKeluarga')
+                ->where(function ($q) {
+                    $q->whereIn('status_rumah', ['kontrak', 'sewa', 'kos', 'Kontrak', 'Sewa', 'Kos', 'Menumpang'])
+                      ->orWhereIn('status_domisili', ['Warga Sementara', 'Pendatang Baru', 'Akan Pindah']);
+                });
+
+            if ($user->isRt()) {
+                $cleanRt = str_pad($user->clean_rt_number, 3, '0', STR_PAD_LEFT);
+                $queryPendatang->where(function ($q) use ($cleanRt, $user) {
+                    $q->where('rt_number', $cleanRt)
+                      ->orWhere('rt_number', intval($cleanRt))
+                      ->orWhere('address', 'like', "%RT 00{$user->clean_rt_number}%");
+                });
+            } elseif ($request->filled('rt') && $request->rt !== 'all') {
+                $filterRt = str_pad(intval($request->rt), 3, '0', STR_PAD_LEFT);
+                $queryPendatang->where(function ($q) use ($filterRt) {
+                    $q->where('rt_number', $filterRt)
+                      ->orWhere('rt_number', intval($filterRt));
+                });
+            }
+
+            if ($request->filled('status_rumah') && $request->status_rumah !== 'all') {
+                $queryPendatang->where('status_rumah', $request->status_rumah);
+            }
+
+            if ($request->filled('status_domisili') && $request->status_domisili !== 'all') {
+                $queryPendatang->where('status_domisili', $request->status_domisili);
+            }
+
+            if ($request->filled('search')) {
+                $s = $request->search;
+                $queryPendatang->where(function ($q) use ($s) {
+                    $q->where('name', 'like', "%{$s}%")
+                      ->orWhere('nik', 'like', "%{$s}%")
+                      ->orWhere('no_kk', 'like', "%{$s}%")
+                      ->orWhere('address', 'like', "%{$s}%")
+                      ->orWhere('phone', 'like', "%{$s}%");
+                });
+            }
+
+            $pendatangs = $queryPendatang->orderBy('rt_number')->orderBy('name')->paginate(25)->withQueryString();
+        } elseif ($activeTab === 'mutasi') {
+            // Tab E: Data Mutasi Warga
+            $queryMutasi = WargaMutasi::with(['user', 'kartuKeluarga', 'pengaju', 'pemeriksa']);
+
+            if ($user->isRt()) {
+                $cleanRt = str_pad($user->clean_rt_number, 3, '0', STR_PAD_LEFT);
+                $rtInt = intval($cleanRt);
+                $queryMutasi->where(function ($q) use ($cleanRt, $rtInt) {
+                    $q->where('rt_asal', $cleanRt)
+                      ->orWhere('rt_asal', $rtInt)
+                      ->orWhere('rt_asal', 'RT ' . $cleanRt)
+                      ->orWhere('rt_tujuan', $cleanRt)
+                      ->orWhere('rt_tujuan', $rtInt)
+                      ->orWhere('rt_tujuan', 'RT ' . $cleanRt);
+                });
+            } elseif ($request->filled('rt') && $request->rt !== 'all') {
+                $filterRt = str_pad(intval($request->rt), 3, '0', STR_PAD_LEFT);
+                $filterInt = intval($filterRt);
+                $queryMutasi->where(function ($q) use ($filterRt, $filterInt) {
+                    $q->where('rt_asal', $filterRt)
+                      ->orWhere('rt_asal', $filterInt)
+                      ->orWhere('rt_tujuan', $filterRt)
+                      ->orWhere('rt_tujuan', $filterInt);
+                });
+            }
+
+            if ($request->filled('jenis_mutasi') && $request->jenis_mutasi !== 'all') {
+                $queryMutasi->where('jenis_mutasi', $request->jenis_mutasi);
+            }
+
+            if ($request->filled('status') && $request->status !== 'all') {
+                $queryMutasi->where('status', $request->status);
+            }
+
+            if ($request->filled('search')) {
+                $s = $request->search;
+                $queryMutasi->where(function ($q) use ($s) {
+                    $q->where('nama_warga', 'like', "%{$s}%")
+                      ->orWhere('nik', 'like', "%{$s}%")
+                      ->orWhere('nomor_kk', 'like', "%{$s}%")
+                      ->orWhere('kode_mutasi', 'like', "%{$s}%");
+                });
+            }
+
+            $mutasis = $queryMutasi->orderBy('tanggal_mutasi', 'desc')->paginate(25)->withQueryString();
         }
 
         return view('kependudukan.index', compact(
@@ -223,14 +337,71 @@ class DataKependudukanController extends Controller
             'totalKk',
             'totalLaki',
             'totalPerempuan',
+            'totalPendatang',
+            'totalMutasi',
             'kkTerverifikasi',
             'kkMenunggu',
             'kkPerluPembaruan',
             'distribusiRt',
             'wargas',
             'keluargas',
-            'dokumens'
+            'dokumens',
+            'pendatangs',
+            'mutasis'
         ));
+    }
+
+    /**
+     * Simpan Catatan Mutasi Warga Baru
+     */
+    public function storeMutasi(Request $request)
+    {
+        $user = auth()->user();
+        abort_unless($user->isRw() || $user->isRt() || $user->isBendahara(), 403, 'Akses terbatas untuk pengurus.');
+
+        $validated = $request->validate([
+            'nama_warga' => 'required|string|max:255',
+            'nik' => 'nullable|string|max:25',
+            'nomor_kk' => 'nullable|string|max:25',
+            'gender' => 'nullable|in:Laki-laki,Perempuan',
+            'no_telepon' => 'nullable|string|max:25',
+            'jenis_mutasi' => 'required|in:mutasi_masuk,mutasi_keluar,pindah_antar_rt,perubahan_alamat,kelahiran,kematian',
+            'tanggal_mutasi' => 'required|date',
+            'rt_asal' => 'nullable|string|max:10',
+            'rt_tujuan' => 'nullable|string|max:10',
+            'alamat_asal' => 'nullable|string|max:500',
+            'alamat_tujuan' => 'nullable|string|max:500',
+            'alasan_mutasi' => 'nullable|string|max:500',
+        ]);
+
+        $count = WargaMutasi::count() + 1;
+        $kodeMutasi = 'MUT-' . date('Ym') . '-' . str_pad($count, 4, '0', STR_PAD_LEFT);
+
+        $rtAsal = $validated['rt_asal'] ?? ($user->isRt() ? str_pad($user->clean_rt_number, 3, '0', STR_PAD_LEFT) : null);
+        $rtTujuan = $validated['rt_tujuan'] ?? ($user->isRt() ? str_pad($user->clean_rt_number, 3, '0', STR_PAD_LEFT) : null);
+
+        WargaMutasi::create([
+            'kode_mutasi' => $kodeMutasi,
+            'jenis_mutasi' => $validated['jenis_mutasi'],
+            'nama_warga' => $validated['nama_warga'],
+            'nik' => $validated['nik'],
+            'nomor_kk' => $validated['nomor_kk'],
+            'gender' => $validated['gender'] ?? 'Laki-laki',
+            'no_telepon' => $validated['no_telepon'],
+            'rt_asal' => $rtAsal ? str_pad(preg_replace('/[^0-9]/', '', $rtAsal), 3, '0', STR_PAD_LEFT) : null,
+            'rt_tujuan' => $rtTujuan ? str_pad(preg_replace('/[^0-9]/', '', $rtTujuan), 3, '0', STR_PAD_LEFT) : null,
+            'alamat_asal' => $validated['alamat_asal'],
+            'alamat_tujuan' => $validated['alamat_tujuan'],
+            'tanggal_mutasi' => $validated['tanggal_mutasi'],
+            'alasan_mutasi' => $validated['alasan_mutasi'] ?? 'Pencatatan mutasi kependudukan',
+            'status' => 'disetujui',
+            'pengaju_id' => $user->id,
+            'pemeriksa_id' => $user->id,
+            'tanggal_verifikasi' => now(),
+        ]);
+
+        return redirect()->route('kependudukan.index', ['tab' => 'mutasi'])
+            ->with('success', "Catatan mutasi {$validated['nama_warga']} ({$kodeMutasi}) berhasil disimpan.");
     }
 
     /**
@@ -341,7 +512,7 @@ class DataKependudukanController extends Controller
                 $newMember = User::create([
                     'name' => $validated['name'],
                     'nik' => $validated['nik'],
-                    'email' => strtolower(str_replace(' ', '', $validated['name'])) . rand(100, 999) . '@warkas.local',
+                    'email' => strtolower(str_replace(' ', '', $validated['name'])) . rand(100, 999) . '@haven.local',
                     'password' => bcrypt('password123'),
                     'role' => 'warga',
                     'gender' => $validated['gender'],

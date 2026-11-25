@@ -15,6 +15,7 @@ class BukuKas extends Model
         'kode_kas',
         'nama_kas',
         'jenis_kas',
+        'pemilik_dana',
         'rt_number',
         'target_anggaran',
         'saldo_awal',
@@ -70,6 +71,11 @@ class BukuKas extends Model
     {
         if (!$this->rt_number) return null;
         return str_pad(preg_replace('/[^0-9]/', '', $this->rt_number), 3, '0', STR_PAD_LEFT);
+    }
+
+    public function getCleanNamaKasAttribute()
+    {
+        return str_replace(['Buku Kas Kas', 'Kas Kas'], ['Buku Kas', 'Kas'], $this->nama_kas);
     }
 
     /**

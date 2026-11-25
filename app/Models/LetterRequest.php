@@ -83,6 +83,102 @@ class LetterRequest extends Model
     public const STATUS_APPROVED = 'Siap Dicetak';
     public const STATUS_COMPLETED = 'Selesai';
 
+    /**
+     * Helper identifikasi apakah nama key field merupakan nama seseorang
+     */
+    public static function isPersonNameField(string $key): bool
+    {
+        $key = strtolower(trim($key));
+
+        $nonPersonKeys = [
+            'nama_usaha',
+            'nama_kegiatan',
+            'nama_acara',
+            'nama_program',
+            'nama_institusi',
+            'nama_institusi_pendidikan',
+            'nama_sekolah',
+            'nama_kampus',
+            'nama_kantor',
+            'nama_instansi',
+            'nama_perusahaan',
+            'nama_organisasi',
+            'nama_toko',
+            'nama_jalan',
+            'nama_barang',
+            'nama_surat',
+        ];
+
+        if (in_array($key, $nonPersonKeys, true)) {
+            return false;
+        }
+
+        $personKeys = [
+            'nama',
+            'nama_lengkap',
+            'nama_pemohon',
+            'nama_anggota',
+            'nama_almarhum',
+            'nama_almarhumah',
+            'nama_penjamin_warga',
+            'nama_penjamin',
+            'nama_siswa',
+            'nama_anak',
+            'nama_istri',
+            'nama_suami',
+            'nama_ayah',
+            'nama_ibu',
+            'nama_orang_tua',
+            'nama_wali',
+            'nama_pasangan',
+            'nama_tamu',
+            'tuan_rumah',
+            'penanggung_jawab',
+            'nama_pelapor',
+            'nama_saksi',
+            'nama_ahli_waris',
+            'nama_korban',
+            'nama_pihak_terkait',
+        ];
+
+        if (in_array($key, $personKeys, true)) {
+            return true;
+        }
+
+        return str_starts_with($key, 'nama_') || str_ends_with($key, '_nama');
+    }
+
+    /**
+     * Format nama orang untuk dokumen: HURUF BESAR (UPPERCASE) dan CETAK TEBAL (BOLD)
+     */
+    public static function formatPersonName(?string $name): string
+    {
+        if (empty($name)) {
+            return '';
+        }
+        $clean = trim(strip_tags($name));
+        return '<strong>' . mb_strtoupper($clean, 'UTF-8') . '</strong>';
+    }
+
+    /**
+     * Format nama orang teks polos UPPERCASE
+     */
+    public static function formatPersonNamePlain(?string $name): string
+    {
+        if (empty($name)) {
+            return '';
+        }
+        return mb_strtoupper(trim(strip_tags($name)), 'UTF-8');
+    }
+
+    /**
+     * Accessor nama lengkap berformat dokumen (Uppercase & Bold)
+     */
+    public function getFormattedNamaDokumenAttribute(): string
+    {
+        return self::formatPersonName($this->nama_lengkap);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
@@ -140,7 +236,7 @@ class LetterRequest extends Model
 
         $this->histories()->create([
             'user_id' => $actor?->id,
-            'actor_name' => $actor?->name ?? 'Sistem Warkas Machi',
+            'actor_name' => $actor?->name ?? 'Sistem Haven',
             'actor_role' => $actor ? $actor->role_badge_label : 'Sistem Otomatis',
             'status_sebelumnya' => $oldStatus,
             'status_baru' => $newStatus,

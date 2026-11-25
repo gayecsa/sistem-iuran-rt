@@ -68,7 +68,7 @@
     <div class="p-4 rounded-2xl bg-blue-50 border border-blue-200 text-blue-900 text-xs flex items-start gap-3">
         <i data-lucide="info" class="w-5 h-5 text-blue-600 shrink-0 mt-0.5"></i>
         <div class="space-y-0.5">
-            <strong class="font-bold text-blue-950">Prinsip Moderasi Pengurus Warkas Machi:</strong>
+            <strong class="font-bold text-blue-950">Prinsip Moderasi Pengurus Haven:</strong>
             <p class="mb-0 text-blue-800">
                 Pengurus RT/RW memiliki wewenang untuk <strong>menyetujui, meminta revisi, menolak, atau menonaktifkan status publikasi</strong> usaha demi kepatuhan kependudukan dan ketertiban lingkungan. Pengurus <strong>TIDAK BERHAK</strong> mengubah harga menu, foto, atau isi produk milik warga.
             </p>

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Pengaturan Tarif Iuran Warga - Warkas Machi')
+@section('title', 'Pengaturan Tarif Iuran Warga')
 
 @section('content')
 <div class="max-w-4xl mx-auto space-y-6">

@@ -57,10 +57,13 @@
         <div class="d-flex align-items-center gap-2 flex-wrap">
             <span class="text-secondary fw-bold small me-2"><i data-lucide="layers" style="width: 16px; height: 16px;"></i> Filter Layer:</span>
             <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 filter-btn active" data-filter="all" onclick="filterMarkers('all', this)">
-                Semua Titik ({{ count($markers['rt']) + count($markers['ronda']) + count($markers['posyandu']) + count($markers['bank_sampah']) + count($markers['umkm']) + count($markers['pengaduan']) + 1 }})
+                Semua Titik ({{ count($markers['rt']) + count($markers['ronda']) + count($markers['posyandu']) + count($markers['bank_sampah']) + count($markers['umkm']) + count($markers['pengaduan']) + count($markers['cctv'] ?? []) + 1 }})
             </button>
             <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 filter-btn" data-filter="rw" onclick="filterMarkers('rw', this)">
                 <i data-lucide="landmark" style="width: 13px; height: 13px;"></i> Balai RW 013
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 filter-btn" data-filter="cctv" onclick="filterMarkers('cctv', this)">
+                <i data-lucide="video" style="width: 13px; height: 13px;"></i> Titik CCTV ({{ count($markers['cctv'] ?? []) }})
             </button>
             <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 filter-btn" data-filter="ronda" onclick="filterMarkers('ronda', this)">
                 <i data-lucide="shield" style="width: 13px; height: 13px;"></i> Pos Ronda ({{ count($markers['ronda']) }})
@@ -114,6 +117,10 @@
                         <span>Balai RW 013</span>
                     </li>
                     <li class="d-flex align-items-center gap-2">
+                        <span class="badge rounded-circle p-2" style="background: #4F46E5; color: #FFFFFF;"><i data-lucide="video" style="width: 12px; height: 12px;"></i></span>
+                        <span>Titik CCTV Lingkungan</span>
+                    </li>
+                    <li class="d-flex align-items-center gap-2">
                         <span class="badge rounded-circle p-2 bg-danger"><i data-lucide="shield" style="width: 12px; height: 12px;"></i></span>
                         <span>Pos Ronda & Keamanan</span>
                     </li>
@@ -156,6 +163,7 @@
     // Marker Groups
     const markerLayers = {
         rw: L.layerGroup().addTo(map),
+        cctv: L.layerGroup().addTo(map),
         ronda: L.layerGroup().addTo(map),
         posyandu: L.layerGroup().addTo(map),
         bank_sampah: L.layerGroup().addTo(map),
@@ -189,6 +197,50 @@
             </div>
         `;
         L.marker([rw.lat, rw.lng], { icon }).bindPopup(popup).addTo(markerLayers.rw);
+    }
+
+    // 2. Marker Titik CCTV Lingkungan
+    if (markersData.cctv) {
+        markersData.cctv.forEach(c => {
+            const icon = createCustomPin('#4F46E5', '<i class="fas fa-video"></i>');
+            
+            let actionBtn = '';
+            if (c.access_status === 'allowed') {
+                actionBtn = `
+                    <a href="{{ route('ronda.index') }}" class="btn btn-sm btn-primary rounded-pill w-100 mt-2 fw-bold d-inline-flex align-items-center justify-content-center gap-1" style="background: #1456A0; border-color: #1456A0; font-size: 0.78rem;">
+                        <i class="fas fa-eye"></i> Buka Pantauan CCTV &rarr;
+                    </a>`;
+            } else if (c.access_status === 'rt_restricted') {
+                actionBtn = `
+                    <div class="alert alert-secondary py-1 px-2 mb-0 mt-2 text-center text-muted fw-semibold" style="font-size: 0.73rem;">
+                        <i class="fas fa-lock me-1"></i> Wilayah RT ${c.rt} (Akses dibatasi)
+                    </div>`;
+            } else {
+                actionBtn = `
+                    <a href="{{ route('ronda.index') }}?request_cctv=${c.id}" class="btn btn-sm btn-warning text-dark rounded-pill w-100 mt-2 fw-bold d-inline-flex align-items-center justify-content-center gap-1" style="font-size: 0.78rem;">
+                        <i class="fas fa-key"></i> Ajukan Izin Akses
+                    </a>`;
+            }
+
+            const popup = `
+                <div style="min-width: 240px;">
+                    <div class="d-flex align-items-center justify-content-between mb-1">
+                        <span class="badge" style="background: #EEF2FF; color: #4F46E5; border: 1px solid #C7D2FE; font-size: 0.7rem;">Titik CCTV Lingkungan</span>
+                        <span class="badge bg-success-subtle text-success" style="font-size: 0.7rem;">${c.status}</span>
+                    </div>
+                    <h6 class="fw-bold mb-1 text-dark" style="font-size: 0.88rem;">${c.nama}</h6>
+                    <p class="small text-muted mb-1" style="font-size: 0.78rem;"><i class="fas fa-map-marker-alt text-danger me-1"></i>${c.alamat || 'Sukamiskin Arcamanik'}</p>
+                    <div class="p-2 rounded bg-light border small mt-2">
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">Wilayah:</span>
+                            <strong class="text-dark">RT ${c.rt} / RW 013</strong>
+                        </div>
+                    </div>
+                    ${actionBtn}
+                </div>
+            `;
+            L.marker([c.lat, c.lng], { icon }).bindPopup(popup).addTo(markerLayers.cctv);
+        });
     }
 
     // 2. Marker Ronda & Keamanan

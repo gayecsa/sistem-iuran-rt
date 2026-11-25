@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Dashboard Warga')
+
 @section('content')
 <div class="dashboard-container">
 
@@ -29,7 +31,7 @@
             </div>
 
             <div class="d-flex align-items-center gap-2 flex-wrap">
-                <a href="{{ route('pembayaran.create') }}" class="wm-btn-primary">
+                <a href="{{ route('keuangan.dashboard', ['tab' => 'bayar']) }}" class="wm-btn-primary">
                     <i data-lucide="credit-card" style="width: 17px; height: 17px;"></i> Bayar Iuran
                 </a>
                 <a href="{{ route('surat.create') }}" class="wm-btn-outline">
@@ -56,7 +58,7 @@
                     </div>
                 </div>
                 <div class="wm-stat-val {{ count($tagihan_belum_bayar) == 0 ? 'text-success' : 'text-danger' }}">
-                    {{ count($tagihan_belum_bayar) == 0 ? 'Lunas' : count($tagihan_belum_bayar) . ' Belum Bayar' }}
+                    {{ count($tagihan_belum_bayar) == 0 ? 'Lunas / Bebas' : count($tagihan_belum_bayar) . ' Belum Bayar' }}
                 </div>
                 <div class="small text-muted fw-semibold">Bulan Berjalan</div>
             </div>
@@ -72,12 +74,12 @@
                     </div>
                 </div>
                 @php
-                    $totalTertunda = collect($tagihan_belum_bayar)->sum('jumlah');
+                    $totalTertunda = collect($tagihan_belum_bayar)->sum('sisa_tagihan');
                 @endphp
                 <div class="wm-stat-val text-warning" style="font-size: 1.25rem;">
                     Rp {{ number_format($totalTertunda, 0, ',', '.') }}
                 </div>
-                <div class="small text-muted fw-semibold">{{ count($tagihan_belum_bayar) }} Jenis Iuran Aktif</div>
+                <div class="small text-muted fw-semibold">{{ count($tagihan_belum_bayar) }} Tagihan Tertunda</div>
             </div>
         </div>
 
@@ -122,16 +124,16 @@
         <!-- KOLOM KIRI (TAGIHAN, RIWAYAT PEMBAYARAN, PENGADUAN SAYA) -->
         <div class="col-lg-7">
             
-            <!-- 1. Tagihan Belum Dibayar -->
+            {{-- 1. Tagihan Iuran Menunggu Pembayaran / Status Lunas --}}
             @if(count($tagihan_belum_bayar) > 0)
-                <div class="wm-card mb-4" style="border-top: 4px solid var(--wm-primary);">
+                <div class="wm-card mb-4" style="border-top: 4px solid #DC2626;">
                     <div class="wm-card-header d-flex justify-content-between align-items-center">
                         <div>
                             <h5 class="wm-card-title mb-0 text-danger">
                                 <i data-lucide="alert-triangle" class="text-danger me-2" style="width: 20px; height: 20px;"></i>
                                 Tagihan Iuran Menunggu Pembayaran
                             </h5>
-                            <p class="text-muted small mb-0 mt-1">Harap segera menyelesaikan pembayaran iuran kebersihan, keamanan, dan kas.</p>
+                            <p class="text-muted small mb-0 mt-1">Harap segera menyelesaikan pembayaran iuran lingkungan terpadu keluarga Anda.</p>
                         </div>
                     </div>
                     <div class="wm-card-body p-0">
@@ -139,18 +141,37 @@
                             @foreach($tagihan_belum_bayar as $tagihan)
                                 <div class="list-group-item d-flex justify-content-between align-items-center p-3">
                                     <div>
-                                        <div class="fw-bold text-dark">{{ $tagihan->nama }}</div>
-                                        <small class="text-muted">Periode: {{ $tagihan->periode ?? 'Bulan Berjalan' }}</small>
+                                        <div class="fw-bold text-dark">
+                                            Tagihan Iuran {{ \Carbon\Carbon::parse($tagihan->periode . '-01')->translatedFormat('F Y') }}
+                                            <span class="text-muted fw-normal small">#{{ $tagihan->nomor_tagihan }}</span>
+                                        </div>
+                                        <small class="text-muted">
+                                            Jatuh Tempo: {{ \Carbon\Carbon::parse($tagihan->jatuh_tempo)->translatedFormat('d M Y') }} • RT {{ $tagihan->clean_rt ?? ($user->clean_rt ?? '001') }}
+                                        </small>
                                     </div>
                                     <div class="text-end">
-                                        <div class="fw-bold text-danger mb-1">Rp {{ number_format($tagihan->jumlah, 0, ',', '.') }}</div>
-                                        <a href="{{ route('pembayaran.create', ['iuran_id' => $tagihan->id]) }}" class="btn btn-sm btn-primary" style="font-size:0.75rem;">
+                                        <div class="fw-bold text-danger mb-1">Rp {{ number_format($tagihan->sisa_tagihan, 0, ',', '.') }}</div>
+                                        <a href="{{ route('keuangan.dashboard', ['tab' => 'bayar', 'tagihan_id' => $tagihan->id]) }}" class="btn btn-sm btn-primary" style="font-size:0.75rem; background-color: #1456A0; border-color: #1456A0;">
                                             <i data-lucide="credit-card" style="width:13px;height:13px;"></i> Bayar Sekarang
                                         </a>
                                     </div>
                                 </div>
                             @endforeach
                         </div>
+                    </div>
+                </div>
+            @else
+                <!-- State Positif: Semua Tagihan Sudah Lunas / Dibebaskan -->
+                <div class="wm-card mb-4 warga-lunas-card" style="border-top: 4px solid #16865D; background: #FAFDFB;">
+                    <div class="wm-card-body p-4 text-center">
+                        <div class="warga-lunas-icon" style="width: 48px; height: 48px; background: #E8F6EF; color: #16865D; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                            <i data-lucide="check-circle" style="width: 26px; height: 26px;"></i>
+                        </div>
+                        <h5 class="fw-bold mb-1 warga-lunas-title" style="color: #16865D;">Semua Tagihan Iuran Sudah Lunas / Dibebaskan</h5>
+                        <p class="text-muted small mb-3 warga-lunas-desc">Tidak ada tunggakan iuran atau kewajiban pembayaran yang tertunda untuk keluarga Anda.</p>
+                        <a href="{{ route('keuangan.dashboard', ['tab' => 'riwayat']) }}" class="btn btn-sm warga-lunas-btn" style="background: #E8F6EF; color: #16865D; border: 1px solid #C6F6D5; font-weight: 600;">
+                            <i data-lucide="file-check" style="width: 14px; height: 14px; vertical-align: -2px;"></i> Lihat Riwayat & Kuitansi
+                        </a>
                     </div>
                 </div>
             @endif
@@ -162,7 +183,7 @@
                         <i data-lucide="history" class="text-primary me-2" style="width: 20px; height: 20px;"></i>
                         Riwayat Pembayaran Saya
                     </h5>
-                    <a href="{{ route('pembayaran.index') }}" class="wm-btn-outline" style="padding: 6px 12px; font-size: 0.8rem;">
+                    <a href="{{ route('keuangan.dashboard', ['tab' => 'riwayat']) }}" class="wm-btn-outline" style="padding: 6px 12px; font-size: 0.8rem;">
                         Semua Riwayat
                     </a>
                 </div>
@@ -171,38 +192,66 @@
                         <table class="table align-middle mb-0">
                             <thead class="table-light">
                                 <tr style="font-size:0.8rem; text-transform:uppercase;">
-                                    <th>Jenis Iuran</th>
-                                    <th>Tanggal Bayar</th>
+                                    <th>Periode & Jenis</th>
+                                    <th>Tanggal / Waktu</th>
                                     <th>Nominal</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($riwayat_bayar as $bayar)
-                                    <tr>
-                                        <td>
-                                            <div class="fw-semibold text-dark">{{ $bayar->iuran->nama ?? 'Iuran Warga' }}</div>
-                                            <small class="text-muted">{{ $bayar->metode_pembayaran ?? 'Transfer' }}</small>
-                                        </td>
-                                        <td class="small text-muted">{{ Carbon\Carbon::parse($bayar->tanggal_bayar)->translatedFormat('d M Y') }}</td>
-                                        <td class="fw-bold text-dark">Rp {{ number_format($bayar->jumlah_bayar, 0, ',', '.') }}</td>
-                                        <td>
-                                            @if($bayar->status === 'lunas')
-                                                <span class="badge bg-success">Lunas</span>
-                                            @elseif($bayar->status === 'menunggu_verifikasi')
-                                                <span class="badge bg-warning text-dark">Verifikasi</span>
-                                            @else
-                                                <span class="badge bg-secondary">{{ ucfirst($bayar->status) }}</span>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @empty
+                                @if($riwayat_bayar->count() > 0)
+                                    @foreach($riwayat_bayar as $bayar)
+                                        <tr>
+                                            <td>
+                                                <div class="fw-semibold text-dark">
+                                                    @if($bayar->tagihanKeluarga)
+                                                        Iuran Periode {{ \Carbon\Carbon::parse($bayar->tagihanKeluarga->periode . '-01')->translatedFormat('F Y') }}
+                                                    @else
+                                                        Iuran Lingkungan Terpadu
+                                                    @endif
+                                                </div>
+                                                <small class="text-muted">{{ $bayar->metode_pembayaran ?: 'Transfer Bank' }} • {{ $bayar->nomor_pembayaran ?: ('#PAY-' . $bayar->id) }}</small>
+                                            </td>
+                                            <td class="small text-muted">{{ $bayar->tanggal_bayar ? \Carbon\Carbon::parse($bayar->tanggal_bayar)->translatedFormat('d M Y') : '-' }}</td>
+                                            <td class="fw-bold text-dark">Rp {{ number_format($bayar->nominal_bayar, 0, ',', '.') }}</td>
+                                            <td>
+                                                @if($bayar->status === 'dibatalkan')
+                                                    <span class="badge" style="background:#FEE2E2; color:#DC2626;">Dibatalkan</span>
+                                                @else
+                                                    <span class="badge" style="background:#E8F6EF; color:#16865D;">Lunas</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @elseif(isset($riwayat_tagihan) && $riwayat_tagihan->count() > 0)
+                                    @foreach($riwayat_tagihan->take(5) as $rtg)
+                                        <tr>
+                                            <td>
+                                                <div class="fw-semibold text-dark">
+                                                    Iuran Periode {{ \Carbon\Carbon::parse($rtg->periode . '-01')->translatedFormat('F Y') }}
+                                                </div>
+                                                <small class="text-muted">#{{ $rtg->nomor_tagihan }} • {{ $rtg->metode_pembayaran_terakhir ?: 'Sistem Terpadu' }}</small>
+                                            </td>
+                                            <td class="small text-muted">{{ $rtg->tanggal_lunas ? \Carbon\Carbon::parse($rtg->tanggal_lunas)->translatedFormat('d M Y') : \Carbon\Carbon::parse($rtg->updated_at)->translatedFormat('d M Y') }}</td>
+                                            <td class="fw-bold text-dark">Rp {{ number_format($rtg->total_dibayar > 0 ? $rtg->total_dibayar : $rtg->total_tagihan, 0, ',', '.') }}</td>
+                                            <td>
+                                                @if($rtg->status === 'Dibebaskan')
+                                                    <span class="badge" style="background:#EAF3FF; color:#1456A0;">Dibebaskan</span>
+                                                @elseif($rtg->status === 'Lunas')
+                                                    <span class="badge" style="background:#E8F6EF; color:#16865D;">Lunas</span>
+                                                @else
+                                                    <span class="badge bg-secondary">{{ $rtg->status }}</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @else
                                     <tr>
                                         <td colspan="4" class="text-center py-4 text-muted small">
                                             Belum ada catatan riwayat pembayaran.
                                         </td>
                                     </tr>
-                                @endforelse
+                                @endif
                             </tbody>
                         </table>
                     </div>

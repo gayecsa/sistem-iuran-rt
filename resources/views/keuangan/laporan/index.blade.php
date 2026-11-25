@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Laporan Keuangan Terpadu - Warkas Machi RW 013')
+@section('title', 'Laporan Keuangan Terpadu')
 
 @section('content')
 <div class="space-y-6">

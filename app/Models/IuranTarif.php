@@ -15,8 +15,14 @@ class IuranTarif extends Model
         'kode_tarif',
         'nama_tarif',
         'jenis_kas',
+        'buku_kas_id',
         'nominal',
+        'metode_perhitungan',
         'periode',
+        'rt_target',
+        'jenis_iuran',
+        'tingkat_pengelola',
+        'urutan_prioritas',
         'berlaku_mulai',
         'keterangan_musyawarah',
         'is_active',
@@ -26,7 +32,13 @@ class IuranTarif extends Model
         'nominal' => 'decimal:2',
         'berlaku_mulai' => 'date',
         'is_active' => 'boolean',
+        'urutan_prioritas' => 'integer',
     ];
+
+    public function bukuKas()
+    {
+        return $this->belongsTo(BukuKas::class, 'buku_kas_id');
+    }
 
     public function histories()
     {

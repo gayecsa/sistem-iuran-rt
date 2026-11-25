@@ -114,7 +114,7 @@
                 <div>
                     <h5 class="fw-bold text-dark mb-1 d-flex align-items-center gap-2">
                         <i data-lucide="list-filter" class="text-primary" style="width:20px;height:20px;"></i>
-                        <span>Daftar 18 Layanan Surat Resmi Warkas Machi</span>
+                        <span>Daftar 18 Layanan Surat Resmi Haven</span>
                     </h5>
                     <p class="text-muted small mb-0">Klik tombol edit untuk memperbarui teks template, persyaratan berkas, atau ubah status aktif/nonaktif.</p>
                 </div>

@@ -478,7 +478,7 @@
                             @endif
                         </td>
                         <td class="text-center">{{ $temuan->clean_rt }}</td>
-                        <td class="text-center fw-bold">{{ ucfirst($temuan->tingkat_prioritas) }}</td>
+                        <td class="text-center fw-bold">{{ $temuan->prioritas_badge['label'] }}</td>
                         <td class="text-center fw-bold">{{ $temuan->status_badge['label'] }}</td>
                     </tr>
                 @empty

@@ -17,20 +17,6 @@
         </div>
     </div>
 
-    <!-- Alert Notifikasi Session Flash -->
-    @if(session('success'))
-        <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center gap-3 p-3">
-            <div class="rounded-circle bg-success text-white p-2 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                <i data-lucide="check" style="width: 20px; height: 20px;"></i>
-            </div>
-            <div class="flex-grow-1">
-                <strong class="text-success d-block">Berhasil!</strong>
-                <span class="small text-dark">{{ session('success') }}</span>
-            </div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-
     <div class="row g-4 mb-4">
         <!-- Kolom Kiri: Rincian Laporan Resmi -->
         <div class="col-12 col-lg-8">

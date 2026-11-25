@@ -23,6 +23,11 @@ class SuratController extends Controller
     {
         $user = Auth::user();
 
+        // Bagi Pengurus RW, arahkan langsung ke Pusat Manajemen Layanan Surat All-in-One
+        if ($user->isRw() && !$request->has('preview')) {
+            return redirect()->route('rw.surat.index');
+        }
+
         // 1. Statistik Pengajuan Surat Real-time dari Database
         $stats = [
             'total' => 0,
@@ -326,7 +331,7 @@ class SuratController extends Controller
     }
 
     /**
-     * Halaman Inbox Permohonan Masuk Khusus RT
+     * Halaman Inbox Permohonan Masuk Khusus RT (Sistem Tab Pelayanan RT)
      */
     public function rtIndex(Request $request)
     {
@@ -336,9 +341,20 @@ class SuratController extends Controller
         $cleanRt = $user->clean_rt_number;
         $query = LetterRequest::with(['user', 'letterType'])->where('rt_number', $cleanRt)->latest();
 
-        if ($request->filled('status')) {
+        $activeTab = $request->input('tab', 'masuk');
+
+        if ($activeTab === 'masuk') {
+            $query->where('status', LetterRequest::STATUS_WAITING_RT);
+        } elseif ($activeTab === 'diteruskan') {
+            $query->where('status', LetterRequest::STATUS_WAITING_RW);
+        } elseif ($activeTab === 'revisi') {
+            $query->where('status', LetterRequest::STATUS_REVISION_RT);
+        } elseif ($activeTab === 'riwayat') {
+            $query->whereIn('status', [LetterRequest::STATUS_APPROVED, LetterRequest::STATUS_COMPLETED, LetterRequest::STATUS_REJECTED_RT]);
+        } elseif ($request->filled('status')) {
             $query->where('status', $request->status);
         }
+
         if ($request->filled('jenis')) {
             $query->where('jenis_surat', $request->jenis);
         }
@@ -347,12 +363,14 @@ class SuratController extends Controller
 
         $counts = [
             'pending' => LetterRequest::where('rt_number', $cleanRt)->where('status', LetterRequest::STATUS_WAITING_RT)->count(),
-            'approved' => LetterRequest::where('rt_number', $cleanRt)->whereIn('status', [LetterRequest::STATUS_WAITING_RW, LetterRequest::STATUS_APPROVED, LetterRequest::STATUS_COMPLETED])->count(),
+            'forwarded_rw' => LetterRequest::where('rt_number', $cleanRt)->where('status', LetterRequest::STATUS_WAITING_RW)->count(),
+            'approved' => LetterRequest::where('rt_number', $cleanRt)->whereIn('status', [LetterRequest::STATUS_APPROVED, LetterRequest::STATUS_COMPLETED])->count(),
             'revision' => LetterRequest::where('rt_number', $cleanRt)->where('status', LetterRequest::STATUS_REVISION_RT)->count(),
             'rejected' => LetterRequest::where('rt_number', $cleanRt)->where('status', LetterRequest::STATUS_REJECTED_RT)->count(),
+            'total' => LetterRequest::where('rt_number', $cleanRt)->count(),
         ];
 
-        return view('surat.rt_index', compact('user', 'letters', 'counts', 'cleanRt'));
+        return view('surat.rt_index', compact('user', 'letters', 'counts', 'cleanRt', 'activeTab'));
     }
 
     /**
@@ -504,35 +522,173 @@ class SuratController extends Controller
     }
 
     /**
-     * Halaman Inbox Persetujuan Masuk Khusus RW
+     * Halaman Manajemen Layanan Surat All-in-One Khusus RW 013 (Sistem 5 Tab)
      */
     public function rwIndex(Request $request)
     {
         $user = Auth::user();
         abort_unless($user->isRw(), 403, 'Akses khusus Ketua RW / Administrator.');
 
-        $query = LetterRequest::with(['user', 'rtApprover', 'letterType'])->latest();
+        $activeTab = $request->input('tab', 'permohonan');
+        if (!in_array($activeTab, ['permohonan', 'daftar_layanan', 'template', 'alur', 'pratinjau'])) {
+            $activeTab = 'permohonan';
+        }
 
+        // ==========================================
+        // 1. DATA TAB A: PERMOHONAN SURAT
+        // ==========================================
+        $query = LetterRequest::with(['user', 'rtApprover', 'rwApprover', 'letterType'])->latest();
+
+        // Search
+        if ($request->filled('search')) {
+            $s = trim($request->search);
+            $query->where(function($q) use ($s) {
+                $q->where('nama_lengkap', 'like', "%{$s}%")
+                  ->orWhere('nik', 'like', "%{$s}%")
+                  ->orWhere('nomor_registrasi', 'like', "%{$s}%")
+                  ->orWhere('nomor_surat', 'like', "%{$s}%");
+            });
+        }
+
+        // Filter RT
         if ($request->filled('rt')) {
             $query->where('rt_number', $request->rt);
         }
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
+
+        // Filter Jenis Surat
         if ($request->filled('jenis')) {
-            $query->where('jenis_surat', $request->jenis);
+            $query->where(function($q) use ($request) {
+                $q->where('jenis_surat', $request->jenis)
+                  ->orWhere('letter_type_id', $request->jenis);
+            });
+        }
+
+        // Filter Status
+        if ($request->filled('status')) {
+            $st = $request->status;
+            if ($st === 'menunggu_rw') {
+                $query->where('status', LetterRequest::STATUS_WAITING_RW);
+            } elseif ($st === 'proses') {
+                $query->whereIn('status', [LetterRequest::STATUS_WAITING_RT, LetterRequest::STATUS_DRAFT]);
+            } elseif ($st === 'perbaikan') {
+                $query->whereIn('status', [LetterRequest::STATUS_REVISION_RW, LetterRequest::STATUS_REVISION_RT]);
+            } elseif ($st === 'disetujui') {
+                $query->where('status', LetterRequest::STATUS_APPROVED);
+            } elseif ($st === 'ditolak') {
+                $query->whereIn('status', [LetterRequest::STATUS_REJECTED_RW, LetterRequest::STATUS_REJECTED_RT]);
+            } elseif ($st === 'selesai') {
+                $query->where('status', LetterRequest::STATUS_COMPLETED);
+            } else {
+                $query->where('status', $st);
+            }
+        }
+
+        // Filter Periode Pengajuan
+        if ($request->filled('tgl_mulai')) {
+            $query->whereDate('created_at', '>=', $request->tgl_mulai);
+        }
+        if ($request->filled('tgl_selesai')) {
+            $query->whereDate('created_at', '<=', $request->tgl_selesai);
         }
 
         $letters = $query->paginate(15)->withQueryString();
 
-        $counts = [
+        // Group counts for status tabs
+        $statusCounts = [
             'waiting_rw' => LetterRequest::where('status', LetterRequest::STATUS_WAITING_RW)->count(),
-            'approved' => LetterRequest::whereIn('status', [LetterRequest::STATUS_APPROVED, LetterRequest::STATUS_COMPLETED])->count(),
+            'processing' => LetterRequest::whereIn('status', [LetterRequest::STATUS_WAITING_RT, LetterRequest::STATUS_DRAFT])->count(),
+            'revision' => LetterRequest::whereIn('status', [LetterRequest::STATUS_REVISION_RW, LetterRequest::STATUS_REVISION_RT])->count(),
+            'approved' => LetterRequest::where('status', LetterRequest::STATUS_APPROVED)->count(),
             'rejected' => LetterRequest::whereIn('status', [LetterRequest::STATUS_REJECTED_RW, LetterRequest::STATUS_REJECTED_RT])->count(),
+            'completed' => LetterRequest::where('status', LetterRequest::STATUS_COMPLETED)->count(),
             'total' => LetterRequest::count(),
         ];
 
-        return view('surat.rw_index', compact('user', 'letters', 'counts'));
+        // ==========================================
+        // 2. DATA TAB B: DAFTAR LAYANAN SURAT (18 Jenis)
+        // ==========================================
+        $masterQuery = LetterType::query()->orderBy('urutan');
+        if ($request->filled('kategori_layanan') && $request->kategori_layanan !== 'semua') {
+            $masterQuery->where('kategori', $request->kategori_layanan);
+        }
+        if ($request->filled('search_layanan')) {
+            $sl = $request->search_layanan;
+            $masterQuery->where(function($q) use ($sl) {
+                $q->where('nama', 'like', "%{$sl}%")
+                  ->orWhere('singkatan', 'like', "%{$sl}%")
+                  ->orWhere('deskripsi', 'like', "%{$sl}%")
+                  ->orWhere('kode', 'like', "%{$sl}%");
+            });
+        }
+        $masterTypes = $masterQuery->get();
+
+        $masterStats = [
+            'total' => LetterType::count(),
+            'active' => LetterType::where('is_active', true)->count(),
+            'inactive' => LetterType::where('is_active', false)->count(),
+            'total_requests' => LetterRequest::count(),
+        ];
+
+        // ==========================================
+        // 3. DATA TAB C: TEMPLATE & PERSYARATAN
+        // ==========================================
+        $allTypes = LetterType::orderBy('urutan')->get();
+        $selectedTemplateId = $request->input('template_id', $allTypes->first()?->id);
+        $selectedTemplate = $allTypes->firstWhere('id', $selectedTemplateId) ?: $allTypes->first();
+
+        // ==========================================
+        // 4. DATA TAB D: ALUR PERSETUJUAN
+        // ==========================================
+        $alurStats = [
+            'rt_then_rw' => LetterType::where('alur_persetujuan', LetterType::ALUR_RT_THEN_RW)->count(),
+            'rt_only' => LetterType::where('alur_persetujuan', LetterType::ALUR_RT_ONLY)->count(),
+            'pengantar_kelurahan' => LetterType::where('alur_persetujuan', LetterType::ALUR_PENGANTAR_KELURAHAN)->count(),
+            'internal_rw' => LetterType::where('alur_persetujuan', LetterType::ALUR_INTERNAL_RW)->count(),
+        ];
+
+        // ==========================================
+        // 5. DATA TAB E: PRATINJAU LAYANAN WARGA
+        // ==========================================
+        $kategoriPreview = $request->input('kategori_preview', 'semua');
+        $searchPreview = $request->input('search_preview');
+
+        $previewQuery = LetterType::where('is_active', true)->orderBy('urutan');
+        if ($kategoriPreview && $kategoriPreview !== 'semua') {
+            $previewQuery->where('kategori', $kategoriPreview);
+        }
+        if ($searchPreview) {
+            $previewQuery->where(function($q) use ($searchPreview) {
+                $q->where('nama', 'like', "%{$searchPreview}%")
+                  ->orWhere('singkatan', 'like', "%{$searchPreview}%")
+                  ->orWhere('deskripsi', 'like', "%{$searchPreview}%");
+            });
+        }
+        $katalogPreview = $previewQuery->get();
+
+        $previewCategories = [
+            'semua' => ['label' => 'Semua Kategori', 'count' => LetterType::where('is_active', true)->count()],
+            LetterType::KATEGORI_KEPENDUDUKAN => ['label' => 'Kependudukan', 'count' => LetterType::where('is_active', true)->where('kategori', LetterType::KATEGORI_KEPENDUDUKAN)->count()],
+            LetterType::KATEGORI_SOSIAL_KELUARGA => ['label' => 'Sosial & Keluarga', 'count' => LetterType::where('is_active', true)->where('kategori', LetterType::KATEGORI_SOSIAL_KELUARGA)->count()],
+            LetterType::KATEGORI_USAHA_EKONOMI => ['label' => 'Usaha & Ekonomi', 'count' => LetterType::where('is_active', true)->where('kategori', LetterType::KATEGORI_USAHA_EKONOMI)->count()],
+            LetterType::KATEGORI_LINGKUNGAN_KEAMANAN => ['label' => 'Lingkungan & Keamanan', 'count' => LetterType::where('is_active', true)->where('kategori', LetterType::KATEGORI_LINGKUNGAN_KEAMANAN)->count()],
+            LetterType::KATEGORI_INTERNAL => ['label' => 'Administrasi Internal', 'count' => LetterType::where('is_active', true)->where('kategori', LetterType::KATEGORI_INTERNAL)->count()],
+        ];
+
+        return view('surat.rw_index', compact(
+            'user',
+            'activeTab',
+            'letters',
+            'statusCounts',
+            'masterTypes',
+            'masterStats',
+            'allTypes',
+            'selectedTemplate',
+            'alurStats',
+            'katalogPreview',
+            'previewCategories',
+            'kategoriPreview',
+            'searchPreview'
+        ));
     }
 
     /**
@@ -701,20 +857,32 @@ class SuratController extends Controller
         $rtName = $letter->rt_approved_name ?? ($letter->rtApprover?->name ?? 'Ketua RT ' . $letter->rt);
         $rwName = $letter->rw_approved_name ?? ($letter->rwApprover?->name ?? 'Gayeca');
 
-        // Resolve template body
+        // Resolve template body dengan format standar dokumen resmi:
+        // Seluruh nama orang diformat HURUF KAPITAL (UPPERCASE) dan CETAK TEBAL (BOLD)
         $templateText = '';
         if ($letter->letterType && !empty($letter->letterType->template_body)) {
             $templateText = $letter->letterType->template_body;
+            $formattedApplicant = LetterRequest::formatPersonName($letter->nama_lengkap);
+
             $replacements = [
-                '{rt}' => $letter->rt,
-                '{rw}' => $letter->rw,
-                '{nama}' => $letter->nama_lengkap,
-                '{nik}' => $letter->nik,
-                '{keperluan}' => $letter->keperluan,
+                '{rt}' => e($letter->rt),
+                '{rw}' => e($letter->rw),
+                '{nama}' => $formattedApplicant,
+                '{nama_lengkap}' => $formattedApplicant,
+                '{nama_pemohon}' => $formattedApplicant,
+                '[NAMA]' => $formattedApplicant,
+                '{nik}' => e($letter->nik),
+                '{keperluan}' => e($letter->keperluan),
             ];
+
             if (!empty($letter->detail_khusus)) {
                 foreach ($letter->detail_khusus as $k => $v) {
-                    $replacements['{' . $k . '}'] = is_array($v) ? implode(', ', $v) : $v;
+                    $rawVal = is_array($v) ? implode(', ', $v) : (string)$v;
+                    if (LetterRequest::isPersonNameField($k)) {
+                        $replacements['{' . $k . '}'] = LetterRequest::formatPersonName($rawVal);
+                    } else {
+                        $replacements['{' . $k . '}'] = e($rawVal);
+                    }
                 }
             }
             $templateText = str_replace(array_keys($replacements), array_values($replacements), $templateText);

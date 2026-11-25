@@ -16,6 +16,8 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         $middleware->web(append: [
             \App\Http\Middleware\NavigationHistory::class,
+            \App\Http\Middleware\SuperAdminViewOnlyMiddleware::class,
+            \App\Http\Middleware\WargaIdleTimeoutMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -3,15 +3,15 @@
 @section('content')
 <div class="container-fluid p-0">
     <!-- Top Hero Banner Monitoring RW 013 -->
-    <div class="wm-card mb-4 overflow-hidden position-relative" style="background: linear-gradient(135deg, #123766 0%, #0D2340 100%); color: #fff; border: none; border-radius: 16px;">
+    <div class="wm-card mb-4 overflow-hidden position-relative sa-hero-card" style="background: linear-gradient(135deg, #0F3966 0%, #1456A0 55%, #2878D0 100%) !important; color: #fff !important; border: none !important; border-radius: 16px;">
         <div class="p-4 p-md-5 position-relative" style="z-index: 2;">
             <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
                 <div style="max-width: 780px;">
                     <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
-                        <span class="badge bg-primary text-white fw-bold px-3 py-1 rounded-pill" style="font-size: 11px; letter-spacing: 0.5px;">
+                        <span class="badge px-3 py-1 rounded-pill fw-bold hero-badge" style="background: rgba(255, 255, 255, 0.16) !important; color: #FFFFFF !important; border: 1px solid rgba(255, 255, 255, 0.28) !important; font-size: 11px; letter-spacing: 0.5px;">
                             <i data-lucide="shield-check" style="width: 14px; height: 14px; vertical-align: middle;"></i> DASHBOARD MONITORING & EVALUASI
                         </span>
-                        <span class="badge bg-white text-dark fw-bold px-3 py-1 rounded-pill opacity-90" style="font-size: 11px;">
+                        <span class="badge fw-bold px-3 py-1 rounded-pill hero-badge" style="background: rgba(255, 255, 255, 0.16) !important; color: #FFFFFF !important; border: 1px solid rgba(255, 255, 255, 0.28) !important; font-size: 11px;">
                             RW 013 Sukamiskin Arcamanik
                         </span>
                     </div>
@@ -21,7 +21,7 @@
                     </p>
                 </div>
                 <div class="d-flex align-items-center gap-2 flex-wrap">
-                    <a href="{{ route('dashboard') }}" class="btn btn-light rounded-pill px-3 py-2 fw-bold small text-primary shadow-sm">
+                    <a href="{{ route('dashboard') }}" class="btn btn-light rounded-pill px-3 py-2 fw-bold small text-white shadow-sm hero-btn-light" style="background: rgba(255, 255, 255, 0.18) !important; color: #FFFFFF !important; border: 1px solid rgba(255, 255, 255, 0.35) !important;">
                         <i data-lucide="layout-grid" class="me-1" style="width: 16px; height: 16px; vertical-align: middle;"></i> Ke Dashboard Utama
                     </a>
                 </div>
@@ -30,20 +30,6 @@
         <!-- Decorative Circle Background -->
         <div class="position-absolute rounded-circle" style="width: 320px; height: 320px; background: rgba(255,255,255,0.04); top: -80px; right: -60px; pointer-events: none;"></div>
     </div>
-
-    <!-- Alert Notifikasi Flash Session -->
-    @if(session('success'))
-        <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center gap-3 p-3">
-            <div class="rounded-circle bg-success text-white p-2 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                <i data-lucide="check" style="width: 20px; height: 20px;"></i>
-            </div>
-            <div class="flex-grow-1">
-                <strong class="text-success d-block">Berhasil!</strong>
-                <span class="small text-dark">{{ session('success') }}</span>
-            </div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
 
     @if(!empty($rtBelumLapor))
         <div class="alert alert-warning border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center justify-content-between flex-wrap gap-3 p-3">

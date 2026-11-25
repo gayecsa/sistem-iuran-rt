@@ -51,6 +51,8 @@ class User extends Authenticatable
         'dokumen_ktp_path',
         'dokumen_pendukung_path',
         'last_login_at',
+        'notification_preferences',
+        'privacy_settings',
     ];
 
     /**
@@ -73,7 +75,31 @@ class User extends Authenticatable
         'is_active' => 'boolean',
         'last_login_at' => 'datetime',
         'tanggal_lahir' => 'date',
+        'notification_preferences' => 'array',
+        'privacy_settings' => 'array',
     ];
+
+    public function getNotificationPreference(string $key, bool $default = true): bool
+    {
+        $prefs = $this->notification_preferences ?? [];
+        return isset($prefs[$key]) ? (bool)$prefs[$key] : $default;
+    }
+
+    public function getPrivacySetting(string $key, $default = null)
+    {
+        $settings = $this->privacy_settings ?? [];
+        return $settings[$key] ?? $default;
+    }
+
+    public function isMaskNikKk(): bool
+    {
+        return (bool)$this->getPrivacySetting('mask_nik_kk', true);
+    }
+
+    public function getPhoneVisibility(): string
+    {
+        return (string)$this->getPrivacySetting('phone_visibility', 'internal');
+    }
 
     public function kartuKeluarga()
     {
@@ -135,8 +161,13 @@ class User extends Authenticatable
     }
 
     // ======================================================================
-    // HELPER & SCOPE HIERARKI RW & RT WARKAS MACHI
+    // HELPER & SCOPE HIERARKI RW & RT HAVEN
     // ======================================================================
+
+    public function isSuperAdmin(): bool
+    {
+        return strtolower($this->role ?? '') === 'super_admin';
+    }
 
     public function isRw(): bool
     {
@@ -174,6 +205,9 @@ class User extends Authenticatable
 
     public function getRoleBadgeLabelAttribute(): string
     {
+        if ($this->isSuperAdmin()) {
+            return 'Super Admin Haven';
+        }
         if ($this->isRw()) {
             return 'Ketua RW 013 / Admin';
         }
@@ -279,5 +313,16 @@ class User extends Authenticatable
         }
 
         return false;
+    }
+
+    /**
+     * Kirim notifikasi pengaturan ulang kata sandi dalam Bahasa Indonesia.
+     *
+     * @param string $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new \App\Notifications\ResetPasswordNotification($token));
     }
 }

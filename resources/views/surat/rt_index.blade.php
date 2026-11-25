@@ -114,6 +114,56 @@
         </div>
     </div>
 
+    {{-- SISTEM TAB PELAYANAN SURAT RT --}}
+    <div class="wm-card mb-4 bg-white border rounded-4 shadow-sm p-2">
+        <ul class="nav nav-pills flex-nowrap overflow-x-auto gap-2 p-1" role="tablist" style="scrollbar-width: thin;">
+            <li class="nav-item flex-shrink-0">
+                <a class="nav-link rounded-pill py-2 px-3 fw-bold small d-flex align-items-center gap-2 {{ ($activeTab ?? 'masuk') == 'masuk' ? 'active bg-primary text-white' : 'text-secondary' }}" 
+                   href="{{ route('rt.surat.index', ['tab' => 'masuk']) }}">
+                    <i data-lucide="inbox" style="width: 16px; height: 16px;"></i>
+                    <span>A. Permohonan Masuk</span>
+                    @if($counts['pending'] > 0)
+                        <span class="badge rounded-pill bg-danger text-white ms-1">{{ $counts['pending'] }}</span>
+                    @endif
+                </a>
+            </li>
+            <li class="nav-item flex-shrink-0">
+                <a class="nav-link rounded-pill py-2 px-3 fw-bold small d-flex align-items-center gap-2 {{ ($activeTab ?? '') == 'revisi' ? 'active bg-warning text-dark' : 'text-secondary' }}" 
+                   href="{{ route('rt.surat.index', ['tab' => 'revisi']) }}">
+                    <i data-lucide="edit-3" style="width: 16px; height: 16px;"></i>
+                    <span>B. Perlu Perbaikan Berkas</span>
+                    @if($counts['revision'] > 0)
+                        <span class="badge rounded-pill bg-dark text-white ms-1">{{ $counts['revision'] }}</span>
+                    @endif
+                </a>
+            </li>
+            <li class="nav-item flex-shrink-0">
+                <a class="nav-link rounded-pill py-2 px-3 fw-bold small d-flex align-items-center gap-2 {{ ($activeTab ?? '') == 'diteruskan' ? 'active bg-info text-white' : 'text-secondary' }}" 
+                   href="{{ route('rt.surat.index', ['tab' => 'diteruskan']) }}">
+                    <i data-lucide="send" style="width: 16px; height: 16px;"></i>
+                    <span>C. Diteruskan ke RW</span>
+                    @if($counts['forwarded_rw'] > 0)
+                        <span class="badge rounded-pill bg-light text-dark border ms-1">{{ $counts['forwarded_rw'] }}</span>
+                    @endif
+                </a>
+            </li>
+            <li class="nav-item flex-shrink-0">
+                <a class="nav-link rounded-pill py-2 px-3 fw-bold small d-flex align-items-center gap-2 {{ ($activeTab ?? '') == 'riwayat' ? 'active bg-success text-white' : 'text-secondary' }}" 
+                   href="{{ route('rt.surat.index', ['tab' => 'riwayat']) }}">
+                    <i data-lucide="archive" style="width: 16px; height: 16px;"></i>
+                    <span>D. Riwayat Pelayanan Selesai</span>
+                </a>
+            </li>
+            <li class="nav-item flex-shrink-0">
+                <a class="nav-link rounded-pill py-2 px-3 fw-bold small d-flex align-items-center gap-2 {{ ($activeTab ?? '') == 'semua' ? 'active bg-secondary text-white' : 'text-secondary' }}" 
+                   href="{{ route('rt.surat.index', ['tab' => 'semua']) }}">
+                    <i data-lucide="layers" style="width: 16px; height: 16px;"></i>
+                    <span>Semua Berkas RT ({{ $counts['total'] }})</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
     {{-- TABEL INBOX PERMOHONAN RT --}}
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="background: #ffffff;">
         <div class="card-header bg-white border-bottom p-4">

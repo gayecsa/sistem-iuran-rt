@@ -11,7 +11,7 @@
             <nav aria-label="breadcrumb" class="mb-1">
                 <ol class="breadcrumb mb-0" style="font-size: 0.85rem;">
                     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none text-muted"><i data-lucide="home" class="me-1" style="width:14px;height:14px;"></i>Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('rw.surat_master.index') }}" class="text-decoration-none text-muted">Master Surat RW</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('rw.surat.index', ['tab' => 'daftar_layanan']) }}" class="text-decoration-none text-muted">Manajemen Layanan Surat</a></li>
                     <li class="breadcrumb-item active text-primary fw-semibold" aria-current="page">Edit Konfigurasi</li>
                 </ol>
             </nav>
@@ -26,9 +26,9 @@
             </p>
         </div>
 
-        <a href="{{ route('rw.surat_master.index') }}" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2 shadow-sm rounded-3" style="font-size: 0.88rem;">
+        <a href="{{ route('rw.surat.index', ['tab' => 'daftar_layanan']) }}" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2 shadow-sm rounded-3" style="font-size: 0.88rem;">
             <i data-lucide="arrow-left" style="width:16px;height:16px;"></i>
-            <span>Kembali ke Master</span>
+            <span>Kembali ke Manajemen Surat</span>
         </a>
     </div>
 

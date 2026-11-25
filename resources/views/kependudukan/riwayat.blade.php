@@ -103,7 +103,7 @@
                                 {{ $h->catatan ?: '-' }}
                             </td>
                             <td class="pe-4 small">
-                                <strong class="text-dark d-block">{{ $h->petugas_nama ?: 'Sistem Warkas Machi' }}</strong>
+                                <strong class="text-dark d-block">{{ $h->petugas_nama ?: 'Sistem Haven' }}</strong>
                                 <span class="text-muted" style="font-size: 0.72rem;">{{ strtoupper($h->petugas_role ?: 'Admin') }}</span>
                             </td>
                         </tr>

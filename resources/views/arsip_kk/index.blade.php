@@ -59,7 +59,7 @@
             <div>
                 <h6 class="fw-bold mb-1 text-white">Prinsip Legalitas Dokumen Kependudukan Resmi</h6>
                 <p class="mb-0 small opacity-90" style="font-size: 0.82rem;">
-                    Kartu Keluarga adalah dokumen negara yang diterbitkan resmi oleh Dinas Kependudukan dan Pencatatan Sipil (Dukcapil). Aplikasi Warkas Machi RW 013 berfungsi sebagai repositori arsip salinan autentik, verifikasi fisik dokumen asli, dan penatausahaan administrasi warga. Pencetakan salinan dokumen hanya diizinkan bagi berkas yang telah berstatus <strong>Terverifikasi</strong>.
+                    Kartu Keluarga adalah dokumen negara yang diterbitkan resmi oleh Dinas Kependudukan dan Pencatatan Sipil (Dukcapil). Aplikasi Haven RW 013 berfungsi sebagai repositori arsip salinan autentik, verifikasi fisik dokumen asli, dan penatausahaan administrasi warga. Pencetakan salinan dokumen hanya diizinkan bagi berkas yang telah berstatus <strong>Terverifikasi</strong>.
                 </p>
             </div>
         </div>

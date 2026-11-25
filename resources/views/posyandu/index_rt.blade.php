@@ -3,15 +3,15 @@
 @section('content')
 <div class="container-fluid p-0">
     <!-- Top Hero Banner Posyandu RT -->
-    <div class="wm-card mb-4 overflow-hidden position-relative" style="background: linear-gradient(135deg, #0F5132 0%, #123766 100%); color: #fff; border: none; border-radius: 16px;">
+    <div class="wm-card mb-4 overflow-hidden position-relative sa-hero-card" style="background: linear-gradient(135deg, #0F3966 0%, #1456A0 55%, #2878D0 100%) !important; color: #fff !important; border: none !important; border-radius: 16px;">
         <div class="p-4 p-md-5 position-relative" style="z-index: 2;">
             <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
                 <div style="max-width: 720px;">
                     <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
-                        <span class="badge bg-light text-success fw-bold px-3 py-1 rounded-pill" style="color: #0F5132 !important; font-size: 11px; letter-spacing: 0.5px;">
+                        <span class="badge px-3 py-1 rounded-pill fw-bold hero-badge" style="background: rgba(255, 255, 255, 0.18) !important; color: #FFFFFF !important; border: 1px solid rgba(255, 255, 255, 0.30) !important; font-size: 11px; letter-spacing: 0.5px;">
                             <i data-lucide="heart-pulse" style="width: 14px; height: 14px; vertical-align: middle;"></i> OPERASIONAL POSYANDU RT {{ $rtStr }}
                         </span>
-                        <span class="badge bg-white text-dark fw-bold px-3 py-1 rounded-pill opacity-90" style="font-size: 11px;">
+                        <span class="badge fw-bold px-3 py-1 rounded-pill hero-badge" style="background: rgba(255, 255, 255, 0.18) !important; color: #FFFFFF !important; border: 1px solid rgba(255, 255, 255, 0.30) !important; font-size: 11px;">
                             RW 013 Sukamiskin Arcamanik
                         </span>
                     </div>
@@ -36,30 +36,35 @@
         <div class="position-absolute rounded-circle" style="width: 320px; height: 320px; background: rgba(255,255,255,0.05); top: -80px; right: -60px; pointer-events: none;"></div>
     </div>
 
-    <!-- Alert Flash Message -->
-    @if(session('success'))
-        <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center gap-3 p-3">
-            <div class="rounded-circle bg-success text-white p-2 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                <i data-lucide="check" style="width: 20px; height: 20px;"></i>
+    <!-- BANNER PENGINGAT RESMI DARI PENGURUS RW -->
+    @if($rwReminder)
+        <div class="alert alert-warning border border-warning shadow-sm rounded-4 mb-4 p-4 d-flex align-items-center justify-content-between flex-wrap gap-3" style="background: #FFFBEB;">
+            <div class="d-flex align-items-start gap-3">
+                <div class="rounded-circle p-2 d-flex align-items-center justify-content-center" style="background: #FEF3C7; color: #D97706; width: 44px; height: 44px; flex-shrink: 0;">
+                    <i data-lucide="bell-ring" style="width: 24px; height: 24px;"></i>
+                </div>
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                        <span class="badge bg-danger text-white px-2 py-1 rounded-pill fw-bold" style="font-size: 10px;">
+                            PENGINGAT RESMI PENGURUS RW 013
+                        </span>
+                        <small class="text-muted">{{ Carbon\Carbon::parse($rwReminder->created_at)->diffForHumans() }}</small>
+                    </div>
+                    <h6 class="fw-bold text-dark mb-1">Penyampaian Laporan Kegiatan Posyandu RT {{ $rtStr }} Diperlukan</h6>
+                    <p class="text-secondary small mb-0">
+                        Pengurus RW 013 mengingatkan agar laporan hasil kegiatan Posyandu RT {{ $rtStr }} (<strong>{{ $lastEvent->judul_kegiatan ?? 'Kegiatan Terakhir' }}</strong>) segera disusun dan dikirimkan untuk melengkapi rekapitulasi monitoring kesehatan kewilayahan.
+                    </p>
+                </div>
             </div>
-            <div class="flex-grow-1">
-                <strong class="text-success d-block">Berhasil!</strong>
-                <span class="small text-dark">{{ session('success') }}</span>
-            </div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="alert alert-danger border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center gap-3 p-3">
-            <div class="rounded-circle bg-danger text-white p-2 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                <i data-lucide="alert-circle" style="width: 20px; height: 20px;"></i>
-            </div>
-            <div class="flex-grow-1">
-                <strong class="text-danger d-block">Kesalahan</strong>
-                <span class="small text-dark">{{ session('error') }}</span>
-            </div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            @if($lastEvent && !$laporanTerakhir)
+                <button type="button" class="btn btn-warning rounded-pill px-4 py-2 fw-bold text-dark shadow-sm" data-bs-toggle="modal" data-bs-target="#modalBuatLaporan{{ $lastEvent->id }}">
+                    <i data-lucide="file-plus" style="width: 16px; height: 16px; vertical-align: middle;" class="me-1"></i> Susun Laporan Sekarang
+                </button>
+            @elseif($laporanTerakhir)
+                <a href="{{ route('posyandu.laporan.show', $laporanTerakhir->id) }}" class="btn btn-outline-warning rounded-pill px-4 py-2 fw-bold text-dark shadow-sm">
+                    <i data-lucide="eye" style="width: 16px; height: 16px; vertical-align: middle;" class="me-1"></i> Cek Berkas Laporan
+                </a>
+            @endif
         </div>
     @endif
 
@@ -323,6 +328,84 @@
                     <button type="button" class="btn btn-sm btn-success rounded-pill px-3 fw-bold" data-bs-toggle="modal" data-bs-target="#modalTambahPeserta">
                         <i data-lucide="user-plus" style="width: 14px; height: 14px; vertical-align: middle;"></i> Tambah Peserta Baru
                     </button>
+                </div>
+
+                <!-- PANEL AUTO-DETEKSI WARGA RT BELUM TERDAFTAR (BALITA & LANSIA) -->
+                <div class="wm-card bg-white border border-primary-subtle rounded-4 shadow-sm p-4 mb-4" style="border-left: 4px solid #1456A0 !important;">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                                <span class="badge px-3 py-1 rounded-pill fw-bold text-white" style="background: #1456A0; font-size: 11px;">
+                                    <i data-lucide="sparkles" style="width: 12px; height: 12px; vertical-align: middle;"></i> AUTO-DETEKSI SASARAN RT {{ $rtStr }}
+                                </span>
+                                <h6 class="fw-bold mb-0 text-dark fs-6">Warga RT Belum Terdaftar (Auto-Deteksi)</h6>
+                            </div>
+                            <p class="text-muted small mb-0">
+                                Berdasarkan data kependudukan RT {{ $rtStr }}, sistem otomatis memindai warga usia Balita (0–5 th) dan Lansia (≥60 th) yang belum terdaftar sebagai peserta Posyandu.
+                            </p>
+                        </div>
+                        <span class="badge bg-light text-primary border px-3 py-2 rounded-pill fw-bold">
+                            {{ count($autoDetectedRtWarga) }} Warga Terdeteksi
+                        </span>
+                    </div>
+
+                    @if(!empty($autoDetectedRtWarga))
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-3 text-secondary small fw-bold">Nama Warga</th>
+                                        <th class="text-secondary small fw-bold">Kategori Sasaran</th>
+                                        <th class="text-secondary small fw-bold">Usia</th>
+                                        <th class="text-secondary small fw-bold">Alamat / RT</th>
+                                        <th class="text-end pe-3 text-secondary small fw-bold">Aksi Cepat</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach(array_slice($autoDetectedRtWarga, 0, 8) as $item)
+                                        <tr>
+                                            <td class="ps-3">
+                                                <strong class="text-dark d-block">{{ $item['user']->name }}</strong>
+                                                <small class="text-muted">NIK: {{ $item['user']->masked_nik ?? $item['user']->nik }} &bull; {{ $item['user']->gender ?? '-' }}</small>
+                                            </td>
+                                            <td>
+                                                <span class="badge {{ $item['badge_class'] }} px-2 py-1 rounded-pill" style="font-size: 11px;">
+                                                    <i data-lucide="{{ $item['icon'] }}" style="width: 12px; height: 12px; vertical-align: middle;" class="me-1"></i>
+                                                    {{ $item['kategori_label'] }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="small fw-semibold text-dark">{{ $item['usia_text'] }}</span>
+                                            </td>
+                                            <td>
+                                                <small class="text-muted text-truncate d-block" style="max-width: 200px;">{{ $item['user']->address ?? 'RT ' . $rtStr }}</small>
+                                            </td>
+                                            <td class="text-end pe-3">
+                                                <form action="{{ route('posyandu.peserta.store') }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    <input type="hidden" name="user_id" value="{{ $item['user']->id }}">
+                                                    <input type="hidden" name="kategori" value="{{ $item['kategori'] }}">
+                                                    <button type="submit" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-bold">
+                                                        <i data-lucide="user-plus" style="width: 14px; height: 14px; vertical-align: middle;"></i> Daftarkan
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        @if(count($autoDetectedRtWarga) > 8)
+                            <div class="p-2 text-center border-top bg-light-subtle small text-muted">
+                                Menampilkan 8 dari {{ count($autoDetectedRtWarga) }} warga yang terdeteksi. Gunakan tombol "Tambah Peserta Baru" di atas untuk mencari nama lainnya.
+                            </div>
+                        @endif
+                    @else
+                        <div class="p-3 bg-light-subtle rounded-3 border text-center text-muted small">
+                            <i data-lucide="check-circle-2" class="text-success me-1" style="width: 16px; height: 16px; vertical-align: middle;"></i>
+                            Seluruh warga sasaran Balita (0–5 th) dan Lansia (≥60 th) di RT {{ $rtStr }} saat ini sudah terdata dan terdaftar 100% sebagai peserta Posyandu.
+                        </div>
+                    @endif
                 </div>
 
                 <div class="table-responsive">

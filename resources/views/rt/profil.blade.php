@@ -112,7 +112,7 @@
                         </div>
                     </div>
                     <p class="small text-muted mb-0">
-                        Data statistik diperbarui secara berkala melalui sinkronisasi sensus kependudukan Warkas Machi dan laporan bulanan RT ke RW.
+                        Data statistik diperbarui secara berkala melalui sinkronisasi sensus kependudukan Haven dan laporan bulanan RT ke RW.
                     </p>
                 </div>
             </div>
