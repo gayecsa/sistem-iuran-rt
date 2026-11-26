@@ -1473,7 +1473,7 @@
             if (rekamPollTimer) clearInterval(rekamPollTimer);
 
             rekamPollTimer = setInterval(function () {
-                fetch('{{ route("api.iot.portal.live-status") }}')
+                fetch('{{ route("api.iot.portal.live_status") }}')
                     .then(function (res) { return res.json(); })
                     .then(function (data) {
                         if (!data || !data.device) return;

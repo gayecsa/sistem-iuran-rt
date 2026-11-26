@@ -181,9 +181,7 @@ class PortalIotController extends Controller
         $reason = 'Kartu Tidak Dikenal';
 
         if ($user) {
-            $isActive = ($user->is_active !== false)
-                && ($user->status !== 'rejected')
-                && ($user->status !== 'inactive');
+            $isActive = ($user->is_active !== false);
 
             if ($isActive) {
                 $isGranted = true;

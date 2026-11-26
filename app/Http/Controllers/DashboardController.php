@@ -1318,14 +1318,18 @@ class DashboardController extends Controller
             $portalLogs = PortalGateLog::with('user')->latest('tapped_at')->take(50)->get();
             if ($user->role === 'super_admin' || $user->role === 'admin' || $user->isRw()) {
                 $wargaRfidList = User::whereIn('role', ['warga', 'rt', 'rw', 'admin', 'bendahara'])
-                    ->where('status', 'approved')
+                    ->where(function ($q) {
+                        $q->whereNull('is_active')->orWhere('is_active', true);
+                    })
                     ->orderBy('rt_number')
                     ->orderBy('name')
                     ->get(['id', 'name', 'email', 'role', 'rt_number', 'house_number', 'rfid_uid']);
             } else {
                 $cleanRt = str_pad($user->clean_rt_number, 3, '0', STR_PAD_LEFT);
                 $wargaRfidList = User::whereIn('role', ['warga', 'rt'])
-                    ->where('status', 'approved')
+                    ->where(function ($q) {
+                        $q->whereNull('is_active')->orWhere('is_active', true);
+                    })
                     ->where(function($q) use ($cleanRt) {
                         $q->where('rt_number', $cleanRt)->orWhere('rt_number', intval($cleanRt));
                     })
