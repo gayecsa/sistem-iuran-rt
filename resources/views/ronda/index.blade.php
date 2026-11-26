@@ -332,6 +332,95 @@
         border-bottom-color: #3B82F6 !important;
         background: rgba(59, 130, 246, 0.1) !important;
     }
+
+    /* Portal Gate Boom Barrier Visualizer */
+    .portal-gate-visualizer {
+        background: radial-gradient(circle at center, #111C33 0%, #080D1A 100%);
+        border: 1px solid #1E293B;
+        border-radius: 16px;
+        padding: 24px;
+        color: #FFFFFF;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+    .boom-gate-box {
+        position: relative;
+        height: 180px;
+        width: 100%;
+        display: flex;
+        align-items: flex-end;
+        padding-bottom: 20px;
+        border-bottom: 3px dashed #334155;
+    }
+    .boom-barrier-housing {
+        width: 38px;
+        height: 90px;
+        background: linear-gradient(180deg, #F59E0B 0%, #D97706 100%);
+        border-radius: 8px 8px 0 0;
+        position: relative;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+        z-index: 2;
+        border: 2px solid #B45309;
+    }
+    .boom-barrier-lamp {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #EF4444;
+        box-shadow: 0 0 10px #EF4444;
+        margin: 8px auto 0;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .boom-barrier-lamp.open {
+        background: #10B981;
+        box-shadow: 0 0 15px #10B981;
+    }
+    .boom-barrier-arm {
+        position: absolute;
+        bottom: 75px;
+        left: 20px;
+        height: 10px;
+        width: calc(100% - 40px);
+        max-width: 480px;
+        background: repeating-linear-gradient(45deg, #EF4444, #EF4444 15px, #FFFFFF 15px, #FFFFFF 30px);
+        border-radius: 4px;
+        transform-origin: 0% 50%;
+        transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+        z-index: 1;
+    }
+    .boom-barrier-arm.open {
+        transform: rotate(-65deg);
+    }
+    .portal-live-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 30px;
+        font-weight: 700;
+        font-size: 0.78rem;
+    }
+    .rfid-chip-card {
+        background: linear-gradient(135deg, #0F3966 0%, #1456A0 55%, #2878D0 100%);
+        border-radius: 16px;
+        padding: 24px;
+        color: #FFFFFF;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(20, 86, 160, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .rfid-chip-card::after {
+        content: "";
+        position: absolute;
+        top: -40px;
+        right: -30px;
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.08);
+        pointer-events: none;
+    }
 </style>
 @endpush
 
@@ -499,6 +588,17 @@
                 </span>
             @elseif(isset($laporanKeamananList) && $laporanKeamananList->count() > 0)
                 <span class="badge rounded-pill bg-primary ms-1" style="font-size: 0.72rem;">{{ $laporanKeamananList->count() }}</span>
+            @endif
+        </a>
+        <a href="{{ route('ronda.index', ['tab' => 'portal']) }}" class="ronda-tab-item {{ $activeTab === 'portal' ? 'active' : '' }}">
+            <i data-lucide="radio" style="width: 18px; height: 18px;"></i>
+            <span>Portal Gerbang &amp; IoT</span>
+            @if(isset($iotDevice) && $iotDevice->isOnline())
+                <span class="badge rounded-pill bg-success text-white ms-1 d-inline-flex align-items-center gap-1 shadow-sm" style="font-size: 0.68rem; padding: 2px 7px;">
+                    <span class="cctv-pulse-dot" style="width: 6px; height: 6px; background: #FFF;"></span> Online
+                </span>
+            @else
+                <span class="badge rounded-pill bg-secondary text-white ms-1" style="font-size: 0.68rem; padding: 2px 7px;">Offline</span>
             @endif
         </a>
     </div>
@@ -1705,6 +1805,8 @@
                 </div>
             @endif
         </div>
+    @elseif($activeTab === 'portal')
+        @include('ronda.tabs.portal')
     @endif
 </div>
 
@@ -1902,6 +2004,139 @@
                 modal.show();
             }
         }
+
+        // Real-Time Polling for IoT Portal Gerbang (2s)
+        @if($activeTab === 'portal')
+        (function() {
+            var lastSeenTapId = {{ $portalLogs->first()?->id ?? 0 }};
+            var boomCloseTimer = null;
+
+            function updateLiveStatus() {
+                fetch('{{ route('api.iot.portal.live_status') }}')
+                    .then(function(res) { return res.json(); })
+                    .then(function(data) {
+                        if (!data) return;
+
+                        // 1. Update Device Online Status
+                        var dev = data.device;
+                        var badge = document.getElementById('deviceOnlineBadge');
+                        var badgeText = document.getElementById('deviceOnlineText');
+                        var heartbeatText = document.getElementById('deviceHeartbeatText');
+
+                        if (badge && badgeText) {
+                            if (dev.is_online) {
+                                badge.className = 'portal-live-badge bg-success text-white';
+                                badgeText.textContent = 'Perangkat Online';
+                            } else {
+                                badge.className = 'portal-live-badge bg-secondary text-white';
+                                badgeText.textContent = 'Perangkat Offline';
+                            }
+                        }
+
+                        if (heartbeatText) {
+                            heartbeatText.textContent = 'Terakhir aktif: ' + dev.last_seen_human + ' • Lokasi: Pos Keamanan Gerbang Utama RW 013';
+                        }
+
+                        // 2. Check Last Tap Animation
+                        var tap = data.last_tap;
+                        if (tap && tap.id !== lastSeenTapId) {
+                            lastSeenTapId = tap.id;
+                            handleNewTapEvent(tap);
+                        }
+                    })
+                    .catch(function(err) {});
+            }
+
+            function handleNewTapEvent(tap) {
+                var barrierArm = document.getElementById('visualBarrierArm');
+                var lamp = document.getElementById('visualLamp');
+                var statusCard = document.getElementById('visualStatusCard');
+                var statusIcon = document.getElementById('visualStatusIcon');
+                var statusTitle = document.getElementById('visualStatusTitle');
+                var statusDesc = document.getElementById('visualStatusDesc');
+                var extraAction = document.getElementById('visualExtraAction');
+
+                if (!statusCard) return;
+
+                if (tap.status === 'granted') {
+                    if (tap.mode === 'portal') {
+                        if (barrierArm) barrierArm.classList.add('open');
+                        if (lamp) lamp.classList.add('open');
+                        statusCard.style.background = 'rgba(22, 134, 93, 0.2)';
+                        statusCard.style.borderColor = '#16865D';
+                        statusIcon.style.background = 'rgba(22, 134, 93, 0.3)';
+                        statusIcon.style.color = '#34D399';
+                        statusIcon.innerHTML = '<i data-lucide="check-circle" style="width: 20px; height: 20px;"></i>';
+                        statusTitle.innerHTML = '<span class="text-success">SELAMAT DATANG: ' + (tap.user ? tap.user.name : 'Warga') + ' (' + (tap.user ? tap.user.rt : '') + ')</span>';
+                        statusDesc.textContent = 'Akses Diterima — Portal Palang Terbuka Otomatis.';
+                        if (extraAction) extraAction.style.display = 'none';
+
+                        clearTimeout(boomCloseTimer);
+                        boomCloseTimer = setTimeout(function() {
+                            if (barrierArm) barrierArm.classList.remove('open');
+                            if (lamp) lamp.classList.remove('open');
+                            statusCard.style.background = 'rgba(15, 23, 42, 0.6)';
+                            statusCard.style.borderColor = '#334155';
+                            statusIcon.style.background = 'rgba(59, 130, 246, 0.15)';
+                            statusIcon.style.color = '#60A5FA';
+                            statusIcon.innerHTML = '<i data-lucide="radio" style="width: 20px; height: 20px;"></i>';
+                            statusTitle.textContent = 'Siaga Menunggu Tap Kartu RFID...';
+                            statusDesc.textContent = 'Dekatkan kartu RFID warga pada sensor RFID-RC522 di pos gerbang.';
+                            if (typeof lucide !== 'undefined') lucide.createIcons();
+                        }, 5000);
+                    } else if (tap.mode === 'ronda') {
+                        statusCard.style.background = 'rgba(124, 58, 237, 0.2)';
+                        statusCard.style.borderColor = '#7C3AED';
+                        statusIcon.style.background = 'rgba(124, 58, 237, 0.3)';
+                        statusIcon.style.color = '#A78BFA';
+                        statusIcon.innerHTML = '<i data-lucide="moon" style="width: 20px; height: 20px;"></i>';
+                        statusTitle.innerHTML = '<span style="color: #A78BFA;">ABSENSI RONDA TERCATAT: ' + (tap.user ? tap.user.name : 'Warga') + ' (' + (tap.user ? tap.user.rt : '') + ')</span>';
+                        statusDesc.textContent = 'Kehadiran petugas ronda malam tercatat di buku kontrol keamanan.';
+                        if (extraAction) extraAction.style.display = 'none';
+                    } else if (tap.mode === 'bank_sampah') {
+                        var saldoText = tap.bank_sampah ? tap.bank_sampah.saldo_formatted : 'Rp 0';
+                        statusCard.style.background = 'rgba(22, 134, 93, 0.2)';
+                        statusCard.style.borderColor = '#16865D';
+                        statusIcon.style.background = 'rgba(22, 134, 93, 0.3)';
+                        statusIcon.style.color = '#34D399';
+                        statusIcon.innerHTML = '<i data-lucide="recycle" style="width: 20px; height: 20px;"></i>';
+                        statusTitle.innerHTML = '<span class="text-success">NASABAH TERIDENTIFIKASI: ' + (tap.user ? tap.user.name : 'Warga') + ' (' + (tap.user ? tap.user.rt : '') + ')</span>';
+                        statusDesc.textContent = 'Saldo Tabungan Sampah: ' + saldoText;
+                        if (extraAction) {
+                            extraAction.style.display = 'block';
+                            extraAction.innerHTML = '<a href="{{ route('bank-sampah') }}" class="btn btn-sm btn-success rounded-pill px-3 fw-bold shadow-sm">Lanjut Input Setoran Sampah &rarr;</a>';
+                        }
+                    } else if (tap.mode === 'register') {
+                        statusCard.style.background = 'rgba(217, 119, 6, 0.2)';
+                        statusCard.style.borderColor = '#D97706';
+                        statusIcon.style.background = 'rgba(217, 119, 6, 0.3)';
+                        statusIcon.style.color = '#FBBF24';
+                        statusIcon.innerHTML = '<i data-lucide="check" style="width: 20px; height: 20px;"></i>';
+                        statusTitle.innerHTML = '<span style="color: #FBBF24;">KARTU BERHASIL DIDAFTARKAN: ' + (tap.user ? tap.user.name : '') + '</span>';
+                        statusDesc.textContent = 'UID ' + tap.rfid_uid + ' berhasil dipasangkan ke akun warga.';
+                        if (extraAction) extraAction.style.display = 'none';
+                    }
+                } else {
+                    statusCard.style.background = 'rgba(239, 68, 68, 0.2)';
+                    statusCard.style.borderColor = '#EF4444';
+                    statusIcon.style.background = 'rgba(239, 68, 68, 0.3)';
+                    statusIcon.style.color = '#F87171';
+                    statusIcon.innerHTML = '<i data-lucide="alert-triangle" style="width: 20px; height: 20px;"></i>';
+                    statusTitle.innerHTML = '<span class="text-danger">AKSES DITOLAK: Kartu Asing / Tidak Terdaftar</span>';
+                    statusDesc.textContent = 'UID: ' + tap.rfid_uid + ' — ' + tap.reason;
+                    if (extraAction) extraAction.style.display = 'none';
+                }
+
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+
+                if (tap.mode === 'register') {
+                    setTimeout(function() { location.reload(); }, 2000);
+                }
+            }
+
+            setInterval(updateLiveStatus, 2000);
+        })();
+        @endif
     });
 </script>
 @endpush

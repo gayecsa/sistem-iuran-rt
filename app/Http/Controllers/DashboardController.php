@@ -26,6 +26,8 @@ use App\Models\PembayaranIuran;
 use App\Models\Cctv;
 use App\Models\CctvAccessRequest;
 use App\Models\ActivityLog;
+use App\Models\IotDevice;
+use App\Models\PortalGateLog;
 
 class DashboardController extends Controller
 {
@@ -1206,7 +1208,7 @@ class DashboardController extends Controller
     public function ronda(Request $request)
     {
         $user = Auth::user();
-        $activeTab = in_array($request->query('tab'), ['cctv', 'lapor', 'riwayat']) ? $request->query('tab') : 'cctv';
+        $activeTab = in_array($request->query('tab'), ['cctv', 'lapor', 'riwayat', 'portal']) ? $request->query('tab') : 'cctv';
 
         $allCctvs = Cctv::where('aktif', true)->orderBy('rt')->get();
 
@@ -1306,6 +1308,34 @@ class DashboardController extends Controller
         }
         $laporanKeamananList = $laporanKeamananQuery->get();
 
+        // Data untuk Tab 4: Portal Gerbang & IoT RW 013
+        $isPengurus = ($user->role === 'super_admin' || $user->role === 'admin' || $user->isRw() || $user->isRt());
+        $iotDevice = IotDevice::getDefault();
+        $portalLogs = collect();
+        $wargaRfidList = collect();
+
+        if ($isPengurus) {
+            $portalLogs = PortalGateLog::with('user')->latest('tapped_at')->take(50)->get();
+            if ($user->role === 'super_admin' || $user->role === 'admin' || $user->isRw()) {
+                $wargaRfidList = User::whereIn('role', ['warga', 'rt', 'rw', 'admin', 'bendahara'])
+                    ->where('status', 'approved')
+                    ->orderBy('rt_number')
+                    ->orderBy('name')
+                    ->get(['id', 'name', 'email', 'role', 'rt_number', 'house_number', 'rfid_uid']);
+            } else {
+                $cleanRt = str_pad($user->clean_rt_number, 3, '0', STR_PAD_LEFT);
+                $wargaRfidList = User::whereIn('role', ['warga', 'rt'])
+                    ->where('status', 'approved')
+                    ->where(function($q) use ($cleanRt) {
+                        $q->where('rt_number', $cleanRt)->orWhere('rt_number', intval($cleanRt));
+                    })
+                    ->orderBy('name')
+                    ->get(['id', 'name', 'email', 'role', 'rt_number', 'house_number', 'rfid_uid']);
+            }
+        } else {
+            $portalLogs = PortalGateLog::where('user_id', $user->id)->latest('tapped_at')->take(20)->get();
+        }
+
         return view('ronda.index', compact(
             'user',
             'cctvs',
@@ -1319,8 +1349,149 @@ class DashboardController extends Controller
             'urgentWarnings',
             'daruratCount',
             'segeraCount',
-            'recentKondusifWarnings'
+            'recentKondusifWarnings',
+            'isPengurus',
+            'iotDevice',
+            'portalLogs',
+            'wargaRfidList'
         ));
+    }
+
+    public function setPortalMode(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user->isSuperAdmin() && !$user->isRw() && !$user->isRt()) {
+            return back()->with('error', 'Anda tidak memiliki hak akses untuk mengubah mode portal.');
+        }
+
+        $request->validate([
+            'mode' => 'required|in:portal,ronda,bank_sampah,register',
+            'target_user_id' => 'nullable|exists:users,id',
+        ]);
+
+        $device = IotDevice::getDefault();
+        $targetUserId = null;
+
+        if ($request->mode === 'register') {
+            if (!$request->target_user_id) {
+                return back()->with('error', 'Silakan pilih warga yang akan didaftarkan kartunya.');
+            }
+
+            $targetUser = User::findOrFail($request->target_user_id);
+
+            if ($user->isRt() && !$user->isRw() && !$user->isSuperAdmin()) {
+                $cleanRt = str_pad($user->clean_rt_number, 3, '0', STR_PAD_LEFT);
+                $targetRt = str_pad($targetUser->clean_rt_number ?? $targetUser->rt_number, 3, '0', STR_PAD_LEFT);
+                if ($cleanRt !== $targetRt) {
+                    return back()->with('error', 'Ketua RT hanya berhak mendaftarkan warga di wilayah RT-nya.');
+                }
+            }
+
+            $targetUserId = $targetUser->id;
+        }
+
+        $device->update([
+            'mode' => $request->mode,
+            'target_user_id' => $targetUserId,
+        ]);
+
+        $modeLabels = [
+            'portal' => 'Portal Gerbang Masuk',
+            'ronda' => 'Absensi Ronda Malam',
+            'bank_sampah' => 'Identifikasi Bank Sampah',
+            'register' => 'Registrasi Kartu Baru',
+        ];
+
+        ActivityLog::record(
+            'keamanan',
+            'portal.mode_changed',
+            "Mode perangkat IoT {$device->device_code} diubah menjadi: " . ($modeLabels[$request->mode] ?? $request->mode),
+            ['mode' => $request->mode, 'target_user_id' => $targetUserId, 'actor' => $user->name]
+        );
+
+        return redirect()->route('ronda.index', ['tab' => 'portal'])
+            ->with('success', 'Mode perangkat berhasil diubah menjadi: ' . ($modeLabels[$request->mode] ?? $request->mode));
+    }
+
+    public function manualRegisterPortal(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user->isSuperAdmin() && !$user->isRw() && !$user->isRt()) {
+            return back()->with('error', 'Anda tidak memiliki hak akses.');
+        }
+
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'rfid_uid' => 'required|string|min:4|max:50',
+        ]);
+
+        $rawUid = (string) $request->input('rfid_uid');
+        $uid = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $rawUid));
+        if (empty($uid)) {
+            return back()->with('error', 'UID RFID tidak boleh kosong dan harus karakter alfanumerik.');
+        }
+
+        $targetUser = User::findOrFail($request->user_id);
+
+        if ($user->isRt() && !$user->isRw() && !$user->isSuperAdmin()) {
+            $cleanRt = str_pad($user->clean_rt_number, 3, '0', STR_PAD_LEFT);
+            $targetRt = str_pad($targetUser->clean_rt_number ?? $targetUser->rt_number, 3, '0', STR_PAD_LEFT);
+            if ($cleanRt !== $targetRt) {
+                return back()->with('error', 'Ketua RT hanya dapat mendaftarkan kartu untuk warga di wilayah RT-nya.');
+            }
+        }
+
+        $existing = User::where('rfid_uid', $uid)->where('id', '!=', $targetUser->id)->first();
+        if ($existing) {
+            return back()->with('error', "UID {$uid} sudah digunakan oleh warga {$existing->name} (RT {$existing->rt_number}).");
+        }
+
+        $targetUser->update(['rfid_uid' => $uid]);
+
+        ActivityLog::record(
+            'keamanan',
+            'portal.rfid_manual_registered',
+            "Input manual RFID ({$uid}) untuk warga {$targetUser->name} oleh {$user->name}",
+            ['uid' => $uid, 'user_id' => $targetUser->id]
+        );
+
+        return redirect()->route('ronda.index', ['tab' => 'portal'])
+            ->with('success', "Kartu RFID berhasil disimpan untuk {$targetUser->name}.");
+    }
+
+    public function unlinkPortalRfid(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user->isSuperAdmin() && !$user->isRw() && !$user->isRt()) {
+            return back()->with('error', 'Anda tidak memiliki hak akses.');
+        }
+
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        $targetUser = User::findOrFail($request->user_id);
+
+        if ($user->isRt() && !$user->isRw() && !$user->isSuperAdmin()) {
+            $cleanRt = str_pad($user->clean_rt_number, 3, '0', STR_PAD_LEFT);
+            $targetRt = str_pad($targetUser->clean_rt_number ?? $targetUser->rt_number, 3, '0', STR_PAD_LEFT);
+            if ($cleanRt !== $targetRt) {
+                return back()->with('error', 'Ketua RT hanya dapat mencabut kartu warga di wilayah RT-nya.');
+            }
+        }
+
+        $oldUid = $targetUser->rfid_uid;
+        $targetUser->update(['rfid_uid' => null]);
+
+        ActivityLog::record(
+            'keamanan',
+            'portal.rfid_unlinked',
+            "Pencabutan kartu RFID ({$oldUid}) milik {$targetUser->name} oleh {$user->name}",
+            ['old_uid' => $oldUid, 'user_id' => $targetUser->id]
+        );
+
+        return redirect()->route('ronda.index', ['tab' => 'portal'])
+            ->with('success', "Kartu RFID milik {$targetUser->name} berhasil dicabut.");
     }
 
     public function storeLaporKeamanan(Request $request)

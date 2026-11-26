@@ -197,6 +197,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/ronda/cctv-request/{id}/approve-rt', [DashboardController::class, 'approveCctvRequestRt'])->name('ronda.cctv-request.approve-rt');
     Route::post('/ronda/cctv-request/{id}/approve-rw', [DashboardController::class, 'approveCctvRequestRw'])->name('ronda.cctv-request.approve-rw');
     Route::post('/ronda/cctv-request/{id}/reject', [DashboardController::class, 'rejectCctvRequest'])->name('ronda.cctv-request.reject');
+    Route::post('/ronda/portal/set-mode', [DashboardController::class, 'setPortalMode'])->name('ronda.portal.set-mode');
+    Route::post('/ronda/portal/manual-register', [DashboardController::class, 'manualRegisterPortal'])->name('ronda.portal.manual-register');
+    Route::post('/ronda/portal/unlink', [DashboardController::class, 'unlinkPortalRfid'])->name('ronda.portal.unlink');
     Route::get('/pengaduan', [DashboardController::class, 'pengaduan'])->name('pengaduan.index');
     Route::post('/pengaduan', [DashboardController::class, 'storePengaduan'])->name('pengaduan.store');
     Route::patch('/pengaduan/{id}/status', [DashboardController::class, 'updateStatusPengaduan'])->name('pengaduan.status');
@@ -400,4 +403,10 @@ Route::middleware('auth')->group(function () {
         Route::put('/cctv/{cctv}', [CctvController::class, 'update'])->name('cctv.update');
         Route::delete('/cctv/{cctv}', [CctvController::class, 'destroy'])->name('cctv.destroy');
     });
+});
+
+// --- API KHUSUS IOT ESP32 GERBANG & RFID RW 013 (BEBAS CSRF, DIPROTEKSI API KEY) ---
+Route::prefix('api/iot/portal')->group(function () {
+    Route::post('/tap', [\App\Http\Controllers\Api\PortalIotController::class, 'tap'])->name('api.iot.portal.tap');
+    Route::get('/live-status', [\App\Http\Controllers\Api\PortalIotController::class, 'liveStatus'])->name('api.iot.portal.live_status');
 });

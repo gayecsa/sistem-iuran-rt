@@ -51,6 +51,7 @@ class User extends Authenticatable
         'dokumen_ktp_path',
         'dokumen_pendukung_path',
         'last_login_at',
+        'rfid_uid',
         'notification_preferences',
         'privacy_settings',
     ];
@@ -158,6 +159,25 @@ class User extends Authenticatable
     public function perkembanganBalita()
     {
         return $this->hasMany(PerkembanganBalita::class, 'user_id');
+    }
+
+    public function portalLogs()
+    {
+        return $this->hasMany(PortalGateLog::class, 'user_id');
+    }
+
+    public function getMaskedRfidUidAttribute(): string
+    {
+        $uid = trim($this->rfid_uid ?? '');
+        if (!$uid) return '-';
+        $len = strlen($uid);
+        if ($len <= 4) return '***' . $uid;
+        if ($len >= 12) {
+            // e-KTP 7-byte (14 hex chars): 04A1******D4E5
+            return substr($uid, 0, 4) . '******' . substr($uid, -4);
+        }
+        // RFID 4-byte (8 hex chars): A1****D4
+        return substr($uid, 0, 2) . '****' . substr($uid, -2);
     }
 
     // ======================================================================

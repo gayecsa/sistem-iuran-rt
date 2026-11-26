@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'iot' => [
+        'key' => env('IOT_PORTAL_KEY', 'haven-rw013-gate-key-2026'),
+    ],
+
 ];

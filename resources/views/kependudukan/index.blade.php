@@ -356,9 +356,34 @@
                                     <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 small fw-semibold">
                                         {{ $w->status_verifikasi ?: 'Terdaftar' }}
                                     </span>
+                                    @if($user->isRw() || $user->isRt() || $user->isSuperAdmin())
+                                        <div class="mt-1">
+                                            @if($w->rfid_uid)
+                                                <span class="badge bg-success-subtle text-success border border-success border-opacity-25 px-2 py-0.5 rounded-pill" style="font-size: 0.7rem;" title="UID: {{ $w->masked_rfid_uid }}">
+                                                    <i data-lucide="nfc" style="width: 11px; height: 11px; display: inline-block; vertical-align: -1px;"></i> e-KTP / RFID Terdaftar
+                                                </span>
+                                            @else
+                                                <span class="badge bg-secondary-subtle text-muted border border-secondary border-opacity-25 px-2 py-0.5 rounded-pill" style="font-size: 0.7rem;">
+                                                    Belum Rekam e-KTP
+                                                </span>
+                                            @endif
+                                        </div>
+                                    @endif
                                 </td>
                                 <td class="pe-4 text-end">
                                     <div class="d-flex align-items-center justify-content-end gap-1">
+                                        @if($user->isRw() || $user->isRt() || $user->isSuperAdmin())
+                                            <button type="button" class="btn btn-sm btn-outline-warning text-dark rounded-pill px-2.5 py-1 fw-bold btn-rekam-ektp" 
+                                                data-id="{{ $w->id }}" 
+                                                data-name="{{ $w->name }}" 
+                                                data-rt="{{ $w->clean_rt_label ?? 'RT ' . str_pad($w->rt_number, 3, '0', STR_PAD_LEFT) }}"
+                                                data-uid="{{ $w->rfid_uid ?? '' }}"
+                                                data-masked-uid="{{ $w->masked_rfid_uid }}"
+                                                title="Rekam atau perbarui chip e-KTP / RFID warga">
+                                                <i data-lucide="radio" style="width: 13px; height: 13px; display: inline-block; vertical-align: -2px;"></i>
+                                                <span class="d-none d-xl-inline">Rekam e-KTP</span>
+                                            </button>
+                                        @endif
                                         <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold btn-quickview-warga" data-id="{{ $w->id }}">
                                             Detail
                                         </button>
@@ -1163,6 +1188,125 @@
     </div>
 </div>
 
+<!-- Modal Rekam / Pindai e-KTP Fisik -->
+<div class="modal fade" id="modalRekamEktp" tabindex="-1" aria-labelledby="modalRekamEktpLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header border-bottom p-4" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #fff;">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="p-2.5 rounded-3 bg-warning text-dark d-flex align-items-center justify-content-center shadow-sm" style="width: 44px; height: 44px;">
+                        <i data-lucide="nfc" style="width: 24px; height: 24px;"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0 text-white" id="modalRekamEktpLabel">Rekam e-KTP / Kartu RFID Warga</h5>
+                        <small class="text-white-50">Integrasi ESP32 Reader RW 013 (MFRC522)</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <!-- Info Warga -->
+                <div class="p-3 rounded-3 mb-3 bg-light border">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <strong id="rekamWargaName" class="text-dark fs-6">-</strong>
+                        <span id="rekamWargaRt" class="badge bg-primary text-white rounded-pill px-2.5 py-1 small">RT -</span>
+                    </div>
+                    <div class="small text-muted d-flex align-items-center gap-2">
+                        <span>Status Kartu:</span>
+                        <strong id="rekamCurrentUid" class="font-monospace text-dark">-</strong>
+                    </div>
+                </div>
+
+                <!-- Disclaimer Privasi Resmi Kemendagri -->
+                <div class="alert alert-info border-0 rounded-3 mb-3 p-3 d-flex gap-2.5">
+                    <i data-lucide="shield-check" class="text-primary flex-shrink-0" style="width: 20px; height: 20px; margin-top: 2px;"></i>
+                    <div class="small text-dark">
+                        <strong>Kepatuhan Privasi Data e-KTP:</strong> Sistem hanya membaca <em>nomor seri unik (UID)</em> publik chip RFID/e-KTP fisik (4-byte atau 7-byte). Sistem sama sekali <u>tidak</u> membaca atau menyimpan data biometrik/terenkripsi Kemendagri.
+                    </div>
+                </div>
+
+                <!-- Tab Pilihan: Scan Reader vs Input Manual -->
+                <ul class="nav nav-pills nav-fill mb-3 gap-2" id="rekamPillsTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active rounded-pill fw-bold btn-sm py-2" id="pills-scan-tab" data-bs-toggle="pill" data-bs-target="#pills-scan" type="button" role="tab">
+                            <i data-lucide="radio" style="width: 14px; height: 14px; display: inline-block; vertical-align: -2px;"></i> Pindai Reader ESP32
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link rounded-pill fw-bold btn-sm py-2" id="pills-manual-tab" data-bs-toggle="pill" data-bs-target="#pills-manual" type="button" role="tab">
+                            <i data-lucide="keyboard" style="width: 14px; height: 14px; display: inline-block; vertical-align: -2px;"></i> Input Manual UID
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="rekamPillsTabContent">
+                    <!-- Tab Scan Reader -->
+                    <div class="tab-pane fade show active" id="pills-scan" role="tabpanel">
+                        <div id="scanIdleState" class="text-center py-3">
+                            <div class="p-3 rounded-circle bg-light d-inline-flex mb-3 border">
+                                <i data-lucide="rss" style="width: 36px; height: 36px; color: var(--wm-primary);"></i>
+                            </div>
+                            <p class="text-muted small mb-3">
+                                Klik tombol di bawah untuk mengaktifkan mode rekam pada reader gerbang ESP32. Warga cukup menempelkan e-KTP fisik atau kartu RFID.
+                            </p>
+                            <button type="button" id="btnStartScanMode" class="btn btn-warning text-dark fw-bold rounded-pill px-4 shadow-sm">
+                                <i data-lucide="play" style="width: 15px; height: 15px; display: inline-block; vertical-align: -2px;"></i>
+                                Aktifkan Mode Standby Reader
+                            </button>
+                        </div>
+
+                        <div id="scanWaitingState" class="text-center py-3" style="display: none;">
+                            <div class="spinner-grow text-warning mb-3" style="width: 3rem; height: 3rem;" role="status">
+                                <span class="visually-hidden">Scanning...</span>
+                            </div>
+                            <h6 class="fw-bold text-dark mb-1">Menunggu Tap e-KTP pada Reader...</h6>
+                            <p class="text-muted small mb-3">
+                                Tempelkan fisik e-KTP / kartu RFID ke reader perangkat <strong class="text-dark">GATE-01</strong>. Sistem sedang memantau secara real-time.
+                            </p>
+                            <div class="d-flex justify-content-center gap-2">
+                                <button type="button" id="btnCancelScanMode" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-semibold">
+                                    Batalkan Pindai
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="scanSuccessState" class="text-center py-3" style="display: none;">
+                            <div class="p-3 rounded-circle bg-success bg-opacity-10 text-success d-inline-flex mb-2">
+                                <i data-lucide="check-circle" style="width: 40px; height: 40px;"></i>
+                            </div>
+                            <h6 class="fw-bold text-success mb-1">e-KTP Berhasil Direkam!</h6>
+                            <div class="p-2 bg-light rounded-3 my-2 font-monospace fw-bold text-dark" id="scanResultUidText">-</div>
+                            <p class="text-muted small mb-0">Halaman akan diperbarui otomatis dalam sekejap...</p>
+                        </div>
+                    </div>
+
+                    <!-- Tab Manual Input -->
+                    <div class="tab-pane fade" id="pills-manual" role="tabpanel">
+                        <form action="{{ route('ronda.portal.manual-register') }}" method="POST" id="formManualRegister">
+                            @csrf
+                            <input type="hidden" name="user_id" id="manualUserId" value="">
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold text-muted">Nomor Seri UID (Hexadecimal):</label>
+                                <input type="text" name="rfid_uid" id="manualRfidInput" class="form-control font-monospace text-uppercase" placeholder="Contoh: 04A1B2C3D4E5F6 (e-KTP) atau A1B2C3D4" maxlength="50" required>
+                                <div class="form-text small">
+                                    Dukungan otomatis: <strong>7-byte (14 hex) e-KTP asli</strong> atau <strong>4-byte (8 hex) RFID standar</strong>.
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold btn-sm">
+                                <i data-lucide="save" style="width: 14px; height: 14px; display: inline-block; vertical-align: -2px;"></i>
+                                Simpan UID Manual
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-top bg-light">
+                <button type="button" class="btn btn-secondary rounded-pill px-4 btn-sm" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         if (typeof lucide !== 'undefined') {
@@ -1211,6 +1355,152 @@
                     });
             });
         });
+
+        // ======================================================================
+        // HANDLER MODAL REKAM e-KTP / RFID WARGA
+        // ======================================================================
+        var modalRekamEl = document.getElementById('modalRekamEktp');
+        var bsModalRekam = modalRekamEl ? new bootstrap.Modal(modalRekamEl) : null;
+        var currentRekamUserId = null;
+        var rekamPollTimer = null;
+
+        function resetRekamModalStates() {
+            if (rekamPollTimer) {
+                clearInterval(rekamPollTimer);
+                rekamPollTimer = null;
+            }
+            var idleEl = document.getElementById('scanIdleState');
+            var waitEl = document.getElementById('scanWaitingState');
+            var succEl = document.getElementById('scanSuccessState');
+            if (idleEl) idleEl.style.display = 'block';
+            if (waitEl) waitEl.style.display = 'none';
+            if (succEl) succEl.style.display = 'none';
+        }
+
+        if (modalRekamEl) {
+            modalRekamEl.addEventListener('hidden.bs.modal', function () {
+                resetRekamModalStates();
+            });
+        }
+
+        document.querySelectorAll('.btn-rekam-ektp').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var id = this.getAttribute('data-id');
+                var name = this.getAttribute('data-name');
+                var rt = this.getAttribute('data-rt');
+                var uid = this.getAttribute('data-uid');
+                var maskedUid = this.getAttribute('data-masked-uid');
+
+                currentRekamUserId = id;
+                document.getElementById('rekamWargaName').textContent = name;
+                document.getElementById('rekamWargaRt').textContent = rt;
+                document.getElementById('rekamCurrentUid').textContent = uid ? maskedUid + ' (' + uid + ')' : 'Belum Ada';
+                document.getElementById('manualUserId').value = id;
+                document.getElementById('manualRfidInput').value = uid || '';
+
+                resetRekamModalStates();
+                if (bsModalRekam) {
+                    bsModalRekam.show();
+                }
+            });
+        });
+
+        var btnStartScan = document.getElementById('btnStartScanMode');
+        if (btnStartScan) {
+            btnStartScan.addEventListener('click', function () {
+                if (!currentRekamUserId) return;
+
+                btnStartScan.disabled = true;
+                btnStartScan.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Mengaktifkan...';
+
+                var csrfToken = document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').getAttribute('content') : '';
+
+                var formData = new FormData();
+                formData.append('mode', 'register');
+                formData.append('target_user_id', currentRekamUserId);
+                if (csrfToken) {
+                    formData.append('_token', csrfToken);
+                }
+
+                fetch('{{ route("ronda.portal.set-mode") }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: formData
+                })
+                .then(function (res) { return res.json().catch(function() { return {}; }); })
+                .then(function () {
+                    btnStartScan.disabled = false;
+                    btnStartScan.innerHTML = '<i data-lucide="play" style="width: 15px; height: 15px; display: inline-block; vertical-align: -2px;"></i> Aktifkan Mode Standby Reader';
+                    
+                    document.getElementById('scanIdleState').style.display = 'none';
+                    document.getElementById('scanWaitingState').style.display = 'block';
+
+                    // Mulai polling status reader ESP32 tiap 2 detik
+                    startRekamPolling();
+                })
+                .catch(function () {
+                    // Fallback jika respons redirect/HTML
+                    btnStartScan.disabled = false;
+                    document.getElementById('scanIdleState').style.display = 'none';
+                    document.getElementById('scanWaitingState').style.display = 'block';
+                    startRekamPolling();
+                });
+            });
+        }
+
+        var btnCancelScan = document.getElementById('btnCancelScanMode');
+        if (btnCancelScan) {
+            btnCancelScan.addEventListener('click', function () {
+                var csrfToken = document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').getAttribute('content') : '';
+                var formData = new FormData();
+                formData.append('mode', 'portal');
+                if (csrfToken) formData.append('_token', csrfToken);
+
+                fetch('{{ route("ronda.portal.set-mode") }}', {
+                    method: 'POST',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': csrfToken },
+                    body: formData
+                }).finally(function () {
+                    resetRekamModalStates();
+                });
+            });
+        }
+
+        function startRekamPolling() {
+            if (rekamPollTimer) clearInterval(rekamPollTimer);
+
+            rekamPollTimer = setInterval(function () {
+                fetch('{{ route("api.iot.portal.live-status") }}')
+                    .then(function (res) { return res.json(); })
+                    .then(function (data) {
+                        if (!data || !data.device) return;
+
+                        // Jika mode alat sudah kembali ke portal dan ada log granted terbaru
+                        if (data.device.mode === 'portal') {
+                            var latestLog = data.latest_log;
+                            if (latestLog && String(latestLog.user_id) === String(currentRekamUserId)) {
+                                clearInterval(rekamPollTimer);
+                                rekamPollTimer = null;
+
+                                document.getElementById('scanWaitingState').style.display = 'none';
+                                var succEl = document.getElementById('scanSuccessState');
+                                if (succEl) succEl.style.display = 'block';
+                                document.getElementById('scanResultUidText').textContent = 'UID: ' + latestLog.rfid_uid;
+
+                                setTimeout(function () {
+                                    window.location.reload();
+                                }, 1500);
+                            }
+                        }
+                    })
+                    .catch(function (err) {
+                        console.error('Polling error:', err);
+                    });
+            }, 2000);
+        }
     });
 </script>
 @endsection
