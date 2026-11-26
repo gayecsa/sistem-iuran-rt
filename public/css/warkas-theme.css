@@ -394,6 +394,8 @@ body.sidebar-collapsed .wm-main-content {
     display: flex;
     align-items: center;
     gap: 16px;
+    min-width: 0;
+    flex: 1 1 auto;
 }
 
 .wm-hamburger {
@@ -408,6 +410,7 @@ body.sidebar-collapsed .wm-main-content {
     color: var(--wm-text);
     cursor: pointer;
     transition: all 0.2s;
+    flex-shrink: 0;
 }
 
 .wm-hamburger:hover {
@@ -419,6 +422,7 @@ body.sidebar-collapsed .wm-main-content {
 .wm-topbar-title {
     display: flex;
     flex-direction: column;
+    min-width: 0;
 }
 
 .wm-topbar-title h6 {
@@ -586,6 +590,14 @@ body.sidebar-collapsed .wm-main-content {
     .wm-topbar {
         left: 0 !important;
         padding: 0 16px;
+    }
+    
+    .wm-topbar-left {
+        gap: 10px;
+    }
+    
+    .wm-topbar-right {
+        gap: 8px;
     }
     
     .wm-main-content {

@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Haven — Safe Space, Seamless Service</title>
-    <meta name="description" content="Haven – Safe Space, Seamless Service. Sistem Informasi dan Layanan Terpadu RW 013 Sukamiskin Arcamanik Bandung. One Billing, Surat Digital, Ronda CCTV, dan Pelayanan Warga.">
+    <title>Haven Portal — Safe Space, Seamless Service</title>
+    <meta name="description" content="Haven Portal – Safe Space, Seamless Service. Sistem Informasi dan Layanan Terpadu RW 013 Sukamiskin Arcamanik Bandung. One Billing, Surat Digital, Ronda CCTV, dan Pelayanan Warga.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -634,7 +634,7 @@
                 </defs>
             </svg>
             <div>
-                <strong>Haven</strong>
+                <strong>Haven Portal</strong>
                 <small style="font-weight: 600; color: var(--secondary); letter-spacing: 0.3px;">Safe Space, Seamless Service</small>
             </div>
         </a>
@@ -666,7 +666,7 @@
         <section class="hero">
             <div>
                 <span class="hero-badge">
-                    <i class="fas fa-shield-halved"></i> HAVEN &bull; SAFE SPACE, SEAMLESS SERVICE
+                    <i class="fas fa-shield-halved"></i> HAVEN PORTAL &bull; SAFE SPACE, SEAMLESS SERVICE
                 </span>
                 <h1>Pelayanan Mudah, <span>Warga Sejahtera</span></h1>
                 <div class="underline"></div>
@@ -678,7 +678,7 @@
                 @endif
 
                 <p class="lead">
-                    Selamat datang di <strong>Haven</strong>. Portal digital terintegrasi warga RW 013 Kelurahan Sukamiskin, Kecamatan Arcamanik, Kota Bandung. Nikmati kemudahan iuran terpadu, surat pengantar digital, pemantauan keamanan lingkungan, hingga etalase UMKM warga.
+                    Selamat datang di <strong>Haven Portal</strong>. Portal digital terintegrasi warga RW 013 Kelurahan Sukamiskin, Kecamatan Arcamanik, Kota Bandung. Nikmati kemudahan iuran terpadu, surat pengantar digital, pemantauan keamanan lingkungan, hingga etalase UMKM warga.
                 </p>
 
                 <div class="cta-group">
@@ -968,12 +968,12 @@
                         </defs>
                     </svg>
                     <div>
-                        <strong>Haven</strong>
+                        <strong>Haven Portal</strong>
                         <small style="font-weight: 600; color: var(--secondary); letter-spacing: 0.3px;">Safe Space, Seamless Service</small>
                     </div>
                 </div>
                 <p>
-                    Haven — Sistem Tata Kelola &amp; Pelayanan Warga Terpadu RW 013. Menghadirkan lingkungan rukun warga yang modern, transparan, aman, dan berdaya saing di <strong style="color: var(--secondary);">havenportal.id</strong>.
+                    Haven Portal — Sistem Tata Kelola &amp; Pelayanan Warga Terpadu RW 013. Menghadirkan lingkungan rukun warga yang modern, transparan, aman, dan berdaya saing di <strong style="color: var(--secondary);">havenportal.mehape.com</strong>.
                 </p>
                 <div style="display: flex; gap: 8px; margin-top: 12px;">
                     <a href="{{ route('login') }}" class="btn btn-soft" style="padding: 8px 14px; font-size: .8rem;">
@@ -1027,7 +1027,7 @@
         </div>
 
         <div class="footer-bottom">
-            &copy; {{ date('Y') }} Haven &bull; Safe Space, Seamless Service &bull; havenportal.id &bull; Rukun Warga 013, Kelurahan Sukamiskin, Kecamatan Arcamanik, Kota Bandung 40293. Seluruh hak cipta dilindungi.
+            &copy; {{ date('Y') }} Haven Portal &bull; Safe Space, Seamless Service &bull; havenportal.mehape.com &bull; Rukun Warga 013, Kelurahan Sukamiskin, Kecamatan Arcamanik, Kota Bandung 40293. Seluruh hak cipta dilindungi.
         </div>
     </div>
 </footer>

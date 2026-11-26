@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@hasSection('title')@yield('title') | Haven @else{{ $title ?? 'Dashboard' }} | Haven @endif</title>
+    <title>@hasSection('title')@yield('title') | Haven Portal @else{{ $title ?? 'Dashboard' }} | Haven Portal @endif</title>
     
     <!-- Google Fonts: Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -61,7 +61,7 @@
     <aside class="wm-sidebar" id="sidebarMenu" aria-label="Navigasi Utama">
         <!-- Sidebar Brand Header -->
         <div class="wm-sidebar-brand">
-            <a href="{{ route('dashboard') }}" class="wm-brand-link" title="Haven — Safe Space, Seamless Service">
+            <a href="{{ route('dashboard') }}" class="wm-brand-link" title="Haven Portal — Safe Space, Seamless Service">
                 <div class="wm-brand-icon" style="background: transparent; box-shadow: none; width: 38px; height: 38px;">
                     <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="width: 38px; height: 38px;">
                         <rect width="64" height="64" rx="16" fill="url(#havenGrad)"/>
@@ -76,7 +76,7 @@
                     </svg>
                 </div>
                 <div class="wm-brand-info">
-                    <span class="wm-brand-name" style="letter-spacing: -0.3px;">Haven</span>
+                    <span class="wm-brand-name" style="letter-spacing: -0.3px;">Haven Portal</span>
                     <span class="wm-brand-sub" style="font-size: 0.60rem; letter-spacing: 0.4px; color: #93C5FD; text-transform: uppercase;">Safe Space, Seamless Service</span>
                 </div>
             </a>
@@ -576,8 +576,17 @@
 
             <!-- Brand Sapaan & Wilayah -->
             <div class="wm-topbar-title">
-                <h6>RW 013 &bull; Kelurahan Sukamiskin, Kec. Arcamanik, Kota Bandung 40293</h6>
-                <small class="d-none d-sm-inline">Sistem Koordinasi & Pelayanan Terpadu Warga</small>
+                {{-- Laptop / Desktop (>= 768px): Haven Portal • RW 013 Sukamiskin --}}
+                <div class="d-none d-md-block text-truncate">
+                    <h6 class="mb-0 text-truncate">Haven Portal &bull; RW 013 Sukamiskin</h6>
+                    <small class="d-block text-truncate">Sistem Koordinasi &amp; Pelayanan Terpadu Warga</small>
+                </div>
+
+                {{-- HP / Mobile (< 768px): Ringkas 1 baris Haven Portal • RW 013 --}}
+                <div class="d-md-none text-truncate" style="max-width: 100%;">
+                    <h6 class="mb-0 text-truncate" style="font-size: 0.95rem; line-height: 1.2;">Haven Portal <span class="fw-semibold" style="font-size: 0.80rem; opacity: 0.85;">&bull; RW 013</span></h6>
+                    <small class="d-block text-truncate" style="font-size: 0.68rem; line-height: 1.15;">RW 013 Sukamiskin</small>
+                </div>
             </div>
         </div>
 
@@ -952,7 +961,7 @@
 
         <!-- Footer RW 013 -->
         <footer class="text-center py-4 mt-5 text-muted small" style="border-top: 1px solid var(--wm-border);">
-            <p class="mb-1 fw-semibold">&copy; {{ date('Y') }} Haven &bull; Safe Space, Seamless Service &bull; havenportal.id</p>
+            <p class="mb-1 fw-semibold">&copy; {{ date('Y') }} Haven Portal &bull; Safe Space, Seamless Service &bull; havenportal.mehape.com</p>
             <p class="mb-0 text-secondary" style="font-size: 0.74rem;">Sistem Koordinasi &amp; Pelayanan Terpadu RW 013, Kelurahan Sukamiskin, Kec. Arcamanik, Kota Bandung 40293.</p>
         </footer>
     </main>

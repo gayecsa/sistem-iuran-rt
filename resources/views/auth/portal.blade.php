@@ -9,8 +9,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Haven — Safe Space, Seamless Service</title>
-    <meta name="description" content="Haven – Safe Space, Seamless Service. Sistem Informasi dan Layanan Terpadu RW 013 Kel. Sukamiskin, Kec. Arcamanik, Bandung. Masuk atau daftar untuk mengakses layanan warga.">
+    <title>Haven Portal — Safe Space, Seamless Service</title>
+    <meta name="description" content="Haven Portal – Safe Space, Seamless Service. Sistem Informasi dan Layanan Terpadu RW 013 Kel. Sukamiskin, Kec. Arcamanik, Bandung. Masuk atau daftar untuk mengakses layanan warga.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -518,12 +518,12 @@ $logoSvg = '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/s
         <div class="brand-top">
             <div class="brand-logo-badge">
                 {!! $logoSvg !!}
-                <span>HAVEN</span>
+                <span>HAVEN PORTAL</span>
             </div>
 
             <h1>Safe Space, <span>Seamless Service</span></h1>
             <p class="desc">
-                Selamat datang di Haven. Portal digital terintegrasi warga RW 013 Sukamiskin Arcamanik untuk kenyamanan, transparansi keuangan, dan pelayanan prima.
+                Selamat datang di Haven Portal. Portal digital terintegrasi warga RW 013 Sukamiskin Arcamanik untuk kenyamanan, transparansi keuangan, dan pelayanan prima.
             </p>
 
             <div class="brand-features">
@@ -561,7 +561,7 @@ $logoSvg = '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/s
 
         <div class="brand-footer">
             <i class="fas fa-shield-halved" style="color: #6EE7B7;"></i>
-            <span>Haven &bull; havenportal.id &bull; RW 013 Sukamiskin</span>
+            <span>Haven Portal &bull; havenportal.mehape.com &bull; RW 013 Sukamiskin</span>
         </div>
     </section>
 
@@ -581,7 +581,7 @@ $logoSvg = '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/s
 
         <div class="form-header">
             {!! $logoSvg !!}
-            <h2>Haven</h2>
+            <h2>Haven Portal</h2>
             <small style="font-weight: 600; letter-spacing: 0.3px; color: var(--secondary);">Safe Space, Seamless Service</small>
         </div>
 
@@ -781,7 +781,7 @@ $logoSvg = '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/s
         document.querySelectorAll('.tab').forEach(function (b) { b.classList.toggle('active', b.dataset.tab === tab); });
         document.querySelectorAll('.pane').forEach(function (p) { p.classList.toggle('active', p.id === 'pane-' + tab); });
         wrapper.classList.toggle('wide', tab === 'register');
-        document.title = (tab === 'register' ? 'Daftar Akun' : 'Masuk') + ' | Haven — Safe Space, Seamless Service';
+        document.title = (tab === 'register' ? 'Daftar Akun' : 'Masuk') + ' | Haven Portal — Safe Space, Seamless Service';
         if (location.pathname !== '/') history.replaceState(null, '', urls[tab]);
     }
     document.querySelectorAll('[data-tab]').forEach(function (b) {
