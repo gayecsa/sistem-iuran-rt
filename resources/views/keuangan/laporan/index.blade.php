@@ -9,7 +9,7 @@
         <div>
             <h1 class="text-2xl font-extrabold text-slate-800 tracking-tight">Laporan Perbendaharaan & Keuangan</h1>
             <p class="text-xs text-slate-500 mt-1">
-                Laporan komprehensif penerimaan, belanja operasional, dan surplus/defisit RW 013 Sukamiskin
+                Laporan komprehensif penerimaan, belanja operasional, dan surplus/defisit RW 013 Suryatmajan
             </p>
         </div>
 

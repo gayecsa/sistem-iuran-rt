@@ -160,7 +160,7 @@
                     @elseif($isRt)
                         Pengaduan warga di wilayah otoritas <strong>RT {{ $user->clean_rt_label }}</strong> yang perlu diverifikasi dan ditindaklanjuti.
                     @else
-                        Monitoring dan tindak lanjut seluruh pengaduan warga se-wilayah RW 013 Sukamiskin.
+                        Monitoring dan tindak lanjut seluruh pengaduan warga se-wilayah RW 013 Suryatmajan.
                     @endif
                 </small>
             </div>
@@ -330,7 +330,7 @@
                             </div>
                             <div class="col-6">
                                 <span class="text-muted d-block" style="font-size: 0.72rem;">Alamat:</span>
-                                <span class="text-dark text-truncate d-block" title="{{ $user->address }}">{{ $user->address ?: 'Warga Sukamiskin Arcamanik' }}</span>
+                                <span class="text-dark text-truncate d-block" title="{{ $user->address }}">{{ $user->address ?: 'Warga Suryatmajan Danurejan' }}</span>
                             </div>
                         </div>
                         <small class="text-muted d-block mt-2" style="font-size: 0.72rem;">
@@ -370,7 +370,7 @@
                         </div>
                         <div class="col-12">
                             <label class="form-label fw-bold small text-dark">Lokasi Spesifik / Patokan <span class="text-danger">*</span></label>
-                            <input type="text" name="lokasi" class="form-control rounded-3" placeholder="Contoh: Depan Musholla RT 003, Jl. Sukamiskin Raya No. 12" required maxlength="255">
+                            <input type="text" name="lokasi" class="form-control rounded-3" placeholder="Contoh: Depan Musholla RT 003, Jl. Suryatmajan Raya No. 12" required maxlength="255">
                         </div>
                         <div class="col-12">
                             <label class="form-label fw-bold small text-dark">Deskripsi Pengaduan Lengkap <span class="text-danger">*</span></label>

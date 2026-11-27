@@ -266,7 +266,7 @@
                     </div>
                 </div>
                 <div class="p-3 bg-light rounded-3 small">
-                    <div class="mb-1"><strong>Alamat:</strong> {{ $transaksi->user->address ?? 'RT ' . $transaksi->rt_number . ' RW 013 Sukamiskin' }}</div>
+                    <div class="mb-1"><strong>Alamat:</strong> {{ $transaksi->user->address ?? 'RT ' . $transaksi->rt_number . ' RW 013 Suryatmajan' }}</div>
                     <div><strong>Metode:</strong> {{ $transaksi->metode_penyerahan === 'drop_point' ? 'Antar ke Drop Point' : 'Jemput ke Rumah' }}</div>
                 </div>
             </div>

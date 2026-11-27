@@ -22,7 +22,7 @@
                                 <i data-lucide="shield-check" style="width: 14px; height: 14px; vertical-align: middle;" class="text-primary me-1"></i> SISTEM KEPENDUDUKAN TERPADU
                             </span>
                             <span class="badge rounded-pill text-white fw-bold px-3 py-1" style="background: rgba(255,255,255,0.2) !important;">
-                                RW 013 Sukamiskin Arcamanik
+                                RW 013 Suryatmajan Danurejan
                             </span>
                         @endif
                     </div>
@@ -153,7 +153,7 @@
             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
                 <span class="small fw-bold text-muted text-uppercase">
                     <i data-lucide="map-pin" style="width: 14px; height: 14px; vertical-align: middle;" class="text-primary me-1"></i>
-                    Sebaran Penduduk per RT (RW 013 Sukamiskin Arcamanik):
+                    Sebaran Penduduk per RT (RW 013 Suryatmajan Danurejan):
                 </span>
                 <span class="small text-muted">Total 8 RT Aktif</span>
             </div>
@@ -297,7 +297,7 @@
             </div>
 
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
+                <table class="table table-hover align-middle mb-0" style="min-width: 850px;">
                     <thead class="table-light">
                         <tr>
                             <th class="ps-4">Nama Lengkap & NIK</th>
@@ -472,7 +472,7 @@
             </div>
 
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
+                <table class="table table-hover align-middle mb-0" style="min-width: 850px;">
                     <thead class="table-light">
                         <tr>
                             <th class="ps-4">Nomor Kartu Keluarga</th>
@@ -615,7 +615,7 @@
             </div>
 
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
+                <table class="table table-hover align-middle mb-0" style="min-width: 850px;">
                     <thead class="table-light">
                         <tr>
                             <th class="ps-4">No. Kartu Keluarga</th>
@@ -785,7 +785,7 @@
             </div>
 
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
+                <table class="table table-hover align-middle mb-0" style="min-width: 850px;">
                     <thead class="table-light">
                         <tr class="text-muted small text-uppercase" style="font-size: 0.76rem; letter-spacing: 0.5px;">
                             <th class="ps-4">No</th>
@@ -937,7 +937,7 @@
             </div>
 
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
+                <table class="table table-hover align-middle mb-0" style="min-width: 850px;">
                     <thead class="table-light">
                         <tr class="text-muted small text-uppercase" style="font-size: 0.76rem; letter-spacing: 0.5px;">
                             <th class="ps-4">Kode & Tanggal</th>
@@ -1344,7 +1344,7 @@
                         document.getElementById('qvHubungan').textContent = data.hubungan_keluarga;
                         document.getElementById('qvRt').textContent = data.rt;
                         document.getElementById('qvGenderAge').textContent = data.gender + ' (' + (data.age ? data.age + ' Tahun' : '-') + ')';
-                        document.getElementById('qvTtl').textContent = (data.tempat_lahir || 'Bandung') + ', ' + data.tanggal_lahir;
+                        document.getElementById('qvTtl').textContent = (data.tempat_lahir || 'Yogyakarta') + ', ' + data.tanggal_lahir;
                         document.getElementById('qvAgamaKawin').textContent = (data.agama || 'Islam') + ' / ' + (data.status_perkawinan || 'Belum Kawin');
                         document.getElementById('qvPekerjaan').textContent = data.pekerjaan || '-';
                         document.getElementById('qvPhone').textContent = data.phone;

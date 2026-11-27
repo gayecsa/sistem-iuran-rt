@@ -184,7 +184,7 @@
 
                             <p class="text-xs text-slate-500 mb-0 flex items-center gap-1.5">
                                 <i data-lucide="map-pin" class="w-3.5 h-3.5 text-rose-500 shrink-0"></i>
-                                <span>{{ $u->alamat }}, Kelurahan Sukamiskin, Arcamanik</span>
+                                <span>{{ $u->alamat }}, Kelurahan Suryatmajan, Danurejan</span>
                             </p>
 
                             <div class="flex flex-wrap items-center gap-3 text-xs text-slate-600 pt-1">
@@ -249,7 +249,7 @@
                 </div>
                 <h3 class="text-lg font-bold text-slate-900 mb-1">Anda Belum Memiliki Usaha Terdaftar</h3>
                 <p class="text-sm text-slate-500 max-w-md mx-auto mb-5">
-                    Daftarkan usaha kuliner, warung, toko, atau jasa Anda agar dapat dipromosikan ke seluruh warga RW 013 Sukamiskin.
+                    Daftarkan usaha kuliner, warung, toko, atau jasa Anda agar dapat dipromosikan ke seluruh warga RW 013 Suryatmajan.
                 </p>
                 <button type="button" onclick="openDaftarModal()" class="px-5 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs hover:bg-blue-700 shadow-sm inline-flex items-center gap-2">
                     <i data-lucide="plus-circle" class="w-4 h-4"></i>

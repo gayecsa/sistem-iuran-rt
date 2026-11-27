@@ -140,7 +140,7 @@
                         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Rekening Otonom Terpisah
                     </span>
                     <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-400/25 text-blue-100 border border-white/20">
-                        RW 013 Sukamiskin &bull; {{ $totalKkRt }} KK Terdaftar
+                        RW 013 Suryatmajan &bull; {{ $totalKkRt }} KK Terdaftar
                     </span>
                 </div>
                 <h1 class="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight">Manajemen Keuangan RT {{ $rtStr }}</h1>

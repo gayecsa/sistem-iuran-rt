@@ -28,7 +28,7 @@ class MockPaymentGatewayAdapter implements PaymentGatewayInterface
     public function createPaymentPayload(TagihanKeluarga $tagihan, float $nominal, array $metadata = []): array
     {
         $reference = 'MOCK-' . strtoupper(Str::random(12));
-        $qrisCode = '00020101021226670016ID.WARKAS.MACHI0118' . $tagihan->nomor_tagihan . '520458125303360540' . number_format($nominal, 0, '', '') . '5802ID5913WARKAS MACHI6007BANDUNG62070703A016304';
+        $qrisCode = '00020101021226670016ID.WARKAS.MACHI0118' . $tagihan->nomor_tagihan . '520458125303360540' . number_format($nominal, 0, '', '') . '5802ID5913WARKAS MACHI6007Yogyakarta62070703A016304';
 
         // Hitung simulasi alokasi split settlement
         $splitPlan = [];

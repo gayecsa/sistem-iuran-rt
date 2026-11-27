@@ -50,7 +50,7 @@
                     </span>
                 </div>
                 <h4 class="fw-bold text-dark mb-0">Lembar Tagihan Iuran Warga Terpadu</h4>
-                <small class="text-muted">Rukun Warga 013 Kelurahan Sukamiskin, Kecamatan Arcamanik Kota Bandung</small>
+                <small class="text-muted">Rukun Warga 013 Kelurahan Suryatmajan, Kecamatan Danurejan Kota Yogyakarta</small>
             </div>
 
             <div class="d-flex align-items-center gap-2">
@@ -92,7 +92,7 @@
                             </div>
                             <div class="col-12 mt-2">
                                 <span class="text-muted small d-block">Alamat Tempat Tinggal:</span>
-                                <span class="text-dark small">{{ $tagihan->kartuKeluarga->alamat ?? 'Jl. Pacantel No. 12, Sukamiskin' }}</span>
+                                <span class="text-dark small">{{ $tagihan->kartuKeluarga->alamat ?? 'Jl. Pacantel No. 12, Suryatmajan' }}</span>
                             </div>
                         </div>
                     </div>

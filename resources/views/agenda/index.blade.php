@@ -12,7 +12,7 @@
                             <i data-lucide="calendar-days" style="width: 14px; height: 14px; vertical-align: middle;"></i> MANAJEMEN AGENDA & KOORDINASI
                         </span>
                         <span class="badge bg-white text-dark fw-bold px-3 py-1 rounded-pill opacity-90" style="font-size: 11px;">
-                            RW 013 Sukamiskin Arcamanik
+                            RW 013 Suryatmajan Danurejan
                         </span>
                         <span class="badge bg-success text-white fw-bold px-3 py-1 rounded-pill" style="font-size: 11px;">
                             <i data-lucide="shield-check" style="width: 12px; height: 12px; vertical-align: middle;"></i> Monitoring Sentral 8 RT

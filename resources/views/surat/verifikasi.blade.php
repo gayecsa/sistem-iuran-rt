@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verifikasi Keaslian Surat Resmi | RW 013 Sukamiskin Bandung</title>
+    <title>Verifikasi Keaslian Surat Resmi | RW 013 Suryatmajan Yogyakarta</title>
     
     <!-- Google Fonts: Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -47,7 +47,7 @@
                 </div>
                 <h4 class="fw-bold mb-1">DOKUMEN RESMI TERVERIFIKASI SAH</h4>
                 <p class="mb-0 text-white text-opacity-90 small">
-                    Sistem Penerbitan Surat Terpadu Haven &bull; RW 013 Kota Bandung
+                    Sistem Penerbitan Surat Terpadu Haven &bull; RW 013 Kota Yogyakarta
                 </p>
                 <span class="badge bg-white text-success fw-bold px-3 py-1 rounded-pill mt-2 shadow-sm" style="font-size: 0.8rem;">
                     Status: ASLI & TERCATAT RESMI
@@ -58,8 +58,8 @@
                 {{-- KOP KECIL IDENTITAS WILAYAH --}}
                 <div class="text-center pb-3 mb-3 border-bottom">
                     <div class="text-muted text-uppercase small fw-semibold" style="letter-spacing: 0.5px;">Wilayah Penerbit:</div>
-                    <div class="fw-bold text-dark fs-6">Kelurahan Sukamiskin &bull; Kecamatan Arcamanik</div>
-                    <div class="text-secondary small">Rukun Warga 013 &bull; Rukun Tetangga {{ $letter->rt }} Kota Bandung 40293</div>
+                    <div class="fw-bold text-dark fs-6">Kelurahan Suryatmajan &bull; Kecamatan Danurejan</div>
+                    <div class="text-secondary small">Rukun Warga 013 &bull; Rukun Tetangga {{ $letter->rt }} Kota Yogyakarta 55213</div>
                 </div>
 
                 {{-- RINCIAN DOKUMEN (DATA PRIVASI DILINDUNGI) --}}
@@ -134,7 +134,7 @@
 
                 <div class="text-center border-top pt-3 text-muted small" style="font-size: 0.75rem;">
                     <i data-lucide="lock" style="width:12px;height:12px;" class="me-1"></i>
-                    Informasi ini diterbitkan resmi oleh Pengurus RW 013 Sukamiskin Arcamanik Bandung sebagai verifikasi keaslian dokumen tanda tangan digital warga.
+                    Informasi ini diterbitkan resmi oleh Pengurus RW 013 Suryatmajan Danurejan Yogyakarta sebagai verifikasi keaslian dokumen tanda tangan digital warga.
                 </div>
             </div>
         @else
@@ -154,7 +154,7 @@
                     Dokumen dengan kode identifikasi di atas tidak ditemukan di basis data resmi Haven RW 013, atau permohonan surat tersebut belum memperoleh persetujuan lengkap dari Ketua RT dan Ketua RW.
                 </p>
                 <div class="p-3 rounded bg-light border small text-secondary mx-auto mb-4" style="max-width: 480px;">
-                    Pastikan Anda memindai QR Code langsung dari surat resmi cetak ber-Kop Sukamiskin Arcamanik yang telah bertanda tangan ganda RT dan RW 013.
+                    Pastikan Anda memindai QR Code langsung dari surat resmi cetak ber-Kop Suryatmajan Danurejan yang telah bertanda tangan ganda RT dan RW 013.
                 </div>
                 <a href="{{ url('/') }}" class="btn btn-outline-secondary btn-sm px-4 py-2 rounded-3">
                     Kembali ke Beranda

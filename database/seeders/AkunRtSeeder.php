@@ -21,7 +21,7 @@ class AkunRtSeeder extends Seeder
                 'name' => 'Ethan Williams',
                 'email' => 'rt001@warkas.machi.id',
                 'phone' => '081298440101',
-                'address' => 'Jl. Pacuan Kuda No. 12, RT 001 / RW 013, Kelurahan Sukamiskin, Kec. Arcamanik, Kota Bandung 40293',
+                'address' => 'Jl. Malioboro No. 12, RT 001 / RW 013, Kelurahan Suryatmajan, Kec. Danurejan, Kota Yogyakarta 55213',
                 'house_number' => '012',
             ],
             [
@@ -29,7 +29,7 @@ class AkunRtSeeder extends Seeder
                 'name' => 'Alexander Hayes',
                 'email' => 'rt002@warkas.machi.id',
                 'phone' => '081388210202',
-                'address' => 'Jl. Arcamanik Endah No. 8, RT 002 / RW 013, Kelurahan Sukamiskin, Kec. Arcamanik, Kota Bandung 40293',
+                'address' => 'Jl. Sosrowijayan No. 8, RT 002 / RW 013, Kelurahan Suryatmajan, Kec. Danurejan, Kota Yogyakarta 55213',
                 'house_number' => '008',
             ],
             [
@@ -37,7 +37,7 @@ class AkunRtSeeder extends Seeder
                 'name' => 'Lucas Mitchell',
                 'email' => 'rt003@warkas.machi.id',
                 'phone' => '081577660303',
-                'address' => 'Jl. Golf Raya No. 15, RT 003 / RW 013, Kelurahan Sukamiskin, Kec. Arcamanik, Kota Bandung 40293',
+                'address' => 'Jl. Mataram No. 15, RT 003 / RW 013, Kelurahan Suryatmajan, Kec. Danurejan, Kota Yogyakarta 55213',
                 'house_number' => '015',
             ],
             [
@@ -45,7 +45,7 @@ class AkunRtSeeder extends Seeder
                 'name' => 'Sebastian Blake',
                 'email' => 'rt004@warkas.machi.id',
                 'phone' => '081844550404',
-                'address' => 'Jl. Cisaranten Kulon No. 21, RT 004 / RW 013, Kelurahan Sukamiskin, Kec. Arcamanik, Kota Bandung 40293',
+                'address' => 'Jl. Cisaranten Kulon No. 21, RT 004 / RW 013, Kelurahan Suryatmajan, Kec. Danurejan, Kota Yogyakarta 55213',
                 'house_number' => '021',
             ],
             [
@@ -53,7 +53,7 @@ class AkunRtSeeder extends Seeder
                 'name' => 'Noah Anderson',
                 'email' => 'rt005@warkas.machi.id',
                 'phone' => '081911220505',
-                'address' => 'Jl. Puri Asri No. 14, RT 005 / RW 013, Kelurahan Sukamiskin, Kec. Arcamanik, Kota Bandung 40293',
+                'address' => 'Jl. Puri Asri No. 14, RT 005 / RW 013, Kelurahan Suryatmajan, Kec. Danurejan, Kota Yogyakarta 55213',
                 'house_number' => '014',
             ],
             [
@@ -61,7 +61,7 @@ class AkunRtSeeder extends Seeder
                 'name' => 'Adrian Parker',
                 'email' => 'rt006@warkas.machi.id',
                 'phone' => '081233440606',
-                'address' => 'Jl. Bina Asih No. 19, RT 006 / RW 013, Kelurahan Sukamiskin, Kec. Arcamanik, Kota Bandung 40293',
+                'address' => 'Jl. Bina Asih No. 19, RT 006 / RW 013, Kelurahan Suryatmajan, Kec. Danurejan, Kota Yogyakarta 55213',
                 'house_number' => '019',
             ],
             [
@@ -69,7 +69,7 @@ class AkunRtSeeder extends Seeder
                 'name' => 'Oliver James',
                 'email' => 'rt007@warkas.machi.id',
                 'phone' => '081722330707',
-                'address' => 'Jl. Terusan Jakarta No. 30, RT 007 / RW 013, Kelurahan Sukamiskin, Kec. Arcamanik, Kota Bandung 40293',
+                'address' => 'Jl. Terusan Jakarta No. 30, RT 007 / RW 013, Kelurahan Suryatmajan, Kec. Danurejan, Kota Yogyakarta 55213',
                 'house_number' => '030',
             ],
             [
@@ -77,7 +77,7 @@ class AkunRtSeeder extends Seeder
                 'name' => 'Nathaniel Reed',
                 'email' => 'rt008@warkas.machi.id',
                 'phone' => '081199880808',
-                'address' => 'Jl. Sukamiskin Raya No. 45, RT 008 / RW 013, Kelurahan Sukamiskin, Kec. Arcamanik, Kota Bandung 40293',
+                'address' => 'Jl. Suryatmajan Raya No. 45, RT 008 / RW 013, Kelurahan Suryatmajan, Kec. Danurejan, Kota Yogyakarta 55213',
                 'house_number' => '045',
             ],
         ];

@@ -21,7 +21,7 @@
     }
 </script>
 
-{{-- Leaflet.js CSS & JS untuk Peta Navigasi Interaktif Rute Sukamiskin --}}
+{{-- Leaflet.js CSS & JS untuk Peta Navigasi Interaktif Rute Suryatmajan --}}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -70,7 +70,7 @@
             <div class="max-w-3xl space-y-3">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-semibold text-blue-100">
                     <i data-lucide="shopping-bag" class="w-3.5 h-3.5 text-amber-300"></i>
-                    <span>Marketplace Lokal Warga RW 013 Sukamiskin, Arcamanik</span>
+                    <span>Marketplace Lokal Warga RW 013 Suryatmajan, Danurejan</span>
                 </div>
 
                 <h1 class="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-white leading-tight">
@@ -272,7 +272,7 @@
 
                     <div class="flex items-center gap-2 text-xs sm:text-sm text-slate-200">
                         <i data-lucide="map-pin" class="w-4 h-4 text-rose-400 shrink-0"></i>
-                        <span id="detailAlamatUmkm" class="truncate">Alamat UMKM Sukamiskin Arcamanik</span>
+                        <span id="detailAlamatUmkm" class="truncate">Alamat UMKM Suryatmajan Danurejan</span>
                     </div>
                 </div>
             </div>
@@ -357,7 +357,7 @@
                         <div class="flex items-center gap-3">
                             <i data-lucide="navigation-2" class="w-6 h-6 text-blue-600 shrink-0"></i>
                             <div>
-                                <span class="text-xs font-bold block">Rute dari Wilayah RW 013 Sukamiskin</span>
+                                <span class="text-xs font-bold block">Rute dari Wilayah RW 013 Suryatmajan</span>
                                 <span class="text-xs text-blue-700">Estimasi ~3-5 menit berkendara / jalan kaki di lingkungan RW 013</span>
                             </div>
                         </div>
@@ -375,7 +375,7 @@
             <div class="modal-footer bg-slate-50 border-t border-slate-200 px-6 py-4 flex flex-wrap items-center justify-between gap-3">
                 <div class="text-xs text-slate-500">
                     <i data-lucide="shield-check" class="w-3.5 h-3.5 inline text-emerald-600"></i>
-                    <span>Terverifikasi resmi di RW 013 Sukamiskin, Arcamanik</span>
+                    <span>Terverifikasi resmi di RW 013 Suryatmajan, Danurejan</span>
                 </div>
 
                 <div class="flex items-center gap-2">
@@ -421,7 +421,7 @@
                     </div>
                     <div>
                         <h5 class="modal-title font-bold text-lg text-white" id="modalDaftarUmkmLabel">Pendaftaran Usaha UMKM Warga</h5>
-                        <p class="text-xs text-blue-100 mb-0">Daftarkan usaha Anda di katalog marketplace RW 013 Sukamiskin</p>
+                        <p class="text-xs text-blue-100 mb-0">Daftarkan usaha Anda di katalog marketplace RW 013 Suryatmajan</p>
                     </div>
                 </div>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -492,8 +492,8 @@
 
                         {{-- Alamat Lengkap --}}
                         <div class="col-span-1 sm:col-span-2">
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Alamat Tempat Usaha (Sukamiskin, Arcamanik) <span class="text-rose-500">*</span></label>
-                            <textarea name="alamat" rows="2" required placeholder="Contoh: Jl. Pacuan Kuda No. 12, RT 001 / RW 013, Kelurahan Sukamiskin" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:border-blue-600 outline-none">{{ auth()->user()->address }}</textarea>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Alamat Tempat Usaha (Suryatmajan, Danurejan) <span class="text-rose-500">*</span></label>
+                            <textarea name="alamat" rows="2" required placeholder="Contoh: Jl. Malioboro No. 12, RT 001 / RW 013, Kelurahan Suryatmajan" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:border-blue-600 outline-none">{{ auth()->user()->address }}</textarea>
                         </div>
 
                         {{-- Foto Usaha --}}
@@ -633,9 +633,9 @@
     let umkmMarker = null;
     let polylineRoute = null;
 
-    // Koordinat Rumah Warga RW 013 Sukamiskin
-    const userLat = -6.915000;
-    const userLng = 107.679000;
+    // Koordinat Rumah Warga RW 013 Suryatmajan
+    const userLat = -7.792600;
+    const userLng = 110.365800;
 
     document.addEventListener('DOMContentLoaded', function () {
         if (window.lucide) {
@@ -859,7 +859,7 @@
 
     function renderDetailModal(d) {
         document.getElementById('detailNamaUmkm').textContent = d.nama_umkm;
-        document.getElementById('detailAlamatUmkm').textContent = `${d.alamat}, ${d.rt_number} / RW ${d.rw_number}, Sukamiskin, Arcamanik`;
+        document.getElementById('detailAlamatUmkm').textContent = `${d.alamat}, ${d.rt_number} / RW ${d.rw_number}, Suryatmajan, Danurejan`;
         document.getElementById('detailFotoCover').src = d.foto_url;
         document.getElementById('detailNamaPemilik').textContent = d.nama_pemilik;
         document.getElementById('detailOwnerAvatar').src = d.owner_avatar;
@@ -1008,7 +1008,7 @@
             leafletMapInstance = L.map('modalLeafletMap').setView([userLat, userLng], 16);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
-                attribution: '&copy; OpenStreetMap RW 013 Sukamiskin'
+                attribution: '&copy; OpenStreetMap RW 013 Suryatmajan'
             }).addTo(leafletMapInstance);
         } else {
             leafletMapInstance.invalidateSize();
@@ -1034,7 +1034,7 @@
 
         userMarker = L.marker([userLat, userLng], { icon: homeIcon })
             .addTo(leafletMapInstance)
-            .bindPopup('<b>Titik Warga RW 013</b><br>Sukamiskin, Bandung');
+            .bindPopup('<b>Titik Warga RW 013</b><br>Suryatmajan, Yogyakarta');
 
         umkmMarker = L.marker([destLat, destLng], { icon: storeIcon })
             .addTo(leafletMapInstance)

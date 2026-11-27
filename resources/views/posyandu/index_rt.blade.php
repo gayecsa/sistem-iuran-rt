@@ -12,14 +12,14 @@
                             <i data-lucide="heart-pulse" style="width: 14px; height: 14px; vertical-align: middle;"></i> OPERASIONAL POSYANDU RT {{ $rtStr }}
                         </span>
                         <span class="badge fw-bold px-3 py-1 rounded-pill hero-badge" style="background: rgba(255, 255, 255, 0.18) !important; color: #FFFFFF !important; border: 1px solid rgba(255, 255, 255, 0.30) !important; font-size: 11px;">
-                            RW 013 Sukamiskin Arcamanik
+                            RW 013 Suryatmajan Danurejan
                         </span>
                     </div>
                     <h2 class="fw-bold mb-2 text-white" style="letter-spacing: -0.5px;">
                         {{ $posyanduUnit->nama_posyandu ?? 'Posyandu Melati 13 Unit RT ' . $rtStr }}
                     </h2>
                     <p class="mb-0 text-white text-opacity-75 lead fs-6">
-                        Pusat pelayanan kesehatan dasar warga RT {{ $rtStr }}: pemantauan tumbuh kembang balita, kesehatan ibu hamil/menyusui, skrining lansia, dan penyuluhan gizi bersama UPTD Puskesmas Arcamanik.
+                        Pusat pelayanan kesehatan dasar warga RT {{ $rtStr }}: pemantauan tumbuh kembang balita, kesehatan ibu hamil/menyusui, skrining lansia, dan penyuluhan gizi bersama UPTD Puskesmas Danurejan.
                     </p>
                 </div>
                 <div class="d-flex align-items-center gap-2 flex-wrap">
@@ -721,7 +721,7 @@
 
                     <div class="mb-3">
                         <label class="form-label fw-semibold small">Mitra Tenaga Medis</label>
-                        <input type="text" name="mitra_nakes" class="form-control" value="Bidan Puskesmas Arcamanik & Kader RT {{ $rtStr }}">
+                        <input type="text" name="mitra_nakes" class="form-control" value="Bidan Puskesmas Danurejan & Kader RT {{ $rtStr }}">
                     </div>
                 </div>
                 <div class="modal-footer border-top p-3">

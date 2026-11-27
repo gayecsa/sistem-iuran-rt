@@ -12,12 +12,12 @@
                             <i data-lucide="shield-check" style="width: 14px; height: 14px; vertical-align: middle;"></i> DASHBOARD MONITORING & EVALUASI
                         </span>
                         <span class="badge fw-bold px-3 py-1 rounded-pill hero-badge" style="background: rgba(255, 255, 255, 0.16) !important; color: #FFFFFF !important; border: 1px solid rgba(255, 255, 255, 0.28) !important; font-size: 11px;">
-                            RW 013 Sukamiskin Arcamanik
+                            RW 013 Suryatmajan Danurejan
                         </span>
                     </div>
                     <h2 class="fw-bold mb-2 text-white" style="letter-spacing: -0.5px;">Pusat Pemantauan Posyandu RW 013</h2>
                     <p class="mb-0 text-white text-opacity-75 lead fs-6">
-                        Monitoring agregat pelayanan Posyandu Melati 13 terpadu pada RT 001 s.d. RT 008, rekapitulasi kehadiran warga, status pelaporan kegiatan, dan koordinasi UPTD Puskesmas Arcamanik.
+                        Monitoring agregat pelayanan Posyandu Melati 13 terpadu pada RT 001 s.d. RT 008, rekapitulasi kehadiran warga, status pelaporan kegiatan, dan koordinasi UPTD Puskesmas Danurejan.
                     </p>
                 </div>
                 <div class="d-flex align-items-center gap-2 flex-wrap">
@@ -117,7 +117,7 @@
             <div>
                 <h5 class="fw-bold mb-1 text-dark">
                     <i data-lucide="activity" class="me-2 text-primary" style="width: 20px; height: 20px; vertical-align: middle;"></i>
-                    Matriks Monitoring Posyandu RT 001 – RT 008 Sukamiskin Arcamanik
+                    Matriks Monitoring Posyandu RT 001 – RT 008 Suryatmajan Danurejan
                 </h5>
                 <p class="mb-0 text-muted small">
                     Pemantauan operasional per wilayah RT. Pengurus RW memantau agregat dan evaluasi tanpa mengubah data operasional RT.

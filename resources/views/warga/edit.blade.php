@@ -165,7 +165,7 @@
                 <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="background: var(--wm-card, #FFFFFF); border: 1px solid var(--wm-border, #E2E8F0) !important;">
                     <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
                         <i data-lucide="map-pin" style="width: 18px; height: 18px; color: #1456A0;"></i>
-                        <h6 class="fw-bold mb-0 text-dark">Alamat Tempat Tinggal (Sukamiskin Arcamanik)</h6>
+                        <h6 class="fw-bold mb-0 text-dark">Alamat Tempat Tinggal (Suryatmajan Danurejan)</h6>
                     </div>
 
                     <div class="row g-3">
@@ -192,7 +192,7 @@
 
                         <div class="col-12">
                             <label class="form-label fw-bold small mb-1">Jalan / Gang</label>
-                            <input type="text" name="gang_jalan" value="{{ old('gang_jalan', $warga->gang_jalan ?? 'Jl. Pacuan Kuda') }}" class="form-control">
+                            <input type="text" name="gang_jalan" value="{{ old('gang_jalan', $warga->gang_jalan ?? 'Jl. Malioboro') }}" class="form-control">
                         </div>
 
                         <div class="col-12">

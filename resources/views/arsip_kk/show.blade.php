@@ -12,7 +12,7 @@
             </div>
             <div>
                 <h3 class="fw-bold mb-1 text-dark" style="color: var(--wm-text) !important;">Berkas Arsip KK Resmi</h3>
-                <p class="text-muted mb-0 small">No. KK: <strong class="font-monospace text-primary">{{ $kk->masked_no_kk }}</strong> &bull; {{ $kk->clean_rt_label }} / RW 013 Sukamiskin Bandung</p>
+                <p class="text-muted mb-0 small">No. KK: <strong class="font-monospace text-primary">{{ $kk->masked_no_kk }}</strong> &bull; {{ $kk->clean_rt_label }} / RW 013 Suryatmajan Yogyakarta</p>
             </div>
         </div>
 
@@ -385,7 +385,7 @@
                         <label class="form-label fw-bold small">Metode Pemeriksaan yang Digunakan <span class="text-danger">*</span></label>
                         <select name="metode_verifikasi" class="form-select" required>
                             <option value="Pemeriksaan Manual Fisik & Legalitas Dokumen Asli Dukcapil" selected>Pemeriksaan Manual Fisik & Legalitas Dokumen Asli Dukcapil</option>
-                            <option value="Verifikasi Web Portal Resmi Disdukcapil Kota Bandung">Verifikasi Web Portal Resmi Disdukcapil Kota Bandung</option>
+                            <option value="Verifikasi Web Portal Resmi Disdukcapil Kota Yogyakarta">Verifikasi Web Portal Resmi Disdukcapil Kota Yogyakarta</option>
                             <option value="Verifikasi Melalui Aplikasi Identitas Kependudukan Digital (IKD)">Verifikasi Melalui Aplikasi Identitas Kependudukan Digital (IKD)</option>
                         </select>
                     </div>

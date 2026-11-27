@@ -412,4 +412,5 @@ Route::middleware('auth')->group(function () {
 Route::prefix('api/iot/portal')->group(function () {
     Route::post('/tap', [\App\Http\Controllers\Api\PortalIotController::class, 'tap'])->name('api.iot.portal.tap');
     Route::get('/live-status', [\App\Http\Controllers\Api\PortalIotController::class, 'liveStatus'])->name('api.iot.portal.live_status');
+    Route::get('/live-status-alt', [\App\Http\Controllers\Api\PortalIotController::class, 'liveStatus'])->name('api.iot.portal.live-status');
 });

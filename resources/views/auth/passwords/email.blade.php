@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Lupa Kata Sandi | Haven Portal — Safe Space, Seamless Service</title>
-    <meta name="description" content="Lupa kata sandi akun Haven Portal RW 013 Sukamiskin. Masukkan email terdaftar Anda untuk menerima tautan pengaturan ulang kata sandi.">
+    <meta name="description" content="Lupa kata sandi akun Haven Portal RW 013 Suryatmajan. Masukkan email terdaftar Anda untuk menerima tautan pengaturan ulang kata sandi.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -400,7 +400,7 @@ $logoSvg = '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/s
 <main class="auth-split-wrapper">
 
     {{-- PANEL KIRI: BRANDING BIRU HAVEN SMART RW 013 --}}
-    <section class="auth-brand-panel" aria-label="Portal Smart RW 013 Sukamiskin">
+    <section class="auth-brand-panel" aria-label="Portal Smart RW 013 Suryatmajan">
         <div class="brand-top">
             <div class="brand-logo-badge">
                 {!! $logoSvg !!}
@@ -409,7 +409,7 @@ $logoSvg = '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/s
 
             <h1>Safe Space, <span>Seamless Service</span></h1>
             <p class="desc">
-                Portal digital terintegrasi warga RW 013 Sukamiskin Arcamanik. Pulihkan akses akun Anda dengan cepat, aman, dan terpercaya.
+                Portal digital terintegrasi warga RW 013 Suryatmajan Danurejan. Pulihkan akses akun Anda dengan cepat, aman, dan terpercaya.
             </p>
 
             <div class="brand-features">
@@ -447,7 +447,7 @@ $logoSvg = '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/s
 
         <div class="brand-footer">
             <i class="fas fa-shield-halved" style="color: #6EE7B7;"></i>
-            <span>Haven Portal &bull; havenportal.mehape.com &bull; RW 013 Sukamiskin</span>
+            <span>Haven Portal &bull; havenportal.mehape.com &bull; RW 013 Suryatmajan</span>
         </div>
     </section>
 

@@ -275,7 +275,7 @@
                         Daftar Permohonan Surat Masuk RW 013
                     </h5>
                     <p class="mb-0 text-muted small">
-                        Daftar berkas warga yang diajukan dari wilayah RT 001 s/d RT 008 Kelurahan Sukamiskin Arcamanik.
+                        Daftar berkas warga yang diajukan dari wilayah RT 001 s/d RT 008 Kelurahan Suryatmajan Danurejan.
                     </p>
                 </div>
             </div>
@@ -842,8 +842,8 @@
                         <div class="p-3 bg-light rounded-3 border" style="font-size: 0.8rem; font-family: 'Times New Roman', serif;">
                             <div class="text-center border-bottom pb-2 mb-2">
                                 <div class="fw-bold" style="font-size: 0.95rem;">RUKUN WARGA 013</div>
-                                <div class="fw-bold" style="font-size: 0.9rem;">KELURAHAN SUKAMISKIN KECAMATAN ARCAMANIK</div>
-                                <div style="font-size: 0.75rem;">KOTA BANDUNG - JAWA BARAT 40293</div>
+                                <div class="fw-bold" style="font-size: 0.9rem;">KELURAHAN Suryatmajan KECAMATAN Danurejan</div>
+                                <div style="font-size: 0.75rem;">Kota Yogyakarta - DI Yogyakarta 55213</div>
                             </div>
                             <div class="text-center fw-bold mb-2 text-decoration-underline" style="font-size: 0.9rem;">
                                 {{ strtoupper($selectedTemplate->nama) }}
@@ -852,7 +852,7 @@
                                 Nomor: {{ $selectedTemplate->kode_klasifikasi }}/RW.013/{{ date('Y') }}
                             </div>
                             <p class="mb-2" style="line-height: 1.5;">
-                                Yang bertanda tangan di bawah ini Ketua Rukun Warga (RW) 013 Kelurahan Sukamiskin Kecamatan Arcamanik Kota Bandung, menerangkan bahwa:
+                                Yang bertanda tangan di bawah ini Ketua Rukun Warga (RW) 013 Kelurahan Suryatmajan Kecamatan Danurejan Kota Yogyakarta, menerangkan bahwa:
                             </p>
                             <div class="ps-3 mb-2">
                                 <div>Nama : <strong>Ahmad Dahlan</strong></div>
@@ -864,7 +864,7 @@
                             </p>
                             <div class="d-flex justify-content-between mt-3 pt-2 text-center" style="font-size: 0.75rem;">
                                 <div>Mengetahui,<br>Ketua RT Terkait<br><br><span class="fw-bold">( .................... )</span></div>
-                                <div>Bandung, {{ date('d F Y') }}<br>Ketua RW 013<br><br><span class="fw-bold">( Bambang Sutrisno )</span></div>
+                                <div>Yogyakarta, {{ date('d F Y') }}<br>Ketua RW 013<br><br><span class="fw-bold">( Bambang Sutrisno )</span></div>
                             </div>
                         </div>
                     </div>
@@ -938,7 +938,7 @@
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <span class="fw-bold text-info small d-flex align-items-center gap-1.5">
                                 <i data-lucide="send" style="width: 16px; height: 16px;"></i>
-                                Pengantar Kelurahan Sukamiskin
+                                Pengantar Kelurahan Suryatmajan
                             </span>
                             <span class="badge bg-info text-white rounded-pill px-2.5">{{ $alurStats['pengantar_kelurahan'] }} Layanan</span>
                         </div>

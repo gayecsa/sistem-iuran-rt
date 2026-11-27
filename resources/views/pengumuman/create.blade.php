@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Buat Pengumuman Baru - RW 013 Sukamiskin')
+@section('title', 'Buat Pengumuman Baru - RW 013 Suryatmajan')
 
 @section('content')
 <!-- Tailwind CDN with Preflight Disabled to Prevent Conflict with Bootstrap & Warkas Theme -->

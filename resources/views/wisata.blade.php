@@ -167,12 +167,12 @@
                     PANDUAN REKREASI &amp; FASILITAS LINGKUNGAN
                 </span>
                 <span class="text-white-50 small">•</span>
-                <span class="text-white small fw-medium">Kelurahan Sukamiskin, Arcamanik</span>
+                <span class="text-white small fw-medium">Kelurahan Suryatmajan, Danurejan</span>
             </div>
             <h3 class="fw-bold mb-1 text-white">Wisata &amp; Fasilitas Terdekat</h3>
             <p class="mb-0 text-white-50 small">
                 <i data-lucide="map-pin" style="width: 14px; height: 14px;" class="me-1"></i>
-                Pusat olahraga, taman kota, rekreasi keluarga, dan wisata alam di sekitar wilayah RW 013 Sukamiskin Arcamanik.
+                Pusat olahraga, taman kota, rekreasi keluarga, dan wisata alam di sekitar wilayah RW 013 Suryatmajan Danurejan.
             </p>
         </div>
 
@@ -330,9 +330,9 @@
         }
 
         const wisataData = @json($wisataList);
-        // Koordinat Acuan Sukamiskin, Arcamanik, Bandung (RW 013)
-        const userLat = -6.915000;
-        const userLng = 107.679000;
+        // Koordinat Acuan Suryatmajan, Danurejan, Yogyakarta (RW 013)
+        const userLat = -7.792600;
+        const userLng = 110.365800;
 
         let leafletWisataMap = null;
         let userMarker = null;

@@ -12,7 +12,7 @@
                             <i data-lucide="leaf" style="width: 14px; height: 14px; vertical-align: middle;"></i> LINGKUNGAN HIJAU & SEJAHTERA
                         </span>
                         <span class="badge fw-bold px-3 py-1 rounded-pill" style="background: rgba(255, 255, 255, 0.16) !important; color: #FFFFFF !important; border: 1px solid rgba(255, 255, 255, 0.28) !important; font-size: 11px;">
-                            RW 013 Sukamiskin Arcamanik
+                            RW 013 Suryatmajan Danurejan
                         </span>
                     </div>
                     <h2 class="fw-bold mb-2 text-white" style="letter-spacing: -0.5px;">Program Bank Sampah Terpadu RW 013</h2>
@@ -406,7 +406,7 @@
             <div>
                 <h5 class="fw-bold mb-1 text-dark">
                     <i data-lucide="map-pin" class="me-2 text-success" style="width: 20px; height: 20px; vertical-align: middle;"></i>
-                    Titik Pengumpulan & Petugas Bank Sampah 8 RT Sukamiskin Arcamanik
+                    Titik Pengumpulan & Petugas Bank Sampah 8 RT Suryatmajan Danurejan
                 </h5>
                 <p class="mb-0 text-muted small">
                     Data unit bank sampah resmi terdaftar per wilayah RT 001 - RT 008 dengan penanggung jawab warga.

@@ -22,7 +22,7 @@
                 </span>
             </h3>
             <p class="text-muted mb-0" style="font-size: 0.9rem;">
-                Wilayah RT {{ $letter->rt }} / RW {{ $letter->rw }}, Kelurahan Sukamiskin, Kecamatan Arcamanik, Kota Bandung.
+                Wilayah RT {{ $letter->rt }} / RW {{ $letter->rw }}, Kelurahan Suryatmajan, Kecamatan Danurejan, Kota Yogyakarta.
             </p>
         </div>
 

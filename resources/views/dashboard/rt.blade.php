@@ -85,14 +85,14 @@
                             Status Laporan ke RW: {{ $lapStatus }}
                         </span>
                     </div>
-                    <p class="text-muted mb-0 small mt-1">
+                    <p class="text-muted mb-0 small mt-1 d-none d-md-block">
                         <i data-lucide="map-pin" style="width: 14px; height: 14px; vertical-align: middle; color: var(--wm-green);"></i>
                         Pusat Pengelolaan Administrasi, Pelayanan Warga & Keuangan Lingkungan {{ $rtLabel }}
                     </p>
                 </div>
             </div>
 
-            <div class="d-flex align-items-center gap-2 flex-wrap">
+            <div class="d-none d-md-flex align-items-center gap-2 flex-wrap">
                 <a href="{{ route('warga.index') }}" class="wm-btn-primary">
                     <i data-lucide="users" style="width: 17px; height: 17px;"></i> Warga {{ $rtLabel }}
                 </a>
@@ -193,9 +193,9 @@
         </div>
 
         <!-- 5 Mini-Kartu Keuangan Terpisah -->
-        <div class="row g-3">
+        <div class="row g-2 g-md-3">
             <!-- 1. Pemasukan RT Bulan Ini -->
-            <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="col-6 col-sm-6 col-md-4 col-lg-2">
                 <div class="p-3 rounded-4 border bg-light text-center h-100">
                     <span class="text-muted small fw-bold text-uppercase d-block" style="font-size: 0.72rem;">Pemasukan RT (Bulan Ini)</span>
                     <h5 class="fw-bold text-success mt-2 mb-1">Rp {{ number_format($pemasukanRtBulanIni ?? 0, 0, ',', '.') }}</h5>
@@ -203,7 +203,7 @@
                 </div>
             </div>
             <!-- 2. Pengeluaran RT Bulan Ini -->
-            <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="col-6 col-sm-6 col-md-4 col-lg-2">
                 <div class="p-3 rounded-4 border bg-light text-center h-100">
                     <span class="text-muted small fw-bold text-uppercase d-block" style="font-size: 0.72rem;">Pengeluaran RT (Bulan Ini)</span>
                     <h5 class="fw-bold text-danger mt-2 mb-1">Rp {{ number_format($pengeluaranRtBulanIni ?? 0, 0, ',', '.') }}</h5>
@@ -211,7 +211,7 @@
                 </div>
             </div>
             <!-- 3. Saldo Kas RT -->
-            <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="col-6 col-sm-6 col-md-4 col-lg-3">
                 <div class="p-3 rounded-4 border h-100 text-center" style="background: #E3F5EC; border-color: rgba(22, 134, 93, 0.4) !important;">
                     <span class="text-success small fw-bold text-uppercase d-block" style="font-size: 0.72rem;">Saldo Kas RT {{ $rtStr }}</span>
                     <h4 class="fw-bold text-success mt-2 mb-1">Rp {{ number_format($totalSaldoOtonomRt ?? 0, 0, ',', '.') }}</h4>
@@ -219,7 +219,7 @@
                 </div>
             </div>
             <!-- 4. Kas Sampah RW -->
-            <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="col-6 col-sm-6 col-md-6 col-lg-3">
                 <div class="p-3 rounded-4 border h-100 text-center" style="background: #EFF6FF; border-color: rgba(59, 130, 246, 0.3) !important;">
                     <span class="text-primary small fw-bold text-uppercase d-block" style="font-size: 0.72rem;">Kas Sampah RW</span>
                     <h4 class="fw-bold text-primary mt-2 mb-1">Rp {{ number_format($saldoKasSampah ?? 0, 0, ',', '.') }}</h4>
@@ -227,7 +227,7 @@
                 </div>
             </div>
             <!-- 5. Kas Keamanan / Ronda -->
-            <div class="col-lg-2 col-md-6 col-sm-12">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-2">
                 <div class="p-3 rounded-4 border bg-light text-center h-100">
                     <span class="text-muted small fw-bold text-uppercase d-block" style="font-size: 0.72rem;">Kas Keamanan / Ronda</span>
                     <h5 class="fw-bold text-dark mt-2 mb-1">Rp {{ number_format($saldoKasKeamanan ?? 0, 0, ',', '.') }}</h5>
@@ -294,9 +294,9 @@
     {{-- ======================================================================
          STATISTIK UTAMA KHUSUS RT (4 KARTU METRIK SIMETRIS & PENUH MELEBAR)
          ====================================================================== --}}
-    <div class="row g-3 mb-4">
+    <div class="row g-2 g-md-3 mb-4">
         <!-- 1. Total Warga RT -->
-        <div class="col-12 col-sm-6 col-xl-3">
+        <div class="col-6 col-sm-6 col-xl-3">
             <div class="rt-kpi-card accent-primary">
                 <div>
                     <div class="d-flex justify-content-between align-items-start mb-2">
@@ -319,7 +319,7 @@
         </div>
 
         <!-- 2. Kepala Keluarga (KK) RT -->
-        <div class="col-12 col-sm-6 col-xl-3">
+        <div class="col-6 col-sm-6 col-xl-3">
             <div class="rt-kpi-card accent-green">
                 <div>
                     <div class="d-flex justify-content-between align-items-start mb-2">
@@ -339,7 +339,7 @@
         </div>
 
         <!-- 3. Warga Aktif RT -->
-        <div class="col-12 col-sm-6 col-xl-3">
+        <div class="col-6 col-sm-6 col-xl-3">
             <div class="rt-kpi-card accent-amber">
                 <div>
                     <div class="d-flex justify-content-between align-items-start mb-2">
@@ -359,7 +359,7 @@
         </div>
 
         <!-- 4. Total Saldo Lingkungan RT -->
-        <div class="col-12 col-sm-6 col-xl-3">
+        <div class="col-6 col-sm-6 col-xl-3">
             <div class="rt-kpi-card accent-blue">
                 <div>
                     <div class="d-flex justify-content-between align-items-start mb-2">

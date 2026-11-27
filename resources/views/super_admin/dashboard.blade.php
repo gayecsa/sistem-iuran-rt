@@ -142,26 +142,26 @@
     <div class="sa-hero-card mb-4" style="background: linear-gradient(135deg, #0F3966 0%, #1456A0 55%, #2878D0 100%) !important; color: #FFFFFF !important; border-radius: 20px; padding: 28px 32px; position: relative; overflow: hidden; border: none; box-shadow: 0 4px 20px rgba(10, 37, 64, 0.15);">
         <div class="row align-items-center">
             <div class="col-lg-8">
-                <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
-                    <span class="badge rounded-pill px-3 py-1.5 fw-bold" style="background: rgba(255,255,255,0.18); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.25); font-size: 0.76rem;">
-                        <i data-lucide="shield" style="width: 13px; height: 13px; vertical-align: middle;"></i> CONTROL CENTER HAVEN
+                <div class="d-flex align-items-center gap-1.5 gap-md-2 mb-2 flex-wrap">
+                    <span class="badge rounded-pill px-2.5 px-md-3 py-1.5 fw-bold" style="background: rgba(255,255,255,0.18); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.25); font-size: 0.72rem;">
+                        <i data-lucide="shield" style="width: 13px; height: 13px; vertical-align: middle;"></i> CONTROL CENTER
                     </span>
-                    <span class="badge rounded-pill px-3 py-1.5 fw-bold" style="background: #16865D; font-size: 0.76rem;">
-                        <i data-lucide="activity" style="width: 13px; height: 13px; vertical-align: middle;"></i> Pembukuan 100% Cocok (Selisih Rp 0)
+                    <span class="badge rounded-pill px-2.5 px-md-3 py-1.5 fw-bold" style="background: #16865D; font-size: 0.72rem;">
+                        <i data-lucide="activity" style="width: 13px; height: 13px; vertical-align: middle;"></i> Selisih Rp 0
                     </span>
-                    <span class="badge rounded-pill px-3 py-1.5 fw-bold" style="background: rgba(255,255,255,0.15); font-size: 0.76rem;">
-                        <i data-lucide="lock" style="width: 13px; height: 13px; vertical-align: middle;"></i> Multi-Role Simulation Active
+                    <span class="badge rounded-pill px-2.5 px-md-3 py-1.5 fw-bold d-none d-sm-inline-flex" style="background: rgba(255,255,255,0.15); font-size: 0.72rem;">
+                        <i data-lucide="lock" style="width: 13px; height: 13px; vertical-align: middle;"></i> Multi-Role Active
                     </span>
                 </div>
 
                 <h2 class="fw-bold tracking-tight mb-2 text-white" style="font-size: 1.85rem;">
                     Pusat Kendali Perancang Sistem (Super Admin)
                 </h2>
-                <p class="text-white-50 mb-4" style="max-width: 680px; font-size: 0.95rem; line-height: 1.55;">
-                    Ruang pengawasan arsitektur, pantau keuangan gabungan wilayah RW 013 Sukamiskin, serta simulator peran terisolasi dengan proteksi otomatis mode Lihat Saja (Read-Only) vs Mode Edit.
+                <p class="text-white-50 mb-3 mb-md-4 d-none d-md-block" style="max-width: 680px; font-size: 0.95rem; line-height: 1.55;">
+                    Ruang pengawasan arsitektur, pantau keuangan gabungan wilayah RW 013 Suryatmajan, serta simulator peran terisolasi dengan proteksi otomatis mode Lihat Saja (Read-Only) vs Mode Edit.
                 </p>
 
-                <div class="d-flex flex-wrap gap-2 pt-1">
+                <div class="d-none d-md-flex flex-wrap gap-2 pt-1">
                     <button type="button" class="btn btn-light rounded-pill px-4 py-2.5 fw-bold d-inline-flex align-items-center gap-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalSwitchRole" style="color: #1456A0; font-size: 0.86rem;">
                         <i data-lucide="shuffle" style="width: 16px; height: 16px;"></i> Mulai Switch Role Sekarang
                     </button>
@@ -172,7 +172,7 @@
             </div>
 
             {{-- Hero Banner Quick Info: Akun Administrator (Kontras Jelas & Rapi) --}}
-            <div class="col-lg-4 mt-4 mt-lg-0">
+            <div class="col-lg-4 mt-4 mt-lg-0 d-none d-md-block">
                 <div class="sa-admin-account-card" style="padding: 22px 24px; background: rgba(10, 30, 58, 0.55) !important; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.25) !important; border-radius: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);">
                     <div class="d-flex align-items-center gap-3 mb-3">
                         <img src="https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=FFFFFF&color=1456A0&bold=true" 
@@ -255,9 +255,9 @@
     {{-- ======================================================================
          2. PANEL STATISTIK MONITOR KESEHATAN SISTEM & KEPENDUDUKAN
          ====================================================================== --}}
-    <div class="row g-4 mb-4">
+    <div class="row g-2 g-md-4 mb-4">
         {{-- Card 1: Total Pengguna --}}
-        <div class="col-12 col-sm-6 col-xl-3">
+        <div class="col-6 col-sm-6 col-xl-3">
             <div class="sa-kpi-card accent-primary">
                 <div>
                     <div class="d-flex justify-content-between align-items-start mb-2">
@@ -279,7 +279,7 @@
         </div>
 
         {{-- Card 2: Total Kepala Keluarga --}}
-        <div class="col-12 col-sm-6 col-xl-3">
+        <div class="col-6 col-sm-6 col-xl-3">
             <div class="sa-kpi-card accent-secondary">
                 <div>
                     <div class="d-flex justify-content-between align-items-start mb-2">
@@ -299,7 +299,7 @@
         </div>
 
         {{-- Card 3: Rekonsiliasi Rekening Buku Kas --}}
-        <div class="col-12 col-sm-6 col-xl-3">
+        <div class="col-6 col-sm-6 col-xl-3">
             <div class="sa-kpi-card accent-green">
                 <div>
                     <div class="d-flex justify-content-between align-items-start mb-2">
@@ -321,7 +321,7 @@
         </div>
 
         {{-- Card 4: Konsolidasi Wilayah --}}
-        <div class="col-12 col-sm-6 col-xl-3">
+        <div class="col-6 col-sm-6 col-xl-3">
             <div class="sa-kpi-card accent-blue">
                 <div>
                     <div class="d-flex justify-content-between align-items-start mb-2">
@@ -365,7 +365,26 @@
             </div>
         </div>
 
-        <div class="p-4 bg-white">
+        {{-- Tampilan Mobile Ringkas Ala GoPay (< 768px) --}}
+        <div class="d-md-none p-3 bg-white">
+            <div class="p-3 rounded-4 border bg-light text-center">
+                <div class="d-flex align-items-center justify-content-center gap-1.5 mb-2 flex-wrap">
+                    <span class="badge bg-primary text-white rounded-pill px-2.5 py-1" style="font-size: 0.72rem;">Ketua RW</span>
+                    <span class="badge bg-success text-white rounded-pill px-2.5 py-1" style="font-size: 0.72rem;">8 Ketua RT</span>
+                    <span class="badge bg-secondary text-white rounded-pill px-2.5 py-1" style="font-size: 0.72rem;">Warga RT 001-008</span>
+                </div>
+                <h6 class="fw-bold text-dark mb-1" style="font-size: 0.9rem;">Simulasi Peran &amp; Uji Coba Akses</h6>
+                <p class="text-muted small mb-3" style="font-size: 0.76rem; line-height: 1.4;">
+                    Pilih peran target untuk mensimulasikan antarmuka dan perizinan sistem dalam <strong>Mode Lihat Saja</strong> atau <strong>Mode Edit</strong>.
+                </p>
+                <button type="button" class="btn btn-primary rounded-pill w-100 fw-bold py-2 shadow-sm d-flex align-items-center justify-content-center gap-2" data-bs-toggle="modal" data-bs-target="#modalSwitchRole" style="background: #1456A0; font-size: 0.84rem;">
+                    <i data-lucide="shuffle" style="width: 16px; height: 16px;"></i> Buka Dialog Switch Role Lengkap
+                </button>
+            </div>
+        </div>
+
+        {{-- Tampilan Desktop (>= 768px) 100% Utuh --}}
+        <div class="p-4 bg-white d-none d-md-block">
             <div class="row g-4">
                 {{-- Opsi 1: Pimpinan RW --}}
                 <div class="col-12 col-lg-4">
@@ -531,7 +550,7 @@
 
         <div class="p-0 bg-white">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0" style="font-size: 0.83rem;">
+                <table class="table table-hover align-middle mb-0" style="min-width: 950px; font-size: 0.83rem;">
                     <thead class="table-light text-muted" style="font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.5px;">
                         <tr>
                             <th class="ps-4 py-3">Nama Buku Kas</th>
@@ -655,7 +674,7 @@
         </div>
 
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0" style="font-size: 0.84rem;">
+            <table class="table table-hover align-middle mb-0" style="min-width: 800px; font-size: 0.84rem;">
                 <thead class="table-light text-uppercase text-muted" style="font-size: 0.74rem;">
                     <tr>
                         <th class="ps-4" style="min-width: 150px;">Waktu &amp; IP</th>

@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('content')
 <!-- Leaflet CSS & JS -->
@@ -33,7 +33,7 @@
 </style>
 
 <div class="container-fluid p-0">
-    <!-- Header Peta Wilayah Bandung -->
+    <!-- Header Peta Wilayah Yogyakarta -->
     <div class="wm-card mb-4" style="background: linear-gradient(135deg, #123766 0%, #1456A0 100%); color: #fff;">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
@@ -41,7 +41,7 @@
                 <h3 class="fw-bold mb-1 text-white">Peta Wilayah & Titik Layanan RW 013</h3>
                 <p class="mb-0 text-white opacity-75 small">
                     <i data-lucide="map-pin" style="width: 14px; height: 14px;" class="me-1"></i>
-                    Kelurahan Sukamiskin, Kecamatan Arcamanik, Kota Bandung 40293 &bull; Peta interaktif koordinat Pos Ronda, Posyandu, Bank Sampah, UMKM, dan Pengaduan.
+                    Kelurahan Suryatmajan, Kecamatan Danurejan, Kota Yogyakarta 55213 &bull; Peta interaktif koordinat Pos Ronda, Posyandu, Bank Sampah, UMKM, dan Pengaduan.
                 </p>
             </div>
             <div class="d-flex gap-2">
@@ -91,7 +91,7 @@
             </div>
         </div>
 
-        <!-- Sidebar Ringkasan Wilayah Sukamiskin -->
+        <!-- Sidebar Ringkasan Wilayah Suryatmajan -->
         <div class="col-lg-3">
             <div class="wm-card h-100 p-3">
                 <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">
@@ -101,13 +101,13 @@
                 <div class="small mb-3">
                     <strong class="d-block text-secondary text-uppercase" style="font-size: 0.7rem;">Wilayah Administrasi:</strong>
                     <span class="text-dark fw-bold d-block">RW 013 (RT 001 - RT 008)</span>
-                    <span class="text-muted d-block">Kel. Sukamiskin, Kec. Arcamanik</span>
-                    <span class="text-muted d-block">Kota Bandung, Jawa Barat 40293</span>
+                    <span class="text-muted d-block">Kel. Suryatmajan, Kec. Danurejan</span>
+                    <span class="text-muted d-block">Kota Yogyakarta, DI Yogyakarta 55213</span>
                 </div>
 
                 <div class="p-2 rounded-3 bg-light border small mb-3">
                     <span class="text-dark fw-semibold d-block mb-1"><i data-lucide="map" class="text-primary me-1" style="width: 14px; height: 14px;"></i> Titik Koordinat Pusat:</span>
-                    <code class="text-primary fw-bold">-6.915000, 107.679000</code>
+                    <code class="text-primary fw-bold">-7.792600, 110.365800</code>
                 </div>
 
                 <h6 class="fw-bold text-dark border-bottom pb-2 mb-2 mt-4" style="font-size: 0.85rem;">Legenda Marker</h6>
@@ -147,9 +147,9 @@
 </div>
 
 <script>
-    const centerBandung = [-6.916000, 107.679000];
+    const centerYogyakarta = [-7.792600, 110.365800];
     const map = L.map('mapRw', {
-        center: centerBandung,
+        center: centerYogyakarta,
         zoom: 16,
         scrollWheelZoom: true
     });
@@ -157,7 +157,7 @@
     // Tile Layer OpenStreetMap
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Sukamiskin Arcamanik Bandung'
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Suryatmajan Danurejan Yogyakarta'
     }).addTo(map);
 
     // Marker Groups
@@ -229,7 +229,7 @@
                         <span class="badge bg-success-subtle text-success" style="font-size: 0.7rem;">${c.status}</span>
                     </div>
                     <h6 class="fw-bold mb-1 text-dark" style="font-size: 0.88rem;">${c.nama}</h6>
-                    <p class="small text-muted mb-1" style="font-size: 0.78rem;"><i class="fas fa-map-marker-alt text-danger me-1"></i>${c.alamat || 'Sukamiskin Arcamanik'}</p>
+                    <p class="small text-muted mb-1" style="font-size: 0.78rem;"><i class="fas fa-map-marker-alt text-danger me-1"></i>${c.alamat || 'Suryatmajan Danurejan'}</p>
                     <div class="p-2 rounded bg-light border small mt-2">
                         <div class="d-flex justify-content-between">
                             <span class="text-muted">Wilayah:</span>
@@ -309,7 +309,7 @@
             const icon = createCustomPin('#d97706', '<i class="fas fa-store"></i>');
             const popup = `
                 <div style="min-width: 240px;">
-                    <span class="badge bg-warning text-dark mb-1">UMKM Khas Bandung</span>
+                    <span class="badge bg-warning text-dark mb-1">UMKM Khas Yogyakarta</span>
                     <h6 class="fw-bold mb-1 text-dark">${u.nama}</h6>
                     <p class="small text-muted mb-1"><i class="fas fa-map-marker-alt text-danger me-1"></i>${u.alamat}</p>
                     <div class="p-2 rounded bg-light border small mt-2">
@@ -359,7 +359,7 @@
     }
 
     function resetMapView() {
-        map.setView(centerBandung, 16);
+        map.setView(centerYogyakarta, 16);
     }
 </script>
 @endsection

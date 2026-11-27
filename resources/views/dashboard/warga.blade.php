@@ -23,14 +23,14 @@
                             No. Rumah: {{ $user->house_number ?? '-' }}
                         </span>
                     </div>
-                    <p class="text-muted mb-0 small mt-1">
+                    <p class="text-muted mb-0 small mt-1 d-none d-md-block">
                         <i data-lucide="home" style="width: 14px; height: 14px; vertical-align: middle; color: var(--wm-green);"></i>
-                        Kelurahan Sukamiskin, Kec. Arcamanik, Kota Bandung 40293 &bull; Layanan Terpadu Iuran, Administrasi Surat, Pengaduan, & Kegiatan Warga
+                        Kelurahan Suryatmajan, Kec. Danurejan, Kota Yogyakarta 55213 &bull; Layanan Terpadu Iuran, Administrasi Surat, Pengaduan, & Kegiatan Warga
                     </p>
                 </div>
             </div>
 
-            <div class="d-flex align-items-center gap-2 flex-wrap">
+            <div class="d-none d-md-flex align-items-center gap-2 flex-wrap">
                 <button type="button" class="btn text-white rounded-pill px-3 py-2 fw-bold shadow-sm d-inline-flex align-items-center gap-2" id="btnScrollToGateGps" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); font-size: 0.88rem;">
                     <i data-lucide="shield-check" style="width: 17px; height: 17px;"></i> Buka Portal (GPS)
                 </button>
@@ -161,9 +161,9 @@
     {{-- ======================================================================
          STATISTIK UTAMA WARGA (4 KARTU METRIK)
          ====================================================================== --}}
-    <div class="row g-3 mb-4">
+    <div class="row g-2 g-md-3 mb-4">
         <!-- 1. Status Iuran -->
-        <div class="col-xl-3 col-md-6">
+        <div class="col-6 col-md-6 col-xl-3">
             <div class="wm-stat-card h-100">
                 <div class="d-flex justify-content-between align-items-start">
                     <span class="wm-stat-lbl">Status Iuran</span>
@@ -179,7 +179,7 @@
         </div>
 
         <!-- 2. Tagihan Belum Dibayar -->
-        <div class="col-xl-3 col-md-6">
+        <div class="col-6 col-md-6 col-xl-3">
             <div class="wm-stat-card h-100">
                 <div class="d-flex justify-content-between align-items-start">
                     <span class="wm-stat-lbl">Total Tagihan Tertunda</span>
@@ -198,7 +198,7 @@
         </div>
 
         <!-- 3. Total Iuran Terbayar -->
-        <div class="col-xl-3 col-md-6">
+        <div class="col-6 col-md-6 col-xl-3">
             <div class="wm-stat-card h-100">
                 <div class="d-flex justify-content-between align-items-start">
                     <span class="wm-stat-lbl">Riwayat Terbayar</span>
@@ -216,7 +216,7 @@
         </div>
 
         <!-- 4. Pengaduan Saya -->
-        <div class="col-xl-3 col-md-6">
+        <div class="col-6 col-md-6 col-xl-3">
             <div class="wm-stat-card h-100">
                 <div class="d-flex justify-content-between align-items-start">
                     <span class="wm-stat-lbl">Pengaduan Saya</span>

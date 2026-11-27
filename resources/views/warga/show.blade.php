@@ -179,9 +179,9 @@
                                 <tr><td class="text-muted small" style="width: 40%;">Rukun Tetangga (RT)</td><td class="fw-bold text-dark small">{{ $warga->clean_rt_label }}</td></tr>
                                 <tr><td class="text-muted small">Rukun Warga (RW)</td><td class="fw-bold text-dark small">RW 013</td></tr>
                                 <tr><td class="text-muted small">Nomor Rumah / Blok</td><td class="text-dark small">No. {{ $warga->house_number }} {{ $warga->blok_rumah ? '(Blok ' . $warga->blok_rumah . ')' : '' }}</td></tr>
-                                <tr><td class="text-muted small">Jalan / Gang</td><td class="text-dark small">{{ $warga->gang_jalan ?: 'Jl. Pacuan Kuda' }}</td></tr>
-                                <tr><td class="text-muted small">Kelurahan / Kecamatan</td><td class="text-dark small">Kel. Sukamiskin, Kec. Arcamanik</td></tr>
-                                <tr><td class="text-muted small">Kota / Kode Pos</td><td class="text-dark small">Kota Bandung, 40293</td></tr>
+                                <tr><td class="text-muted small">Jalan / Gang</td><td class="text-dark small">{{ $warga->gang_jalan ?: 'Jl. Malioboro' }}</td></tr>
+                                <tr><td class="text-muted small">Kelurahan / Kecamatan</td><td class="text-dark small">Kel. Suryatmajan, Kec. Danurejan</td></tr>
+                                <tr><td class="text-muted small">Kota / Kode Pos</td><td class="text-dark small">Kota Yogyakarta, 55213</td></tr>
                                 <tr><td class="text-muted small">Status Rumah</td><td class="text-dark small">{{ ucfirst(str_replace('_', ' ', $warga->status_rumah ?? 'Milik Sendiri')) }}</td></tr>
                                 <tr><td class="text-muted small">Status Domisili</td><td class="fw-bold text-success small">{{ $warga->status_domisili ?: 'Warga Tetap' }}</td></tr>
                                 <tr><td class="text-muted small">Alamat Lengkap</td><td class="text-dark small">{{ $warga->address }}</td></tr>

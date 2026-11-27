@@ -177,7 +177,7 @@
 
                 <div class="col-12 col-md-3">
                     <label class="form-label fw-semibold small text-secondary">Tempat Lahir <span class="text-danger">*</span></label>
-                    <input type="text" name="tempat_lahir" id="tempat_lahir" class="form-control" value="{{ old('tempat_lahir', $user->tempat_lahir ?? 'Bandung') }}" required placeholder="Contoh: Bandung">
+                    <input type="text" name="tempat_lahir" id="tempat_lahir" class="form-control" value="{{ old('tempat_lahir', $user->tempat_lahir ?? 'Yogyakarta') }}" required placeholder="Contoh: Yogyakarta">
                 </div>
 
                 <div class="col-12 col-md-3">
@@ -266,10 +266,10 @@
                         <span class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width:28px;height:28px;font-size:0.85rem;">2</span>
                         <span>Alamat Lengkap & Wilayah Domisili</span>
                     </h5>
-                    <p class="text-muted small mb-0">Standar lokasi resmi wilayah binaan Sukamiskin, Arcamanik, Kota Bandung 40293.</p>
+                    <p class="text-muted small mb-0">Standar lokasi resmi wilayah binaan Suryatmajan, Danurejan, Kota Yogyakarta 55213.</p>
                 </div>
                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill small">
-                    Bandung Raya
+                    Yogyakarta Raya
                 </span>
             </div>
 
@@ -278,7 +278,7 @@
                     <label class="form-label fw-semibold small text-secondary">Nama Jalan / Gang / Blok <span class="text-danger">*</span></label>
                     <div class="input-group">
                         <span class="input-group-text bg-light border-end-0 text-muted"><i data-lucide="map-pin" style="width:16px;height:16px;"></i></span>
-                        <input type="text" name="alamat_jalan" id="alamat_jalan" class="form-control border-start-0" value="{{ old('alamat_jalan', $user->alamat ?? 'Jl. Pacantel No. 12') }}" required placeholder="Contoh: Jl. Pacantel, Komplek Sukamiskin">
+                        <input type="text" name="alamat_jalan" id="alamat_jalan" class="form-control border-start-0" value="{{ old('alamat_jalan', $user->alamat ?? 'Jl. Pacantel No. 12') }}" required placeholder="Contoh: Jl. Pacantel, Komplek Suryatmajan">
                     </div>
                 </div>
 
@@ -296,32 +296,32 @@
                 <div class="col-6 col-md-3">
                     <label class="form-label fw-semibold small text-secondary">Rukun Warga (RW) <span class="text-danger">*</span></label>
                     <input type="text" name="rw" id="rw" class="form-control bg-light" value="{{ old('rw', $cleanRw) }}" readonly>
-                    <span class="text-muted" style="font-size:0.72rem;">RW 013 Sukamiskin</span>
+                    <span class="text-muted" style="font-size:0.72rem;">RW 013 Suryatmajan</span>
                 </div>
 
                 <div class="col-12 col-md-3">
                     <label class="form-label fw-semibold small text-secondary">Kelurahan / Desa <span class="text-danger">*</span></label>
-                    <input type="text" name="kelurahan" id="kelurahan" class="form-control bg-light" value="{{ old('kelurahan', 'Sukamiskin') }}" readonly>
+                    <input type="text" name="kelurahan" id="kelurahan" class="form-control bg-light" value="{{ old('kelurahan', 'Suryatmajan') }}" readonly>
                 </div>
 
                 <div class="col-12 col-md-3">
                     <label class="form-label fw-semibold small text-secondary">Kecamatan <span class="text-danger">*</span></label>
-                    <input type="text" name="kecamatan" id="kecamatan" class="form-control bg-light" value="{{ old('kecamatan', 'Arcamanik') }}" readonly>
+                    <input type="text" name="kecamatan" id="kecamatan" class="form-control bg-light" value="{{ old('kecamatan', 'Danurejan') }}" readonly>
                 </div>
 
                 <div class="col-12 col-md-4">
                     <label class="form-label fw-semibold small text-secondary">Kota / Kabupaten <span class="text-danger">*</span></label>
-                    <input type="text" name="kota" id="kota" class="form-control bg-light" value="{{ old('kota', 'Kota Bandung') }}" readonly>
+                    <input type="text" name="kota" id="kota" class="form-control bg-light" value="{{ old('kota', 'Kota Yogyakarta') }}" readonly>
                 </div>
 
                 <div class="col-12 col-md-4">
                     <label class="form-label fw-semibold small text-secondary">Provinsi <span class="text-danger">*</span></label>
-                    <input type="text" name="provinsi" id="provinsi" class="form-control bg-light" value="{{ old('provinsi', 'Jawa Barat') }}" readonly>
+                    <input type="text" name="provinsi" id="provinsi" class="form-control bg-light" value="{{ old('provinsi', 'DI Yogyakarta') }}" readonly>
                 </div>
 
                 <div class="col-12 col-md-4">
                     <label class="form-label fw-semibold small text-secondary">Kode Pos <span class="text-danger">*</span></label>
-                    <input type="text" name="kode_pos" id="kode_pos" class="form-control bg-light" value="{{ old('kode_pos', '40293') }}" readonly>
+                    <input type="text" name="kode_pos" id="kode_pos" class="form-control bg-light" value="{{ old('kode_pos', '55213') }}" readonly>
                 </div>
             </div>
 
@@ -541,7 +541,7 @@
                     <div class="col-12 col-md-6">
                         <div class="text-secondary small fw-semibold">Alamat Domisili Terdaftar:</div>
                         <div class="fw-bold text-dark" id="review-alamat">{{ $user->alamat ?? 'Jl. Pacantel No. 12' }}, RT {{ $cleanRt }}/RW {{ $cleanRw }}</div>
-                        <div class="text-muted small">Kel. Sukamiskin, Kec. Arcamanik, Kota Bandung 40293</div>
+                        <div class="text-muted small">Kel. Suryatmajan, Kec. Danurejan, Kota Yogyakarta 55213</div>
                     </div>
 
                     <div class="col-12 border-top pt-2">

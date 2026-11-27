@@ -25,7 +25,7 @@ class SuperAdminSeeder extends Seeder
                 'rt_number' => '000',
                 'rw_number' => '013',
                 'phone' => '081234567800',
-                'address' => 'Sekretariat RW 013 Sukamiskin',
+                'address' => 'Sekretariat RW 013 Suryatmajan',
                 'is_active' => true,
                 'status_verifikasi' => 'Terverifikasi RW',
             ]

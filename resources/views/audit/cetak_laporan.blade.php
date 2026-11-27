@@ -322,9 +322,9 @@
         <!-- KOP RESMI PEMERINTAHAN RW 013 -->
         <div class="header-kop">
             <h2 class="instansi-1">PENGURUS RUKUN WARGA 013</h2>
-            <h1 class="instansi-2">KELURAHAN SUKAMISKIN &bull; KECAMATAN ARCAMANIK</h1>
-            <h3 class="instansi-3">KOTA BANDUNG — PROVINSI JAWA BARAT</h3>
-            <p class="alamat-kop">Sekretariat: Balai Pertemuan Warga RW 013, Jl. Golf Raya No. 15, Sukamiskin, Arcamanik, Kota Bandung 40293 &bull; Pos-el: rw013.sukamiskin@gmail.com</p>
+            <h1 class="instansi-2">KELURAHAN Suryatmajan &bull; KECAMATAN Danurejan</h1>
+            <h3 class="instansi-3">Kota Yogyakarta — PROVINSI DI Yogyakarta</h3>
+            <p class="alamat-kop">Sekretariat: Balai Pertemuan Warga RW 013, Jl. Mataram No. 15, Suryatmajan, Danurejan, Kota Yogyakarta 55213 &bull; Pos-el: rw013.Suryatmajan@gmail.com</p>
         </div>
 
         <!-- JUDUL DAN NOMOR SURAT RESMI -->
@@ -336,7 +336,7 @@
         <!-- 1. RINGKASAN EKSEKUTIF & LIKUIDITAS KAS -->
         <h4 class="section-title">I. Ringkasan Eksekutif & Likuiditas Kas RW 013</h4>
         <p class="paragraf-isi">
-            Berdasarkan pemeriksaan komprehensif terhadap tata kelola pembukuan, realisasi program kerja, dan kepatuhan administrasi keuangan pada lingkungan RW 013 Sukamiskin yang membawahi 8 Rukun Tetangga (RT 001 s/d RT 008), posisi saldo likuid per tanggal {{ Carbon\Carbon::now()->translatedFormat('d F Y') }} tercatat sebagai berikut:
+            Berdasarkan pemeriksaan komprehensif terhadap tata kelola pembukuan, realisasi program kerja, dan kepatuhan administrasi keuangan pada lingkungan RW 013 Suryatmajan yang membawahi 8 Rukun Tetangga (RT 001 s/d RT 008), posisi saldo likuid per tanggal {{ Carbon\Carbon::now()->translatedFormat('d F Y') }} tercatat sebagai berikut:
         </p>
 
         <table class="lha-table">
@@ -500,7 +500,7 @@
                 <p class="ttd-jabatan">Auditor Internal RW 013</p>
             </div>
             <div class="ttd-box">
-                <p>Bandung, {{ Carbon\Carbon::now()->translatedFormat('d F Y') }}<br><strong>Ketua RW 013 Sukamiskin</strong></p>
+                <p>Yogyakarta, {{ Carbon\Carbon::now()->translatedFormat('d F Y') }}<br><strong>Ketua RW 013 Suryatmajan</strong></p>
                 <div class="ttd-space"></div>
                 <p class="ttd-name"><u>( {{ $ketuaRw->name ?? $user->name ?? 'Pengurus RW 013' }} )</u></p>
                 <p class="ttd-jabatan">Ketua RW 013</p>

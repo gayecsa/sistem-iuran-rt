@@ -14,7 +14,7 @@
                             <i class="fas fa-video me-1"></i> PEMANTAUAN KAWASAN RW 013
                         </span>
                         <span class="badge rounded-pill fw-semibold text-white px-2.5 py-1" style="background: rgba(255, 255, 255, 0.15) !important; font-size: 0.72rem;">
-                            RW 013 Sukamiskin Arcamanik
+                            RW 013 Suryatmajan Danurejan
                         </span>
                         <span class="badge rounded-pill fw-semibold text-white px-2.5 py-1" style="background: rgba(16, 185, 129, 0.3) !important; border: 1px solid rgba(16, 185, 129, 0.4) !important; font-size: 0.72rem;">
                             <i class="fas fa-check-circle me-1"></i> {{ $cctvs->count() }} Titik CCTV Terdata

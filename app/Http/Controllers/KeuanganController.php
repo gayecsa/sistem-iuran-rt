@@ -65,7 +65,7 @@ class KeuanganController extends Controller
         if (!$kasRw) {
             $kasRw = BukuKas::firstOrCreate(
                 ['jenis_kas' => 'kas_rw'],
-                ['kode_kas' => 'KAS-RW-013', 'nama_kas' => 'Kas Induk RW 013 Sukamiskin', 'saldo_sekarang' => 0, 'is_active' => true]
+                ['kode_kas' => 'KAS-RW-013', 'nama_kas' => 'Kas Induk RW 013 Suryatmajan', 'saldo_sekarang' => 0, 'is_active' => true]
             );
         }
         $saldoKasRw = floatval($kasRw->saldo_sekarang ?? 0);

@@ -22,7 +22,7 @@
                     @if(request('tipe') === 'pendatang')
                         Formulir registrasi warga domisili sementara / penyewa / kontrak di lingkungan RW 013.
                     @else
-                        Formulir administrasi kependudukan terpadu lingkungan RW 013 Kelurahan Sukamiskin.
+                        Formulir administrasi kependudukan terpadu lingkungan RW 013 Kelurahan Suryatmajan.
                     @endif
                 </p>
             </div>
@@ -147,7 +147,7 @@
                     <label class="form-label fw-bold small mb-1">Tempat Lahir</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light border-end-0"><i data-lucide="building" style="width: 16px; height: 16px; color: #1456A0;"></i></span>
-                        <input type="text" name="tempat_lahir" id="input_tempat_lahir" class="form-control border-start-0" value="{{ old('tempat_lahir', 'Kota Bandung') }}" placeholder="Kota / Kabupaten Lahir">
+                        <input type="text" name="tempat_lahir" id="input_tempat_lahir" class="form-control border-start-0" value="{{ old('tempat_lahir', 'Kota Yogyakarta') }}" placeholder="Kota / Kabupaten Lahir">
                     </div>
                 </div>
 
@@ -276,7 +276,7 @@
         </div>
 
         {{-- ==================================================================
-             STEP 3: ALAMAT & TEMPAT TINGGAL (SUKAMISKIN ARCAMANIK BANDUNG)
+             STEP 3: ALAMAT & TEMPAT TINGGAL (Suryatmajan Danurejan Yogyakarta)
              ================================================================== --}}
         <div class="wizard-step card border-0 shadow-sm rounded-4 p-4 mb-4 d-none" id="step-3" style="background: var(--wm-card, #FFFFFF); border: 1px solid var(--wm-border, #E2E8F0) !important;">
             <div class="d-flex align-items-center gap-3 pb-3 mb-4 border-bottom">
@@ -285,7 +285,7 @@
                 </div>
                 <div>
                     <h5 class="fw-bold mb-0 text-dark">Tahap 3: Alamat & Status Tempat Tinggal</h5>
-                    <small class="text-muted">Wilayah administratif: RW 013, Kelurahan Sukamiskin, Kecamatan Arcamanik, Kota Bandung 40293.</small>
+                    <small class="text-muted">Wilayah administratif: RW 013, Kelurahan Suryatmajan, Kecamatan Danurejan, Kota Yogyakarta 55213.</small>
                 </div>
             </div>
 
@@ -323,7 +323,7 @@
                 {{-- Gang / Jalan --}}
                 <div class="col-12 col-md-6">
                     <label class="form-label fw-bold small mb-1">Nama Jalan / Gang</label>
-                    <input type="text" name="gang_jalan" id="input_gang_jalan" class="form-control" value="{{ old('gang_jalan', 'Jl. Pacuan Kuda') }}" placeholder="Contoh: Jl. Pacuan Kuda / Gang Saluyu">
+                    <input type="text" name="gang_jalan" id="input_gang_jalan" class="form-control" value="{{ old('gang_jalan', 'Jl. Malioboro') }}" placeholder="Contoh: Jl. Malioboro / Gang Saluyu">
                 </div>
 
                 {{-- Status Tempat Tinggal --}}
@@ -358,7 +358,7 @@
                 {{-- Alamat Lengkap Teks --}}
                 <div class="col-12">
                     <label class="form-label fw-bold small mb-1">Alamat Lengkap Tempat Tinggal <span class="text-danger">*</span></label>
-                    <textarea name="address" id="input_address" class="form-control" rows="2" placeholder="Tuliskan alamat lengkap beserta patokan rumah..." required>{{ old('address', 'Jl. Pacuan Kuda No. 13, RT 001 / RW 013, Kelurahan Sukamiskin, Kec. Arcamanik, Kota Bandung 40293') }}</textarea>
+                    <textarea name="address" id="input_address" class="form-control" rows="2" placeholder="Tuliskan alamat lengkap beserta patokan rumah..." required>{{ old('address', 'Jl. Malioboro No. 13, RT 001 / RW 013, Kelurahan Suryatmajan, Kec. Danurejan, Kota Yogyakarta 55213') }}</textarea>
                 </div>
             </div>
 

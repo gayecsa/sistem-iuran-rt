@@ -443,12 +443,12 @@
                     SISTEM KEAMANAN &amp; SISKAMLING TERPADU
                 </span>
                 <span class="text-white-50 small">•</span>
-                <span class="text-white small fw-medium">Kelurahan Sukamiskin, Arcamanik</span>
+                <span class="text-white small fw-medium">Kelurahan Suryatmajan, Danurejan</span>
             </div>
             <h3 class="fw-bold mb-1 text-white">Ronda Malam &amp; Keamanan RW 013</h3>
             <p class="mb-0 text-white-50 small">
                 <i data-lucide="map-pin" style="width: 14px; height: 14px;" class="me-1"></i>
-                Kelurahan Sukamiskin, Kec. Arcamanik, Kota Bandung 40293 &bull; Integrasi Siskamling 8 RT, Linmas, &amp; Titik Pantau Kawasan.
+                Kelurahan Suryatmajan, Kec. Danurejan, Kota Yogyakarta 55213 &bull; Integrasi Siskamling 8 RT, Linmas, &amp; Titik Pantau Kawasan.
             </p>
         </div>
 
@@ -465,7 +465,7 @@
             @endif
             <a href="tel:112" class="btn btn-danger rounded-pill px-3 fw-bold small shadow d-inline-flex align-items-center gap-2">
                 <i data-lucide="phone-call" style="width: 16px; height: 16px;"></i>
-                <span>Darurat Bandung (112)</span>
+                <span>Darurat Yogyakarta (112)</span>
             </a>
         </div>
     </div>
@@ -496,7 +496,7 @@
                                 {{ $isTopDarurat ? 'SIAGA DARURAT' : 'PERINGATAN WASPADA' }}
                             </span>
                             <span class="badge bg-white text-dark border px-2 py-1 fw-bold" style="font-size: 0.75rem;">
-                                RT {{ str_pad($latestUrgent->rt_number, 3, '0', STR_PAD_LEFT) }}
+                                RT {{ str_pad((string)($latestUrgent->rt_number ?? '001'), 3, '0', STR_PAD_LEFT) }}
                             </span>
                             <span class="small fw-bold" style="color: {{ $bannerText }};">
                                 • {{ $latestUrgent->jenis_kejadian }} di {{ $latestUrgent->lokasi }}
@@ -541,7 +541,7 @@
                                 INFORMASI TERKINI: SITUASI KEMBALI KONDUSIF
                             </span>
                             <span class="badge bg-white text-dark border px-2 py-1 fw-bold" style="font-size: 0.75rem;">
-                                RT {{ str_pad($latestKondusif->rt_number, 3, '0', STR_PAD_LEFT) }}
+                                RT {{ str_pad((string)($latestKondusif->rt_number ?? '001'), 3, '0', STR_PAD_LEFT) }}
                             </span>
                             <span class="small fw-bold text-success" style="color: #0E5A3E !important;">
                                 • {{ $latestKondusif->jenis_kejadian }} di {{ $latestKondusif->lokasi }}
@@ -641,7 +641,7 @@
                         @if(!$isPengurus)
                             Pantauan Langsung CCTV (Izin Akses Warga Aktif)
                         @else
-                            Pantauan Kamera CCTV Kawasan Sukamiskin Arcamanik
+                            Pantauan Kamera CCTV Kawasan Suryatmajan Danurejan
                         @endif
                     </h5>
                     <small class="text-white-50">
@@ -715,7 +715,7 @@
                                     <div style="max-width: 72%;">
                                         <strong class="d-block text-white text-truncate small" style="font-size: 0.8rem;">{{ $cam->nama }}</strong>
                                         <small class="text-white-50 d-block text-truncate" style="font-size: 0.72rem;">
-                                            <i data-lucide="map-pin" style="width: 10px; height: 10px;"></i> {{ $cam->lokasi ?: 'Sukamiskin Arcamanik' }} (RT {{ $cam->clean_rt }})
+                                            <i data-lucide="map-pin" style="width: 10px; height: 10px;"></i> {{ $cam->lokasi ?: 'Suryatmajan Danurejan' }} (RT {{ $cam->clean_rt }})
                                         </small>
                                     </div>
                                     <div class="text-end" style="flex-shrink: 0;">
@@ -809,7 +809,7 @@
                                 </h6>
                                 <p class="text-muted small mb-2" style="font-size: 0.8rem; line-height: 1.4;">
                                     <i data-lucide="map-pin" style="width: 12px; height: 12px;" class="text-danger me-1"></i>
-                                    {{ $cam->lokasi ?: 'Sukamiskin Arcamanik' }} (RT {{ $cam->clean_rt }})
+                                    {{ $cam->lokasi ?: 'Suryatmajan Danurejan' }} (RT {{ $cam->clean_rt }})
                                 </p>
                             </div>
                             <div class="pt-3 mt-3 border-top">
@@ -964,7 +964,7 @@
                         @if($user->isRt())
                             Daftar permohonan warga untuk titik CCTV di lingkungan <strong>RT {{ $user->clean_rt_label }}</strong>. Persetujuan RT akan meneruskan tiket ke Ketua RW.
                         @else
-                            Daftar seluruh permohonan izin akses CCTV warga di lingkungan <strong>RW 013 Sukamiskin</strong>.
+                            Daftar seluruh permohonan izin akses CCTV warga di lingkungan <strong>RW 013 Suryatmajan</strong>.
                         @endif
                     </small>
                 </div>
@@ -1125,7 +1125,7 @@
                 <small class="text-muted">Data koordinator piket diambil langsung dari data pengurus/warga terdaftar di database.</small>
             </div>
             <span class="badge bg-primary-subtle text-primary border px-3 py-1 rounded-pill">
-                Wilayah: Sukamiskin, Arcamanik
+                Wilayah: Suryatmajan, Danurejan
             </span>
         </div>
 
@@ -1258,7 +1258,7 @@
                         </div>
                         <div class="list-group-item px-0 py-2">
                             <span class="text-muted d-block mb-1">Alamat Terdaftar:</span>
-                            <span class="text-dark fw-medium">{{ $user->address ?: 'Warga Sukamiskin Arcamanik' }}</span>
+                            <span class="text-dark fw-medium">{{ $user->address ?: 'Warga Suryatmajan Danurejan' }}</span>
                         </div>
                     </div>
 
@@ -1284,7 +1284,7 @@
                         </div>
                         <div class="d-flex justify-content-between align-items-center p-2 rounded bg-light border">
                             <div>
-                                <strong class="d-block text-dark">Call Center Darurat Bandung</strong>
+                                <strong class="d-block text-dark">Call Center Darurat Yogyakarta</strong>
                                 <small class="text-muted">Polisi, Damkar, Medis</small>
                             </div>
                             <a href="tel:112" class="btn btn-sm btn-outline-danger rounded-pill px-2 py-1 fw-bold">112</a>
@@ -1359,7 +1359,7 @@
                                 <label for="lokasiKejadian" class="form-label fw-bold small text-dark">Lokasi / Titik Kejadian <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light text-muted"><i data-lucide="map-pin" style="width: 16px; height: 16px;"></i></span>
-                                    <input type="text" class="form-control @error('lokasi') is-invalid @enderror" id="lokasiKejadian" name="lokasi" value="{{ old('lokasi') }}" placeholder="Contoh: Jl. Sukamiskin Raya No. 12 di depan portal RT 003" required maxlength="255">
+                                    <input type="text" class="form-control @error('lokasi') is-invalid @enderror" id="lokasiKejadian" name="lokasi" value="{{ old('lokasi') }}" placeholder="Contoh: Jl. Suryatmajan Raya No. 12 di depan portal RT 003" required maxlength="255">
                                 </div>
                                 @error('lokasi')
                                     <div class="text-danger small mt-1">{{ $message }}</div>
@@ -1450,7 +1450,7 @@
                                                     </span>
                                                 @endif
                                                 <span class="badge bg-white text-dark border px-2 py-1 fw-bold" style="font-size: 0.72rem;">
-                                                    RT {{ str_pad($w->rt_number, 3, '0', STR_PAD_LEFT) }}
+                                                    RT {{ str_pad((string)($w->rt_number ?? '001'), 3, '0', STR_PAD_LEFT) }}
                                                 </span>
                                             </div>
                                             <small class="text-muted" style="font-size: 0.75rem;">
@@ -1656,7 +1656,7 @@
                         @if($user->isRt())
                             Menampilkan seluruh laporan keamanan warga di lingkungan <strong>RT {{ $user->clean_rt_label }}</strong>.
                         @elseif($user->isRw() || in_array($user->role, ['super_admin', 'admin']))
-                            Menampilkan seluruh arsip laporan keamanan di wilayah <strong>RW 013 Sukamiskin</strong>.
+                            Menampilkan seluruh arsip laporan keamanan di wilayah <strong>RW 013 Suryatmajan</strong>.
                         @else
                             Daftar laporan hal mencurigakan atau pengaduan keamanan yang Anda kirimkan.
                         @endif
@@ -1736,7 +1736,7 @@
                                                 </span>
                                             @endif
                                             <span class="badge bg-primary-subtle text-primary border border-primary border-opacity-25" style="font-size: 0.7rem;">
-                                                RT {{ str_pad($lap->rt_number, 3, '0', STR_PAD_LEFT) }}
+                                                RT {{ str_pad((string)($lap->rt_number ?? '001'), 3, '0', STR_PAD_LEFT) }}
                                             </span>
                                         </div>
                                     </td>

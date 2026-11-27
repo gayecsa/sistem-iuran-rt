@@ -77,8 +77,8 @@
     {{-- KOP SURAT RESMI (Hanya Tampil Saat Cetak / Dokumen Resmi) --}}
     <div class="d-none d-print-block text-center border-bottom pb-3 mb-4">
         <h4 class="fw-bold mb-0 text-uppercase" style="letter-spacing: 1px;">RUKUN WARGA 013</h4>
-        <h5 class="fw-bold mb-1 text-uppercase">KELURAHAN SUKAMISKIN, KECAMATAN ARCAMANIK, KOTA BANDUNG</h5>
-        <p class="mb-0 text-muted small">Sekretariat: Balai RW 013, Jl. Golf Raya No. 15, Sukamiskin, Arcamanik, Bandung 40293</p>
+        <h5 class="fw-bold mb-1 text-uppercase">KELURAHAN Suryatmajan, KECAMATAN Danurejan, Kota Yogyakarta</h5>
+        <p class="mb-0 text-muted small">Sekretariat: Balai RW 013, Jl. Mataram No. 15, Suryatmajan, Danurejan, Yogyakarta 55213</p>
         <div style="border-top: 2px solid #000; border-bottom: 1px solid #000; height: 4px; margin-top: 8px;"></div>
         <div class="text-center mt-3">
             <h5 class="fw-bold text-uppercase mb-0">LAPORAN REKAPITULASI DATA KEPENDUDUKAN</h5>
@@ -231,7 +231,7 @@
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4" style="background: var(--wm-card, #FFFFFF); border: 1px solid var(--wm-border, #E2E8F0) !important;">
         <div class="px-4 py-3 bg-light border-bottom d-flex justify-content-between align-items-center">
             <h6 class="fw-bold mb-0 text-dark">Rekapitulasi Kependudukan Wilayah RT 001 sampai RT 008</h6>
-            <span class="badge rounded-pill bg-white text-dark border px-3 py-1 fw-bold small">RW 013 Sukamiskin</span>
+            <span class="badge rounded-pill bg-white text-dark border px-3 py-1 fw-bold small">RW 013 Suryatmajan</span>
         </div>
 
         <div class="table-responsive">
@@ -347,12 +347,12 @@
         <div class="row">
             <div class="col-6 text-center">
                 <p class="mb-1 text-muted small">Mengetahui,</p>
-                <p class="fw-bold mb-5 text-dark">Ketua RW 013 Sukamiskin Arcamanik</p>
+                <p class="fw-bold mb-5 text-dark">Ketua RW 013 Suryatmajan Danurejan</p>
                 <p class="fw-bold text-dark mb-0 text-decoration-underline">( {{ \App\Models\User::where('role', 'rw')->value('name') ?? (Auth::user()->role === 'rw' ? Auth::user()->name : 'Ketua RW 013') }} )</p>
                 <small class="text-muted">Ketua RW 013</small>
             </div>
             <div class="col-6 text-center">
-                <p class="mb-1 text-muted small">Bandung, {{ Carbon\Carbon::now()->translatedFormat('d F Y') }}</p>
+                <p class="mb-1 text-muted small">Yogyakarta, {{ Carbon\Carbon::now()->translatedFormat('d F Y') }}</p>
                 <p class="fw-bold mb-5 text-dark">Petugas Administrasi Kependudukan</p>
                 <p class="fw-bold text-dark mb-0 text-decoration-underline">{{ $user->name }}</p>
                 <small class="text-muted">ID Petugas: #{{ $user->id }} ({{ strtoupper($user->role) }})</small>

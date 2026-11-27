@@ -26,14 +26,14 @@
                             @endif
                         </span>
                     </div>
-                    <p class="text-muted mb-0 small mt-1">
+                    <p class="text-muted mb-0 small mt-1 d-none d-md-block">
                         <i data-lucide="map-pin" style="width: 14px; height: 14px; vertical-align: middle; color: var(--wm-green);"></i>
-                        Rukun Warga 013 &bull; Kelurahan Sukamiskin, Kec. Arcamanik, Kota Bandung 40293 &bull; Pusat Komando & Pelayanan Terpadu
+                        Rukun Warga 013 &bull; Kelurahan Suryatmajan, Kec. Danurejan, Kota Yogyakarta 55213 &bull; Pusat Komando & Pelayanan Terpadu
                     </p>
                 </div>
             </div>
 
-            <div class="d-flex align-items-center gap-2 flex-wrap">
+            <div class="d-none d-md-flex align-items-center gap-2 flex-wrap">
                 <a href="{{ route('monitoring-rt.index') }}" class="wm-btn-primary">
                     <i data-lucide="clipboard-check" style="width: 17px; height: 17px;"></i> Audit 8 RT
                 </a>
@@ -120,9 +120,9 @@
         </div>
 
         <!-- 5 Kartu Keuangan Terpisah -->
-        <div class="row g-3">
+        <div class="row g-2 g-md-3">
             <!-- 1. Pemasukan Kas RW -->
-            <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="col-6 col-sm-6 col-md-4 col-lg-2">
                 <div class="p-3 rounded-4 border bg-light text-center h-100">
                     <span class="text-muted small fw-bold text-uppercase d-block" style="font-size: 0.72rem;">Pemasukan Kas RW</span>
                     <h5 class="fw-bold text-success mt-2 mb-1">Rp {{ number_format($pemasukan_rw_total ?? $pemasukan_rw ?? 0, 0, ',', '.') }}</h5>
@@ -130,7 +130,7 @@
                 </div>
             </div>
             <!-- 2. Pengeluaran Kas RW -->
-            <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="col-6 col-sm-6 col-md-4 col-lg-2">
                 <div class="p-3 rounded-4 border bg-light text-center h-100">
                     <span class="text-muted small fw-bold text-uppercase d-block" style="font-size: 0.72rem;">Pengeluaran Kas RW</span>
                     <h5 class="fw-bold text-danger mt-2 mb-1">Rp {{ number_format($pengeluaran_rw_total ?? $pengeluaran_rw ?? 0, 0, ',', '.') }}</h5>
@@ -138,7 +138,7 @@
                 </div>
             </div>
             <!-- 3. Saldo Kas Induk RW (Murni RW) -->
-            <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="col-6 col-sm-6 col-md-4 col-lg-3">
                 <div class="p-3 rounded-4 border h-100 text-center" style="background: #E3F5EC; border-color: rgba(22, 134, 93, 0.4) !important;">
                     <span class="text-success small fw-bold text-uppercase d-block" style="font-size: 0.72rem;">Saldo Kas Induk RW</span>
                     <h4 class="fw-bold text-success mt-2 mb-1">Rp {{ number_format($saldo_kas_rw ?? 0, 0, ',', '.') }}</h4>
@@ -146,7 +146,7 @@
                 </div>
             </div>
             <!-- 4. Total Saldo 8 RT (Otonom) -->
-            <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="col-6 col-sm-6 col-md-6 col-lg-3">
                 <div class="p-3 rounded-4 border h-100 text-center" style="background: #EFF6FF; border-color: rgba(59, 130, 246, 0.3) !important;">
                     <span class="text-primary small fw-bold text-uppercase d-block" style="font-size: 0.72rem;">Total Saldo 8 RT (Monitoring)</span>
                     <h4 class="fw-bold text-primary mt-2 mb-1">Rp {{ number_format($total_saldo_rt ?? 0, 0, ',', '.') }}</h4>
@@ -154,7 +154,7 @@
                 </div>
             </div>
             <!-- 5. Kas Pengelolaan Sampah RW -->
-            <div class="col-lg-2 col-md-6 col-sm-12">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-2">
                 <div class="p-3 rounded-4 border bg-light text-center h-100">
                     <span class="text-muted small fw-bold text-uppercase d-block" style="font-size: 0.72rem;">Kas Sampah RW</span>
                     <h5 class="fw-bold text-dark mt-2 mb-1">Rp {{ number_format($saldo_kas_sampah ?? 0, 0, ',', '.') }}</h5>
@@ -187,9 +187,9 @@
     {{-- ======================================================================
          STATISTIK UTAMA (6 KARTU METRIK KETUA RW & PENGURUS)
          ====================================================================== --}}
-    <div class="row g-3 mb-4">
+    <div class="row g-2 g-md-3 mb-4">
         <!-- 1. Total RT -->
-        <div class="col-xl-2 col-md-4 col-sm-6">
+        <div class="col-6 col-sm-6 col-md-4 col-xl-2">
             <div class="wm-stat-card h-100">
                 <div class="d-flex justify-content-between align-items-start">
                     <span class="wm-stat-lbl">Wilayah RT</span>
@@ -203,7 +203,7 @@
         </div>
 
         <!-- 2. Total Warga -->
-        <div class="col-xl-2 col-md-4 col-sm-6">
+        <div class="col-6 col-sm-6 col-md-4 col-xl-2">
             <div class="wm-stat-card h-100">
                 <div class="d-flex justify-content-between align-items-start">
                     <span class="wm-stat-lbl">Total Warga</span>
@@ -220,7 +220,7 @@
         </div>
 
         <!-- 3. Laporan RT -->
-        <div class="col-xl-2 col-md-4 col-sm-6">
+        <div class="col-6 col-sm-6 col-md-4 col-xl-2">
             <div class="wm-stat-card h-100">
                 <div class="d-flex justify-content-between align-items-start">
                     <span class="wm-stat-lbl">Laporan RT</span>
@@ -234,7 +234,7 @@
         </div>
 
         <!-- 4. Total Iuran Terkumpul -->
-        <div class="col-xl-2 col-md-4 col-sm-6">
+        <div class="col-6 col-sm-6 col-md-4 col-xl-2">
             <div class="wm-stat-card h-100">
                 <div class="d-flex justify-content-between align-items-start">
                     <span class="wm-stat-lbl">Iuran Masuk</span>
@@ -250,7 +250,7 @@
         </div>
 
         <!-- 5. Saldo Kas Induk RW -->
-        <div class="col-xl-2 col-md-4 col-sm-6">
+        <div class="col-6 col-sm-6 col-md-4 col-xl-2">
             <div class="wm-stat-card h-100" style="border-top: 3px solid #16865D;">
                 <div class="d-flex justify-content-between align-items-start">
                     <span class="wm-stat-lbl">Saldo Kas Induk RW</span>
@@ -269,7 +269,7 @@
         </div>
 
         <!-- 6. Pengaduan Belum Selesai -->
-        <div class="col-xl-2 col-md-4 col-sm-6">
+        <div class="col-6 col-sm-6 col-md-4 col-xl-2">
             <div class="wm-stat-card h-100" style="border-top: 3px solid #DC2626;">
                 <div class="d-flex justify-content-between align-items-start">
                     <span class="wm-stat-lbl">Pengaduan Aktif</span>

@@ -305,7 +305,7 @@ class DashboardController extends Controller
         if (!$kasRw) {
             $kasRw = BukuKas::firstOrCreate(
                 ['jenis_kas' => 'kas_rw'],
-                ['kode_kas' => 'KAS-RW-013', 'nama_kas' => 'Kas Induk RW 013 Sukamiskin', 'pemilik_dana' => 'rw', 'saldo_sekarang' => 0, 'is_active' => true]
+                ['kode_kas' => 'KAS-RW-013', 'nama_kas' => 'Kas Induk RW 013 Suryatmajan', 'pemilik_dana' => 'rw', 'saldo_sekarang' => 0, 'is_active' => true]
             );
         }
         $kasRw->recalculateSaldo();
@@ -501,7 +501,7 @@ class DashboardController extends Controller
     public function lokasi()
     {
         $user = Auth::user();
-        $userAddress = $user->address ?? "Jl. Pacuan Kuda No. 12, RT 001 / RW 013, Sukamiskin";
+        $userAddress = $user->address ?? "Jl. Malioboro No. 12, RT 001 / RW 013, Suryatmajan";
         $userRt = intval($user->rt_number ?? 1);
         if ($userRt === 0 && preg_match('/RT\s*(\d+)/i', $userAddress, $m)) {
             $userRt = intval($m[1]);
@@ -892,10 +892,10 @@ class DashboardController extends Controller
         $user = Auth::user();
         $markers = [
             'rw' => [
-                'nama' => 'Balai Pertemuan & Sekretariat RW 013 Sukamiskin',
-                'alamat' => 'Jl. Arcamanik Endah No. 1, Kelurahan Sukamiskin, Kec. Arcamanik, Kota Bandung 40293',
-                'lat' => -6.915000,
-                'lng' => 107.679000,
+                'nama' => 'Balai Pertemuan & Sekretariat RW 013 Suryatmajan',
+                'alamat' => 'Jl. Mataram No. 1, Kelurahan Suryatmajan, Kec. Danurejan, Kota Yogyakarta 55213',
+                'lat' => -7.792600,
+                'lng' => 110.365800,
                 'kategori' => 'Sekretariat RW',
                 'keterangan' => 'Pusat pelayanan administrasi warga, koordinasi siskamling, dan balai musyawarah RW 013.'
             ],
@@ -1023,98 +1023,98 @@ class DashboardController extends Controller
     public function wisata()
     {
         $user = Auth::user();
-        $userAddress = $user->address ?? "Jl. Pacuan Kuda No. 12, RT 001 / RW 013, Sukamiskin";
+        $userAddress = $user->address ?? "Jl. Malioboro No. 12, RT 001 / RW 013, Suryatmajan";
 
         $wisataList = [
             [
                 'id' => 1,
-                'nama' => 'Arcamanik Sport Center & Taman Pemuda',
-                'kategori' => 'Fasilitas Olahraga & Taman Terbuka',
+                'nama' => 'Teras Malioboro 1',
+                'kategori' => 'Sentra Kuliner & UMKM Khas Jogja',
                 'badge_color' => 'bg-primary',
-                'lokasi' => 'Jl. Pacuan Kuda, Kelurahan Sukamiskin, Kec. Arcamanik, Kota Bandung',
-                'lat' => -6.913500,
-                'lng' => 107.677800,
-                'jarak' => '400 meter',
-                'waktu' => '5 Menit Jalan Kaki',
-                'jam_buka' => '06:00 - 21:00 WIB',
-                'tiket' => 'Gratis Area Publik (Sewa Lapangan Sesuai Tarif Pemda)',
-                'fasilitas' => 'Stadion Sepak Bola, Jogging Track Sintetis, Lapangan Voli, Arena Senam & Taman Bermain',
-                'deskripsi' => 'Kompleks sarana olahraga modern kebanggaan warga Arcamanik tempat jogging, senam pagi keluarga, dan rekreasi akhir pekan.'
+                'lokasi' => 'Jl. Margo Mulyo, Suryatmajan, Kec. Danurejan, Kota Yogyakarta',
+                'lat' => -7.794200,
+                'lng' => 110.365600,
+                'jarak' => '250 meter',
+                'waktu' => '3 Menit Jalan Kaki',
+                'jam_buka' => '08:00 - 23:00 WIB',
+                'tiket' => 'Gratis Area Publik',
+                'fasilitas' => 'Pusat Oleh-oleh Khas Jogja, Batik Tradisional, Sentra Kuliner Nusantara & Spot Live Acoustic',
+                'deskripsi' => 'Pusat belanja suvenir, kerajinan, dan kuliner terpadu ikonik di koridor pedestrian Malioboro.'
             ],
             [
                 'id' => 2,
-                'nama' => 'Saung Angklung Udjo Bandung',
-                'kategori' => 'Wisata Budaya & Seni Sunda',
+                'nama' => 'Pasar Beringharjo',
+                'kategori' => 'Pusat Perdagangan & Batik Legendaris',
                 'badge_color' => 'bg-warning text-dark',
-                'lokasi' => 'Jl. Padasuka No. 118, Pasirlayung, Kec. Cibeunying Kidul, Kota Bandung',
-                'lat' => -6.897800,
-                'lng' => 107.655200,
-                'jarak' => '4.2 km',
-                'waktu' => '12 Menit Berkendara',
-                'jam_buka' => '08:00 - 17:00 WIB',
-                'tiket' => 'Rp 60.000 / Orang',
-                'fasilitas' => 'Pertunjukan Musik Angklung Interaktif, Teater Terbuka, Sentra Kerajinan Bambu & Kuliner Tradisional',
-                'deskripsi' => 'Destinasi budaya kelas dunia pelestari seni bambu dan angklung Sunda di Bandung Timur yang sangat mengedukasi.'
+                'lokasi' => 'Jl. Margo Mulyo No. 16, Ngupasan, Kec. Gondomanan, Kota Yogyakarta',
+                'lat' => -7.798600,
+                'lng' => 110.365700,
+                'jarak' => '700 meter',
+                'waktu' => '8 Menit Jalan Kaki',
+                'jam_buka' => '08:30 - 21:00 WIB',
+                'tiket' => 'Gratis Area Pasar',
+                'fasilitas' => 'Pasar Batik Terlengkap, Pusat Jamu Tradisional, Aneka Jajanan Pasar & Sentra Antik',
+                'deskripsi' => 'Pasar tertua dan terlengkap di Yogyakarta yang berdiri sejak 1758 sebagai pusat denyut ekonomi warga.'
             ],
             [
                 'id' => 3,
-                'nama' => 'Kiara Artha Park & Taman Asia Afrika',
-                'kategori' => 'Taman Rekreasi & Air Mancur Menari',
+                'nama' => 'Museum Benteng Vredeburg',
+                'kategori' => 'Wisata Sejarah & Cagar Budaya',
                 'badge_color' => 'bg-info text-white',
-                'lokasi' => 'Jl. Banten, Kebonwaru, Kec. Batununggal, Kota Bandung',
-                'lat' => -6.917200,
-                'lng' => 107.643500,
-                'jarak' => '4.8 km',
-                'waktu' => '15 Menit Berkendara',
-                'jam_buka' => '09:00 - 21:00 WIB',
-                'tiket' => 'Rp 10.000 / Orang',
-                'fasilitas' => 'Dancing Fountain (Air Mancur Menari), Trem Wisata, Area Sepeda & Kuliner Modern',
-                'deskripsi' => 'Taman kota terpadu ramah anak dengan danau buatan luas dan pertunjukan air mancur spektakuler di malam hari.'
+                'lokasi' => 'Jl. Margo Mulyo No. 6, Ngupasan, Kec. Gondomanan, Kota Yogyakarta',
+                'lat' => -7.800200,
+                'lng' => 110.366200,
+                'jarak' => '850 meter',
+                'waktu' => '10 Menit Jalan Kaki',
+                'jam_buka' => '08:00 - 20:00 WIB',
+                'tiket' => 'Rp 3.000 (Anak) / Rp 10.000 (Dewasa)',
+                'fasilitas' => 'Diorama Sejarah Perjuangan Bangsa, Taman Edukasi Terbuka, Kafe Bersejarah & Ruang Audio Visual',
+                'deskripsi' => 'Benteng peninggalan kolonial Belanda yang direvitalisasi menjadi ruang publik budaya dan rekreasi sejarah ramah keluarga.'
             ],
             [
                 'id' => 4,
-                'nama' => 'Tebing Keraton & Taman Hutan Raya Djuanda',
-                'kategori' => 'Wisata Alam & Pemandangan Hutan Pinus',
+                'nama' => 'Taman Pintar Yogyakarta',
+                'kategori' => 'Wisata Edukasi & Sains Terpadu',
                 'badge_color' => 'bg-success',
-                'lokasi' => 'Kawasan Tahura Djuanda, Ciburial, Kec. Cimenyan, Kab. Bandung',
-                'lat' => -6.833800,
-                'lng' => 107.663500,
-                'jarak' => '12.5 km',
-                'waktu' => '30 Menit Berkendara',
-                'jam_buka' => '05:00 - 18:00 WIB',
-                'tiket' => 'Rp 15.000 / Orang',
-                'fasilitas' => 'Spot Sunrise Fotografi, Gazebo Pandang, Jalur Trekking Hutan Pinus & Warung Kopi',
-                'deskripsi' => 'Puncak tebing mempesona dengan panorama hamparan kabut hutan pinus dan lembah pegunungan Bandung Utara.'
+                'lokasi' => 'Jl. Panembahan Senopati No. 1-3, Ngupasan, Kec. Gondomanan, Kota Yogyakarta',
+                'lat' => -7.800500,
+                'lng' => 110.368700,
+                'jarak' => '1.1 km',
+                'waktu' => '4 Menit Berkendara',
+                'jam_buka' => '08:30 - 16:00 WIB',
+                'tiket' => 'Rp 12.000 (Anak) / Rp 20.000 (Dewasa)',
+                'fasilitas' => 'Planetarium Digital, Zona Sains Terapan, Wahana Air Menari & Laboratorium Kreativitas Anak',
+                'deskripsi' => 'Wahana ekspresi, apresiasi, dan kreasi sains interaktif kebanggaan warga Yogyakarta untuk seluruh anggota keluarga.'
             ],
             [
                 'id' => 5,
-                'nama' => 'Museum Geologi Kota Bandung',
-                'kategori' => 'Wisata Edukasi & Sains Bumi',
+                'nama' => 'Stasiun Tugu Yogyakarta',
+                'kategori' => 'Cagar Budaya & Transportasi Ikonik',
                 'badge_color' => 'bg-secondary',
-                'lokasi' => 'Jl. Diponegoro No. 57, Cihaur Geulis, Kec. Cibeunying Kaler, Kota Bandung',
-                'lat' => -6.900700,
-                'lng' => 107.621400,
-                'jarak' => '7.8 km',
-                'waktu' => '20 Menit Berkendara',
-                'jam_buka' => '09:00 - 15:00 WIB',
-                'tiket' => 'Rp 3.000 (Pelajar) / Rp 5.000 (Umum)',
-                'fasilitas' => 'Replika Fosil Dinosaurus T-Rex, Ruang Kegempaan & Vulkanologi, Teater 3D & Audio Visual',
-                'deskripsi' => 'Museum bersejarah favorit keluarga untuk mengenalkan formasi batuan, mineral, dan sejarah geologi Indonesia.'
+                'lokasi' => 'Jl. Margo Utomo No. 1, Sosromenduran, Kec. Gedongtengen, Kota Yogyakarta',
+                'lat' => -7.789200,
+                'lng' => 110.363500,
+                'jarak' => '600 meter',
+                'waktu' => '7 Menit Jalan Kaki',
+                'jam_buka' => '24 Jam Operasional',
+                'tiket' => 'Sesuai Layanan Kereta Api / Gratis Kawasan Luar',
+                'fasilitas' => 'Gerbang Heritage Monumental, Loket Tiket Mandiri, Galeri Sejarah Kereta Api & Integrasi KRL/Bandara',
+                'deskripsi' => 'Stasiun kereta api cagar budaya bersejarah kelas besar tipe A yang menjadi pintu gerbang utama wisatawan memasuki kawasan Malioboro.'
             ],
             [
                 'id' => 6,
-                'nama' => 'Wisata Bukit Moko & Caringin Tilu Bandung',
-                'kategori' => 'Wisata Panorama Citylight Bandung',
+                'nama' => 'Balai Warga & Sentra Budaya Kelurahan Suryatmajan',
+                'kategori' => 'Pusat Komunitas & Kesenian Lokal',
                 'badge_color' => 'bg-dark',
-                'lokasi' => 'Cimenyan, Kec. Cimenyan, Kabupaten Bandung',
-                'lat' => -6.852100,
-                'lng' => 107.689000,
-                'jarak' => '9.5 km',
-                'waktu' => '25 Menit Berkendara',
-                'jam_buka' => '24 Jam',
-                'tiket' => 'Rp 15.000 / Orang',
-                'fasilitas' => 'Gardu Pandang Citylight, Warung Jagung Bakar & Bandrek Hangat, Area Camping',
-                'deskripsi' => 'Puncak perbukitan tinggi tempat menikmati pemandangan kelap-kelip lampu gemerlap seluruh kota Bandung di malam hari.'
+                'lokasi' => 'Jl. Suryatmajan No. 8, Danurejan, Kota Yogyakarta 55213',
+                'lat' => -7.793500,
+                'lng' => 110.368200,
+                'jarak' => '300 meter',
+                'waktu' => '4 Menit Jalan Kaki',
+                'jam_buka' => '07:30 - 22:00 WIB',
+                'tiket' => 'Gratis Fasilitas Warga',
+                'fasilitas' => 'Pendopo Sanggar Seni Karawitan, Balai Musyawarah, Lapangan Serbaguna & Perpustakaan Warga',
+                'deskripsi' => 'Pusat interaksi sosial, latihan seni gamelan tradisional, serta koordinasi kegiatan pelayanan kemasyarakatan RW 013 Suryatmajan.'
             ]
         ];
 
@@ -2532,7 +2532,7 @@ class DashboardController extends Controller
                     'kejadian_menonjol' => 'Nihil / Aman',
                     'bank_sampah_terkumpul' => '65 kg'
                 ],
-                'usulan_rt' => 'Pengajuan perbaikan 2 unit PJU Jl. Pacuan Kuda.',
+                'usulan_rt' => 'Pengajuan perbaikan 2 unit PJU Jl. Malioboro.',
                 'evaluasi_rw' => 'Administrasi sangat tertib, partisipasi gotong royong dan pos ronda sangat tinggi.',
                 'rekomendasi_rw' => 'Pertahankan transparansi pelaporan kas dan komunikasi aktif.',
                 'updated_at' => '10 Nov 2026, 14:00 WIB',
@@ -2574,7 +2574,7 @@ class DashboardController extends Controller
                     'kejadian_menonjol' => 'Laporan parkir liar',
                     'bank_sampah_terkumpul' => '40 kg'
                 ],
-                'usulan_rt' => 'Rambu larangan parkir sembarangan di persimpangan Jl. Arcamanik Endah.',
+                'usulan_rt' => 'Rambu larangan parkir sembarangan di persimpangan Jl. Sosrowijayan.',
                 'evaluasi_rw' => 'Laporan keuangan sudah masuk, namun rekap absensi siskamling bulan ini belum dilampirkan.',
                 'rekomendasi_rw' => 'Lengkapi lembar rekap jaga pos ronda dan laporan penerbitan surat pengantar.',
                 'updated_at' => '08 Nov 2026, 11:30 WIB',
@@ -3204,7 +3204,7 @@ class DashboardController extends Controller
                 'kontak' => '0812-9844-0101',
                 'jumlah_kk' => 45,
                 'jumlah_warga' => 142,
-                'alamat_pos' => 'Jl. Pacuan Kuda No. 12, RT 001 / RW 013, Sukamiskin',
+                'alamat_pos' => 'Jl. Malioboro No. 12, RT 001 / RW 013, Suryatmajan',
                 'status_laporan' => 'Lengkap',
                 'administrasi' => 'Lengkap (Verifikasi 100%)',
                 'keuangan' => 'Lengkap (Saldo Rp 14.850.000)',
@@ -3229,7 +3229,7 @@ class DashboardController extends Controller
                 'kontak' => '0813-8821-0202',
                 'jumlah_kk' => 42,
                 'jumlah_warga' => 138,
-                'alamat_pos' => 'Jl. Arcamanik Endah No. 8, RT 002 / RW 013, Sukamiskin',
+                'alamat_pos' => 'Jl. Sosrowijayan No. 8, RT 002 / RW 013, Suryatmajan',
                 'status_laporan' => 'Perlu diperiksa',
                 'administrasi' => 'Perlu Diperiksa (2 Berkas Belum Lengkap)',
                 'keuangan' => 'Lengkap (Saldo Rp 12.400.000)',
@@ -3253,7 +3253,7 @@ class DashboardController extends Controller
                 'kontak' => '0812-7711-0303',
                 'jumlah_kk' => 48,
                 'jumlah_warga' => 156,
-                'alamat_pos' => 'Jl. Golf Raya No. 15, RT 003 / RW 013, Sukamiskin',
+                'alamat_pos' => 'Jl. Mataram No. 15, RT 003 / RW 013, Suryatmajan',
                 'status_laporan' => 'Lengkap',
                 'administrasi' => 'Lengkap (Verifikasi 100%)',
                 'keuangan' => 'Lengkap (Saldo Rp 16.200.000)',
@@ -3277,7 +3277,7 @@ class DashboardController extends Controller
                 'kontak' => '0815-6622-0404',
                 'jumlah_kk' => 38,
                 'jumlah_warga' => 120,
-                'alamat_pos' => 'Jl. Cisaranten Kulon No. 21, RT 004 / RW 013, Sukamiskin',
+                'alamat_pos' => 'Jl. Dagen No. 21, RT 004 / RW 013, Suryatmajan',
                 'status_laporan' => 'Belum dilaporkan',
                 'administrasi' => 'Belum Dilaporkan',
                 'keuangan' => 'Belum Dilaporkan',
@@ -3301,7 +3301,7 @@ class DashboardController extends Controller
                 'kontak' => '0813-4455-0505',
                 'jumlah_kk' => 50,
                 'jumlah_warga' => 165,
-                'alamat_pos' => 'Jl. Puri Asri No. 14, RT 005 / RW 013, Sukamiskin',
+                'alamat_pos' => 'Jl. Suryatmajan No. 14, RT 005 / RW 013, Suryatmajan',
                 'status_laporan' => 'Lengkap',
                 'administrasi' => 'Lengkap (Verifikasi 100%)',
                 'keuangan' => 'Lengkap (Saldo Rp 18.100.000)',
@@ -3325,7 +3325,7 @@ class DashboardController extends Controller
                 'kontak' => '0812-3344-0606',
                 'jumlah_kk' => 40,
                 'jumlah_warga' => 130,
-                'alamat_pos' => 'Jl. Bina Asih No. 19, RT 006 / RW 013, Sukamiskin',
+                'alamat_pos' => 'Jl. Pajeksan No. 19, RT 006 / RW 013, Suryatmajan',
                 'status_laporan' => 'Perlu diperiksa',
                 'administrasi' => 'Perlu Diperiksa (Verifikasi Fisik)',
                 'keuangan' => 'Lengkap (Saldo Rp 11.750.000)',
@@ -3349,7 +3349,7 @@ class DashboardController extends Controller
                 'kontak' => '0817-2233-0707',
                 'jumlah_kk' => 36,
                 'jumlah_warga' => 115,
-                'alamat_pos' => 'Jl. Terusan Jakarta No. 30, RT 007 / RW 013, Sukamiskin',
+                'alamat_pos' => 'Jl. Beskalan No. 30, RT 007 / RW 013, Suryatmajan',
                 'status_laporan' => 'Perlu tindak lanjut',
                 'administrasi' => 'Perlu Tindak Lanjut',
                 'keuangan' => 'Perlu Klarifikasi Bukti',
@@ -3373,7 +3373,7 @@ class DashboardController extends Controller
                 'kontak' => '0811-9988-0808',
                 'jumlah_kk' => 44,
                 'jumlah_warga' => 140,
-                'alamat_pos' => 'Jl. Sukamiskin Raya No. 45, RT 008 / RW 013, Sukamiskin',
+                'alamat_pos' => 'Jl. Suryatmajan Raya No. 45, RT 008 / RW 013, Suryatmajan',
                 'status_laporan' => 'Perlu tindak lanjut',
                 'administrasi' => 'Perlu Tindak Lanjut',
                 'keuangan' => 'Lengkap (Saldo Rp 15.500.000)',
@@ -3509,13 +3509,13 @@ class DashboardController extends Controller
             ],
             'bank_sampah' => [
                 'jadwal' => 'Setiap Rabu, 10.00 - 13.00 WIB',
-                'lokasi' => 'Pusat Bank Sampah Komunal RT 003, Jl. Golf Raya No. 15',
+                'lokasi' => 'Pusat Bank Sampah Komunal RT 003, Jl. Mataram No. 15',
                 'koleksi_terakhir' => '580 kg Sampah Terpilah'
             ],
             'posyandu_berikutnya' => [
                 'jadwal' => 'Sabtu, 08.00 WIB',
-                'lokasi' => 'Balai Warga RT 001, Jl. Pacuan Kuda No. 12',
-                'fokus' => 'Imunisasi Dasar & Timbang Balita UPTD Puskesmas Arcamanik'
+                'lokasi' => 'Balai Warga RT 001, Jl. Malioboro No. 12',
+                'fokus' => 'Imunisasi Dasar & Timbang Balita Puskesmas Danurejan'
             ],
             'cctv_aktif' => $cctvCount > 0 ? $cctvCount : 4
         ];

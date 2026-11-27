@@ -265,7 +265,7 @@ class LetterRequest extends Model
     }
 
     /**
-     * Generator Nomor Surat Resmi Standar Kelurahan Sukamiskin Arcamanik
+     * Generator Nomor Surat Resmi Standar Kelurahan Suryatmajan Danurejan
      */
     public function generateOfficialNumber(): string
     {

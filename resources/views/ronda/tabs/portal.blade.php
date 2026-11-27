@@ -429,7 +429,7 @@
         </div>
 
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0" id="portalLogsTable">
+            <table class="table table-hover align-middle mb-0" id="portalLogsTable" style="min-width: 680px;">
                 <thead class="table-light">
                     <tr style="font-size: 0.8rem; text-transform: uppercase;">
                         <th>Waktu</th>
@@ -444,8 +444,8 @@
                     @forelse($portalLogs as $log)
                         <tr>
                             <td>
-                                <div class="fw-semibold text-dark" style="font-size: 0.82rem;">{{ $log->tapped_at->translatedFormat('d M Y, H:i:s') }}</div>
-                                <small class="text-muted" style="font-size: 0.72rem;">{{ $log->tapped_at->diffForHumans() }}</small>
+                                <div class="fw-semibold text-dark" style="font-size: 0.82rem;">{{ $log->tapped_at ? $log->tapped_at->translatedFormat('d M Y, H:i:s') : '-' }}</div>
+                                <small class="text-muted" style="font-size: 0.72rem;">{{ $log->tapped_at ? $log->tapped_at->diffForHumans() : '-' }}</small>
                             </td>
                             <td>
                                 @if($log->mode === 'portal')
@@ -470,8 +470,8 @@
                                             'super_admin' => 'Super Admin Haven',
                                             'rw', 'admin' => 'Ketua RW 013',
                                             'bendahara' => 'Bendahara RW 013',
-                                            'rt' => 'Ketua RT ' . ($log->user->clean_rt_number ? str_pad($log->user->clean_rt_number, 3, '0', STR_PAD_LEFT) : $log->user->rt_number),
-                                            default => 'Warga RT ' . ($log->user->clean_rt_number ? str_pad($log->user->clean_rt_number, 3, '0', STR_PAD_LEFT) : $log->user->rt_number)
+                                            'rt' => 'Ketua RT ' . ($log->user->clean_rt_number ? str_pad((string)$log->user->clean_rt_number, 3, '0', STR_PAD_LEFT) : ($log->user->rt_number ?? '001')),
+                                            default => 'Warga RT ' . ($log->user->clean_rt_number ? str_pad((string)$log->user->clean_rt_number, 3, '0', STR_PAD_LEFT) : ($log->user->rt_number ?? '001'))
                                         };
                                     @endphp
                                     <div class="fw-bold text-dark" style="font-size: 0.85rem;">{{ $log->user->name }}</div>
@@ -520,7 +520,7 @@
         </div>
 
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
+            <table class="table table-hover align-middle mb-0" style="min-width: 720px;">
                 <thead class="table-light">
                     <tr style="font-size: 0.8rem; text-transform: uppercase;">
                         <th>Pengguna &amp; Peran</th>
@@ -538,12 +538,12 @@
                                 'super_admin' => ['Super Admin', 'bg-dark text-white'],
                                 'rw', 'admin' => ['Ketua RW', 'bg-primary text-white'],
                                 'bendahara' => ['Bendahara RW', 'bg-primary text-white'],
-                                'rt' => ['Ketua RT ' . ($w->clean_rt_number ? str_pad($w->clean_rt_number, 3, '0', STR_PAD_LEFT) : $w->rt_number), 'bg-success text-white'],
+                                'rt' => ['Ketua RT ' . ($w->clean_rt_number ? str_pad((string)$w->clean_rt_number, 3, '0', STR_PAD_LEFT) : ($w->rt_number ?? '001')), 'bg-success text-white'],
                                 default => ['Warga', 'bg-light text-dark border']
                             };
                             $wilayahBadge = match($w->role) {
                                 'super_admin', 'rw', 'admin', 'bendahara' => 'RW 013 (Wilayah)',
-                                default => 'RT ' . ($w->clean_rt_number ? str_pad($w->clean_rt_number, 3, '0', STR_PAD_LEFT) : ($w->rt_number ?? '001'))
+                                default => 'RT ' . ($w->clean_rt_number ? str_pad((string)$w->clean_rt_number, 3, '0', STR_PAD_LEFT) : ($w->rt_number ?? '001'))
                             };
                         @endphp
                         <tr>
@@ -646,7 +646,7 @@
                     Tentang Kartu Pintar Warga RW 013
                 </h6>
                 <p class="text-muted small">
-                    Satu kartu RFID multifungsi ini dapat Anda gunakan untuk berbagai fasilitas terpadu di lingkungan RW 013 Sukamiskin:
+                    Satu kartu RFID multifungsi ini dapat Anda gunakan untuk berbagai fasilitas terpadu di lingkungan RW 013 Suryatmajan:
                 </p>
 
                 <div class="row g-2 mb-3">
@@ -696,7 +696,7 @@
         </h6>
 
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
+            <table class="table table-hover align-middle mb-0" style="min-width: 620px;">
                 <thead class="table-light">
                     <tr style="font-size: 0.8rem; text-transform: uppercase;">
                         <th>Waktu Tap</th>
@@ -710,8 +710,8 @@
                     @forelse($portalLogs as $log)
                         <tr>
                             <td>
-                                <div class="fw-semibold text-dark">{{ $log->tapped_at->translatedFormat('d M Y, H:i:s') }}</div>
-                                <small class="text-muted">{{ $log->tapped_at->diffForHumans() }}</small>
+                                <div class="fw-semibold text-dark">{{ $log->tapped_at ? $log->tapped_at->translatedFormat('d M Y, H:i:s') : '-' }}</div>
+                                <small class="text-muted">{{ $log->tapped_at ? $log->tapped_at->diffForHumans() : '-' }}</small>
                             </td>
                             <td>
                                 <span class="badge bg-light text-dark border">

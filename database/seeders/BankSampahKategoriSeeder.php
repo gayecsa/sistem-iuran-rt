@@ -129,7 +129,7 @@ class BankSampahKategoriSeeder extends Seeder
                     'harga_lama' => 0,
                     'harga_baru' => $kat->harga_per_satuan,
                     'diubah_oleh_id' => $adminId,
-                    'alasan_perubahan' => 'Penetapan tarif dasar resmi Bank Sampah Terpadu RW 013 Sukamiskin Arcamanik.',
+                    'alasan_perubahan' => 'Penetapan tarif dasar resmi Bank Sampah Terpadu RW 013 Suryatmajan Danurejan.',
                 ]);
             }
         }

@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Haven Portal — Safe Space, Seamless Service</title>
-    <meta name="description" content="Haven Portal – Safe Space, Seamless Service. Sistem Informasi dan Layanan Terpadu RW 013 Kel. Sukamiskin, Kec. Arcamanik, Bandung. Masuk atau daftar untuk mengakses layanan warga.">
+    <meta name="description" content="Haven Portal – Safe Space, Seamless Service. Sistem Informasi dan Layanan Terpadu RW 013 Kel. Suryatmajan, Kec. Danurejan, Yogyakarta. Masuk atau daftar untuk mengakses layanan warga.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -576,7 +576,7 @@ $logoSvg = '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/s
     {{-- ======================================================================
          PANEL KIRI: BRANDING BIRU HAVEN SMART RW 013
          ====================================================================== --}}
-    <section class="auth-brand-panel" aria-label="Portal Smart RW 013 Sukamiskin">
+    <section class="auth-brand-panel" aria-label="Portal Smart RW 013 Suryatmajan">
         <div class="brand-top">
             <div class="brand-logo-badge">
                 {!! $logoSvg !!}
@@ -585,7 +585,7 @@ $logoSvg = '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/s
 
             <h1>Safe Space, <span>Seamless Service</span></h1>
             <p class="desc">
-                Selamat datang di Haven Portal. Portal digital terintegrasi warga RW 013 Sukamiskin Arcamanik untuk kenyamanan, transparansi keuangan, dan pelayanan prima.
+                Selamat datang di Haven Portal. Portal digital terintegrasi warga RW 013 Suryatmajan Danurejan untuk kenyamanan, transparansi keuangan, dan pelayanan prima.
             </p>
 
             <div class="brand-features">
@@ -623,7 +623,7 @@ $logoSvg = '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/s
 
         <div class="brand-footer">
             <i class="fas fa-shield-halved" style="color: #6EE7B7;"></i>
-            <span>Haven Portal &bull; havenportal.mehape.com &bull; RW 013 Sukamiskin</span>
+            <span>Haven Portal &bull; havenportal.mehape.com &bull; RW 013 Suryatmajan</span>
         </div>
     </section>
 
@@ -890,7 +890,7 @@ $logoSvg = '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/s
                         <label for="regAddress">Alamat Lengkap Domisili <span class="text-danger">*</span></label>
                         <div class="control area">
                             <i class="fas fa-location-dot lead"></i>
-                            <textarea id="regAddress" name="address" rows="2" class="{{ $re('address') ? 'is-invalid' : '' }}" placeholder="Nama Jalan, Blok, RT/RW, Sukamiskin Arcamanik" required>{{ old('address') }}</textarea>
+                            <textarea id="regAddress" name="address" rows="2" class="{{ $re('address') ? 'is-invalid' : '' }}" placeholder="Nama Jalan, Blok, RT/RW, Suryatmajan Danurejan" required>{{ old('address') }}</textarea>
                         </div>
                         @if($re('address'))<div class="error"><i class="fas fa-circle-exclamation"></i>{{ $errors->first('address') }}</div>@endif
                     </div>

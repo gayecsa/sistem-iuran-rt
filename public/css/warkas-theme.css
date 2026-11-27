@@ -3418,3 +3418,79 @@ body.dark-mode .badge-cat-sistem {
     }
 }
 
+/* ==========================================================================
+   28. MOBILE COMPACT DASHBOARDS & RESPONSIVE TABLES (< 768px)
+   ========================================================================== */
+@media (max-width: 767.98px) {
+    /* Compact Hero Cards */
+    .sa-hero-card {
+        padding: 16px 18px !important;
+        border-radius: 14px !important;
+        margin-bottom: 14px !important;
+    }
+    .sa-hero-card h2 {
+        font-size: 1.25rem !important;
+        margin-bottom: 4px !important;
+    }
+    .dashboard-container > .wm-card:first-child,
+    .wm-card.mb-4:first-of-type {
+        padding: 14px 16px !important;
+        border-radius: 14px !important;
+        margin-bottom: 14px !important;
+    }
+    .dashboard-container > .wm-card:first-child h4 {
+        font-size: 1.15rem !important;
+    }
+    .dashboard-container > .wm-card:first-child img {
+        width: 44px !important;
+        height: 44px !important;
+    }
+
+    /* Compact KPI Cards (2x2 Grid) */
+    .sa-kpi-card,
+    .rt-kpi-card,
+    .wm-stat-card {
+        padding: 12px 14px !important;
+        border-radius: 12px !important;
+    }
+    .sa-kpi-card h3,
+    .rt-kpi-card h3,
+    .wm-stat-card .wm-stat-val {
+        font-size: 1.2rem !important;
+        margin-bottom: 2px !important;
+    }
+    .sa-kpi-card .small,
+    .rt-kpi-card .small,
+    .wm-stat-card .small {
+        font-size: 0.7rem !important;
+    }
+    .sa-kpi-card .pt-3.mt-3,
+    .rt-kpi-card .pt-2.mt-3 {
+        padding-top: 6px !important;
+        margin-top: 6px !important;
+    }
+
+    /* Universal Responsive Tables: prevent column squeezing & header truncation */
+    .table-responsive > table,
+    .table-responsive > .table,
+    .table-responsive > .wm-table,
+    .table-responsive > .table-ronda,
+    .table-responsive > .table-audit {
+        min-width: 680px;
+    }
+    .table-responsive > table th,
+    .table-responsive > .table th,
+    .table-responsive > .wm-table th {
+        white-space: nowrap !important;
+        font-size: 0.74rem !important;
+        padding: 8px 10px !important;
+    }
+    .table-responsive > table td,
+    .table-responsive > .table td,
+    .table-responsive > .wm-table td {
+        font-size: 0.8rem !important;
+        padding: 10px 10px !important;
+    }
+}
+
+

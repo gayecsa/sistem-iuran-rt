@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Kegiatan Posyandu RT {{ $laporan->rt_number }} - RW 013 Sukamiskin</title>
+    <title>Laporan Kegiatan Posyandu RT {{ $laporan->rt_number }} - RW 013 Suryatmajan</title>
     <style>
         body {
             font-family: 'Times New Roman', Times, serif;
@@ -150,9 +150,9 @@
         <!-- KOP SURAT RESMI RW 013 -->
         <div class="kop-surat">
             <h4>RUKUN WARGA 013</h4>
-            <h3>KELURAHAN SUKAMISKIN KECAMATAN ARCAMANIK</h3>
-            <h3>KOTA BANDUNG</h3>
-            <p>Sekretariat: Pos Balai Warga RW 013, Jl. Golf Raya No. 15, Sukamiskin, Arcamanik, Kota Bandung 40293</p>
+            <h3>KELURAHAN Suryatmajan KECAMATAN Danurejan</h3>
+            <h3>Kota Yogyakarta</h3>
+            <p>Sekretariat: Pos Balai Warga RW 013, Jl. Mataram No. 15, Suryatmajan, Danurejan, Kota Yogyakarta 55213</p>
         </div>
 
         <!-- JUDUL DOKUMEN -->
@@ -166,7 +166,7 @@
             <tr>
                 <td style="width: 25%;"><strong>Wilayah Penyelenggara</strong></td>
                 <td style="width: 2%;">:</td>
-                <td>Rukun Tetangga (RT) {{ $laporan->rt_number }} / RW 013 Sukamiskin</td>
+                <td>Rukun Tetangga (RT) {{ $laporan->rt_number }} / RW 013 Suryatmajan</td>
             </tr>
             <tr>
                 <td><strong>Nama Unit Posyandu</strong></td>
@@ -191,7 +191,7 @@
             <tr>
                 <td><strong>Mitra Tenaga Medis</strong></td>
                 <td>:</td>
-                <td>{{ $laporan->jadwal->mitra_nakes ?? 'UPTD Puskesmas Arcamanik Kota Bandung' }}</td>
+                <td>{{ $laporan->jadwal->mitra_nakes ?? 'UPTD Puskesmas Danurejan Kota Yogyakarta' }}</td>
             </tr>
         </table>
 
@@ -259,7 +259,7 @@
                 <tr>
                     <td>
                         Mengetahui,<br>
-                        <strong>Ketua RW 013 Sukamiskin</strong>
+                        <strong>Ketua RW 013 Suryatmajan</strong>
                         <div class="ttd-space"></div>
                         <strong>( {{ \App\Models\User::where('role', 'rw')->value('name') ?? (Auth::user()->role === 'rw' ? Auth::user()->name : 'Ketua RW 013') }} )</strong>
                     </td>

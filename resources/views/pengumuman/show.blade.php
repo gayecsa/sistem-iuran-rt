@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $pengumuman->judul . ' - Pengumuman RW 013 Sukamiskin')
+@section('title', $pengumuman->judul . ' - Pengumuman RW 013 Suryatmajan')
 
 @section('content')
 <!-- Tailwind CDN with Preflight Disabled to Prevent Conflict with Bootstrap & Warkas Theme -->
@@ -77,7 +77,7 @@
                     <i data-lucide="{{ $pengumuman->fallback_icon }}" class="w-10 h-10 text-white"></i>
                 </div>
                 <span class="text-xs font-extrabold tracking-widest uppercase text-white/90">
-                    Pengumuman Resmi RW 013 Sukamiskin
+                    Pengumuman Resmi RW 013 Suryatmajan
                 </span>
             </div>
         @endif
@@ -94,7 +94,7 @@
                     <i data-lucide="shield-check" class="w-4 h-4"></i>
                 </div>
                 <div>
-                    <p class="font-bold text-slate-800">Sekretariat RW 013 Sukamiskin</p>
+                    <p class="font-bold text-slate-800">Sekretariat RW 013 Suryatmajan</p>
                     <p class="text-[11px] text-slate-400">Diterbitkan pada {{ \Carbon\Carbon::parse($pengumuman->created_at)->translatedFormat('d M Y H:i') }} WIB</p>
                 </div>
             </div>

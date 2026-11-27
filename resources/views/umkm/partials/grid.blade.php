@@ -79,7 +79,7 @@
                         <img src="{{ $umkm->owner_avatar_url }}" alt="{{ $umkm->owner_name }}" class="w-4 h-4 rounded-full object-cover">
                         <span class="truncate max-w-[140px]">{{ $umkm->owner_name }}</span>
                         <span>&bull;</span>
-                        <span class="truncate">Sukamiskin</span>
+                        <span class="truncate">Suryatmajan</span>
                     </div>
 
                     {{-- Alamat Singkat --}}

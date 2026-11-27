@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Katalog Layanan Publik Surat & Administrasi Warga | RW 013 Sukamiskin Bandung</title>
+    <title>Katalog Layanan Publik Surat & Administrasi Warga | RW 013 Suryatmajan Yogyakarta</title>
 
     <!-- Google Fonts: Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -55,7 +55,7 @@
                 </div>
                 <div>
                     <strong class="text-dark d-block" style="font-size: 1.05rem; line-height: 1.2;">Haven</strong>
-                    <span class="text-muted small" style="font-size: 0.75rem;">Safe Space, Seamless Service &bull; RW 013 Sukamiskin</span>
+                    <span class="text-muted small" style="font-size: 0.75rem;">Safe Space, Seamless Service &bull; RW 013 Suryatmajan</span>
                 </div>
             </a>
 
@@ -84,7 +84,7 @@
             </span>
             <h1 class="fw-bold mb-3">Katalog Layanan Surat & Administrasi Warga</h1>
             <p class="text-white text-opacity-80 fs-6 mb-4">
-                Informasi resmi persyaratan, estimasi waktu penyelesaian, dan prosedur pengajuan surat keterangan serta pengantar untuk seluruh warga RT 001 sampai RT 008, RW 013 Kelurahan Sukamiskin, Kecamatan Arcamanik, Kota Bandung 40293.
+                Informasi resmi persyaratan, estimasi waktu penyelesaian, dan prosedur pengajuan surat keterangan serta pengantar untuk seluruh warga RT 001 sampai RT 008, RW 013 Kelurahan Suryatmajan, Kecamatan Danurejan, Kota Yogyakarta 55213.
             </p>
 
             {{-- Form Pencarian Cepat --}}
@@ -225,14 +225,14 @@
         <div class="card border-0 shadow-sm rounded-4 p-4 text-white" style="background: linear-gradient(135deg, #123766 0%, #0F2D54 100%);">
             <div class="row align-items-center g-3">
                 <div class="col-12 col-md-8">
-                    <h5 class="fw-bold mb-1">Sekretariat Pelayanan Warga RW 013 Sukamiskin</h5>
+                    <h5 class="fw-bold mb-1">Sekretariat Pelayanan Warga RW 013 Suryatmajan</h5>
                     <p class="text-white text-opacity-80 small mb-2">
-                        Jl. Pacantel No. 12, Kelurahan Sukamiskin, Kecamatan Arcamanik, Kota Bandung 40293.
+                        Jl. Pacantel No. 12, Kelurahan Suryatmajan, Kecamatan Danurejan, Kota Yogyakarta 55213.
                     </p>
                     <div class="d-flex flex-wrap gap-3 small text-white text-opacity-90">
                         <span><i data-lucide="phone" style="width:14px;height:14px;" class="me-1"></i> (022) 7208130</span>
                         <span><i data-lucide="clock" style="width:14px;height:14px;" class="me-1"></i> Pelayanan: Senin - Sabtu (08.00 - 17.00 WIB)</span>
-                        <span><i data-lucide="mail" style="width:14px;height:14px;" class="me-1"></i> rw013.sukamiskin@bandung.go.id</span>
+                        <span><i data-lucide="mail" style="width:14px;height:14px;" class="me-1"></i> rw013.Suryatmajan@Yogyakarta.go.id</span>
                     </div>
                 </div>
                 <div class="col-12 col-md-4 text-md-end">
@@ -248,7 +248,7 @@
     {{-- FOOTER --}}
     <footer class="py-4 border-top bg-white text-center text-muted small">
         <div class="container">
-            &copy; 2026 Haven &bull; Safe Space, Seamless Service &bull; havenportal.id &bull; RW 013 Sukamiskin Arcamanik Kota Bandung. Seluruh hak cipta dilindungi.
+            &copy; 2026 Haven &bull; Safe Space, Seamless Service &bull; havenportal.id &bull; RW 013 Suryatmajan Danurejan Kota Yogyakarta. Seluruh hak cipta dilindungi.
         </div>
     </footer>
 

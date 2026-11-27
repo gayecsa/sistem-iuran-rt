@@ -184,7 +184,7 @@
 
                     <div class="mb-3">
                         <label class="form-label fw-bold small text-dark">Alasan Perubahan Tarif <span class="text-danger">*</span></label>
-                        <textarea name="alasan_perubahan" class="form-control rounded-3" rows="3" required placeholder="Contoh: Mengikuti penyesuaian harga pasar pengepul daur ulang Kota Bandung periode November 2026..."></textarea>
+                        <textarea name="alasan_perubahan" class="form-control rounded-3" rows="3" required placeholder="Contoh: Mengikuti penyesuaian harga pasar pengepul daur ulang Kota Yogyakarta periode November 2026..."></textarea>
                         <small class="text-muted">Wajib diisi sebagai bagian dari akuntabilitas & audit log RW 013.</small>
                     </div>
 

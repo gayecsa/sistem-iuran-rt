@@ -38,9 +38,9 @@
                 <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight mt-2 text-white">Bayar Iuran & Konfirmasi</h1>
                 <p class="text-blue-100 text-sm mt-1">
                     @if($kartuKeluarga)
-                        Keluarga {{ $kartuKeluarga->nama_kepala_keluarga }} • No. KK: {{ $kartuKeluarga->masked_no_kk }} • {{ $kartuKeluarga->clean_rt_label }} RW 013 Sukamiskin
+                        Keluarga {{ $kartuKeluarga->nama_kepala_keluarga }} • No. KK: {{ $kartuKeluarga->masked_no_kk }} • {{ $kartuKeluarga->clean_rt_label }} RW 013 Suryatmajan
                     @else
-                        Akun Warga RW 013 Sukamiskin
+                        Akun Warga RW 013 Suryatmajan
                     @endif
                 </p>
             </div>
@@ -179,7 +179,7 @@
                                 <label class="block text-xs font-bold text-slate-700 mb-1">Metode Pembayaran <span class="text-rose-500">*</span></label>
                                 <select name="metode_pembayaran" required class="w-full text-xs font-medium border border-slate-300 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-[#1456A0] outline-none">
                                     <option value="Transfer Bank">Transfer Bank (Mandiri / BCA / BJB)</option>
-                                    <option value="QRIS">QRIS Standar RW 013 Sukamiskin</option>
+                                    <option value="QRIS">QRIS Standar RW 013 Suryatmajan</option>
                                     <option value="Tunai">Tunai ke Bendahara RT {{ $kartuKeluarga->clean_rt ?? '001' }}</option>
                                 </select>
                             </div>
@@ -240,7 +240,7 @@
                             <span class="px-2 py-0.5 rounded bg-blue-200 text-[#0F3966] font-bold text-[10px]">{{ $kasRw->nama_bank ?? 'Bank Mandiri' }}</span>
                         </div>
                         <p class="font-mono text-base font-extrabold text-[#1456A0] tracking-wide select-all">{{ $kasRw->no_rekening ?? '130-00-1928374-1' }}</p>
-                        <p class="text-[11px] text-slate-500">a.n. {{ $kasRw->atas_nama ?? 'PENGURUS RW 013 SUKAMISKIN' }}</p>
+                        <p class="text-[11px] text-slate-500">a.n. {{ $kasRw->atas_nama ?? 'PENGURUS RW 013 Suryatmajan' }}</p>
                     </div>
 
                     <!-- Rekening Kas RT -->

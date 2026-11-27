@@ -96,7 +96,7 @@
                         <div class="p-2 bg-light rounded-3">
                             <span class="text-muted d-block" style="font-size: 11px;">Alamat Tempat Tinggal Resmi:</span>
                             <strong class="text-dark">{{ $kk->alamat ?: '-' }}</strong>
-                            <span class="text-muted d-block" style="font-size: 11px;">Kelurahan Sukamiskin, Kecamatan Arcamanik, Kota Bandung 40293</span>
+                            <span class="text-muted d-block" style="font-size: 11px;">Kelurahan Suryatmajan, Kecamatan Danurejan, Kota Yogyakarta 55213</span>
                         </div>
                     </div>
                 </div>
@@ -572,7 +572,7 @@
 
                     <div class="mb-3">
                         <label class="form-label fw-bold small text-dark">Sumber Dokumen</label>
-                        <input type="text" name="sumber_dokumen" class="form-control rounded-3" placeholder="Disdukcapil Kota Bandung / Kantor Kelurahan Sukamiskin" value="{{ $kk->sumber_dokumen }}">
+                        <input type="text" name="sumber_dokumen" class="form-control rounded-3" placeholder="Disdukcapil Kota Yogyakarta / Kantor Kelurahan Suryatmajan" value="{{ $kk->sumber_dokumen }}">
                     </div>
                 </div>
                 <div class="modal-footer border-top bg-light">
@@ -615,7 +615,7 @@
                         <select name="metode_verifikasi" class="form-select rounded-3" required>
                             <option value="Pemeriksaan Berkas Fisik Asli">Pemeriksaan Berkas Fisik Asli</option>
                             <option value="Konfirmasi Langsung ke Warga / RT">Konfirmasi Langsung ke Warga / RT</option>
-                            <option value="Validasi Arsip Disdukcapil Kota Bandung">Validasi Arsip Disdukcapil Kota Bandung</option>
+                            <option value="Validasi Arsip Disdukcapil Kota Yogyakarta">Validasi Arsip Disdukcapil Kota Yogyakarta</option>
                         </select>
                     </div>
 
@@ -783,7 +783,7 @@
                             document.getElementById('qvHubungan').textContent = data.hubungan_keluarga;
                             document.getElementById('qvRt').textContent = data.rt;
                             document.getElementById('qvGenderAge').textContent = data.gender + ' (' + (data.age ? data.age + ' Tahun' : '-') + ')';
-                            document.getElementById('qvTtl').textContent = (data.tempat_lahir || 'Bandung') + ', ' + data.tanggal_lahir;
+                            document.getElementById('qvTtl').textContent = (data.tempat_lahir || 'Yogyakarta') + ', ' + data.tanggal_lahir;
                             document.getElementById('qvAgamaKawin').textContent = (data.agama || 'Islam') + ' / ' + (data.status_perkawinan || 'Belum Kawin');
                             document.getElementById('qvPekerjaan').textContent = data.pekerjaan || '-';
                             document.getElementById('qvPhone').textContent = data.phone;

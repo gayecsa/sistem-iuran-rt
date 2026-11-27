@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Keuangan Resmi RW 013 Sukamiskin - {{ $startDate }} s/d {{ $endDate }}</title>
+    <title>Laporan Keuangan Resmi RW 013 Suryatmajan - {{ $startDate }} s/d {{ $endDate }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -32,9 +32,9 @@
     <div class="print-container max-w-4xl mx-auto bg-white rounded-2xl shadow-xl border border-slate-200 p-8 sm:p-12">
         <!-- Kop Surat RW 013 -->
         <div class="text-center pb-5 border-b-2 border-slate-900">
-            <p class="text-xs font-bold tracking-widest uppercase text-slate-500">Pemerintah Daerah Kota Bandung • Kecamatan Arcamanik</p>
-            <h1 class="text-xl font-black tracking-tight text-slate-900 uppercase">RUKUN WARGA 013 KELURAHAN SUKAMISKIN</h1>
-            <p class="text-xs text-slate-600 mt-0.5">Sekretariat: Jl. Pacuan Kuda No. 13 RW 013 Sukamiskin, Arcamanik, Kota Bandung 40293</p>
+            <p class="text-xs font-bold tracking-widest uppercase text-slate-500">Pemerintah Daerah Kota Yogyakarta • Kecamatan Danurejan</p>
+            <h1 class="text-xl font-black tracking-tight text-slate-900 uppercase">RUKUN WARGA 013 KELURAHAN Suryatmajan</h1>
+            <p class="text-xs text-slate-600 mt-0.5">Sekretariat: Jl. Malioboro No. 13 RW 013 Suryatmajan, Danurejan, Kota Yogyakarta 55213</p>
             <div class="mt-2.5 inline-block px-4 py-1 bg-slate-900 text-white text-xs font-extrabold tracking-wider rounded uppercase">
                 LAPORAN PERTANGGUNGJAWABAN PERBENDAHARAAN & ARUS KAS
             </div>
@@ -122,16 +122,16 @@
         <div class="mt-12 pt-6 grid grid-cols-2 gap-8 text-xs text-center">
             <div>
                 <p class="text-slate-500">Mengetahui & Menyetujui,</p>
-                <p class="font-bold text-slate-800 mt-0.5">Ketua RW 013 Sukamiskin</p>
+                <p class="font-bold text-slate-800 mt-0.5">Ketua RW 013 Suryatmajan</p>
                 <div class="h-20 flex items-center justify-center">
                     <span class="text-sm font-serif italic text-blue-900 font-bold underline">Gayeca</span>
                 </div>
                 <p class="font-bold text-slate-900 underline text-sm">Gayeca</p>
-                <p class="text-[10px] text-slate-400">Ketua RW 013 Arcamanik</p>
+                <p class="text-[10px] text-slate-400">Ketua RW 013 Danurejan</p>
             </div>
 
             <div>
-                <p class="text-slate-500">Sukamiskin, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</p>
+                <p class="text-slate-500">Suryatmajan, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</p>
                 <p class="font-bold text-slate-800 mt-0.5">Bendahara Perbendaharaan RW 013</p>
                 <div class="h-20 flex items-center justify-center">
                     <span class="text-sm font-serif italic text-slate-700 font-bold underline">Pengurus Keuangan RW</span>

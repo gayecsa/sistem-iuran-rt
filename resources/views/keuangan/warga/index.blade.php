@@ -38,9 +38,9 @@
                 <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight mt-2 text-white">Iuran & Keuangan Saya</h1>
                 <p class="text-blue-100 text-sm mt-1">
                     @if($kartuKeluarga)
-                        Keluarga {{ $kartuKeluarga->nama_kepala_keluarga }} • No. KK: {{ $kartuKeluarga->masked_no_kk }} • {{ $kartuKeluarga->clean_rt_label }} RW 013 Sukamiskin
+                        Keluarga {{ $kartuKeluarga->nama_kepala_keluarga }} • No. KK: {{ $kartuKeluarga->masked_no_kk }} • {{ $kartuKeluarga->clean_rt_label }} RW 013 Suryatmajan
                     @else
-                        Akun Warga RW 013 Sukamiskin
+                        Akun Warga RW 013 Suryatmajan
                     @endif
                 </p>
             </div>
@@ -218,7 +218,7 @@
                                     <div class="flex justify-between items-center p-3.5 rounded-xl bg-slate-50 border border-slate-100 text-sm">
                                         <div>
                                             <span class="font-bold text-base text-slate-800">3. Retribusi Pengangkutan Sampah</span>
-                                            <p class="text-sm text-slate-500">Petugas cator motor sampah door-to-door & TPS Sukamiskin</p>
+                                            <p class="text-sm text-slate-500">Petugas cator motor sampah door-to-door & TPS Suryatmajan</p>
                                         </div>
                                         <span class="font-bold text-base text-slate-800">Rp {{ number_format($tagihanBulanIni->nominal_sampah, 0, ',', '.') }}</span>
                                     </div>
@@ -299,7 +299,7 @@
                                     <div class="bg-white p-4 rounded-xl border border-slate-200 text-sm space-y-1.5 shadow-sm">
                                         <p class="text-slate-500 text-xs">Transfer ke Rekening Resmi RW 013:</p>
                                         <p class="font-bold text-slate-800">{{ $kasRw->nama_bank ?? 'Bank Mandiri' }}: <span class="font-mono text-[#1456A0]">{{ $kasRw->no_rekening ?? '130-00-1928374-1' }}</span></p>
-                                        <p class="text-xs text-slate-500">a.n. {{ $kasRw->atas_nama ?? 'PENGURUS RW 013 SUKAMISKIN' }}</p>
+                                        <p class="text-xs text-slate-500">a.n. {{ $kasRw->atas_nama ?? 'PENGURUS RW 013 Suryatmajan' }}</p>
                                         <hr class="border-slate-100 my-1.5">
                                         <p class="text-xs text-slate-500">Atau bayar tunai ke Bendahara RT {{ $tagihanBulanIni->clean_rt }}.</p>
                                     </div>
@@ -425,7 +425,7 @@
                                     <label class="block text-sm font-bold text-slate-700 mb-1.5">Metode Pembayaran <span class="text-rose-500">*</span></label>
                                     <select name="metode_pembayaran" required class="w-full text-sm font-medium border border-slate-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-[#1456A0] outline-none">
                                         <option value="Transfer Bank">Transfer Bank (Mandiri / BCA / BJB)</option>
-                                        <option value="QRIS">QRIS Standar RW 013 Sukamiskin</option>
+                                        <option value="QRIS">QRIS Standar RW 013 Suryatmajan</option>
                                         <option value="Tunai">Tunai ke Bendahara RT {{ $kartuKeluarga->clean_rt ?? '001' }}</option>
                                     </select>
                                 </div>
@@ -483,7 +483,7 @@
                                 <span class="px-2.5 py-0.5 rounded bg-blue-200 text-[#0F3966] font-bold text-xs">{{ $kasRw->nama_bank ?? 'Bank Mandiri' }}</span>
                             </div>
                             <p class="font-mono text-lg font-extrabold text-[#1456A0] tracking-wide select-all">{{ $kasRw->no_rekening ?? '130-00-1928374-1' }}</p>
-                            <p class="text-xs text-slate-500">a.n. {{ $kasRw->atas_nama ?? 'PENGURUS RW 013 SUKAMISKIN' }}</p>
+                            <p class="text-xs text-slate-500">a.n. {{ $kasRw->atas_nama ?? 'PENGURUS RW 013 Suryatmajan' }}</p>
                         </div>
 
                         <!-- Rekening Kas RT -->

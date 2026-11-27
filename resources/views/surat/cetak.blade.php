@@ -363,22 +363,22 @@
         {{-- KOP SURAT RESMI PEMERINTAHAN --}}
         <div class="kop-surat">
             <div class="kop-logo">
-                {{-- Lambang Garuda / Kota Bandung Stylized Vector Emblem --}}
+                {{-- Lambang Garuda / Kota Yogyakarta Stylized Vector Emblem --}}
                 <svg viewBox="0 0 100 100" width="70" height="70">
                     <circle cx="50" cy="50" r="46" fill="#123766" stroke="#C5A059" stroke-width="2.5"/>
                     <circle cx="50" cy="50" r="41" fill="none" stroke="#ffffff" stroke-width="1" stroke-dasharray="2,2"/>
                     <path d="M50 16 L56 32 L72 32 L59 42 L64 58 L50 48 L36 58 L41 42 L28 32 L44 32 Z" fill="#C5A059"/>
                     <text x="50" y="70" text-anchor="middle" fill="#ffffff" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" font-weight="700" letter-spacing="0.5">RW 013</text>
-                    <text x="50" y="80" text-anchor="middle" fill="#ffffff" font-family="'Plus Jakarta Sans', sans-serif" font-size="6" font-weight="600">SUKAMISKIN</text>
+                    <text x="50" y="80" text-anchor="middle" fill="#ffffff" font-family="'Plus Jakarta Sans', sans-serif" font-size="6" font-weight="600">Suryatmajan</text>
                 </svg>
             </div>
 
             <div class="kop-teks">
-                <h4>PEMERINTAH DAERAH KOTA BANDUNG</h4>
-                <h3>KECAMATAN ARCAMANIK - KELURAHAN SUKAMISKIN</h3>
+                <h4>PEMERINTAH DAERAH Kota Yogyakarta</h4>
+                <h3>KECAMATAN Danurejan - KELURAHAN Suryatmajan</h3>
                 <h2>RUKUN WARGA 013 &bull; RUKUN TETANGGA {{ $letter->rt }}</h2>
-                <p>Sekretariat: Jl. Pacantel No. 12, Kelurahan Sukamiskin, Kecamatan Arcamanik, Kota Bandung 40293</p>
-                <p style="font-size: 8pt; margin-top: 1px;">Telepon: (022) 7208130 &bull; Pos-el: rw013.sukamiskin@bandung.go.id</p>
+                <p>Sekretariat: Jl. Pacantel No. 12, Kelurahan Suryatmajan, Kecamatan Danurejan, Kota Yogyakarta 55213</p>
+                <p style="font-size: 8pt; margin-top: 1px;">Telepon: (022) 7208130 &bull; Pos-el: rw013.Suryatmajan@Yogyakarta.go.id</p>
             </div>
         </div>
 
@@ -396,7 +396,7 @@
         {{-- BADAN SURAT --}}
         <div class="surat-body">
             <p class="surat-paragraf">
-                Yang bertanda tangan di bawah ini, Pengurus Rukun Tetangga {{ $letter->rt }} dan Pengurus Rukun Warga 013 Kelurahan Sukamiskin, Kecamatan Arcamanik, Kota Bandung, menerangkan dengan sebenarnya bahwa:
+                Yang bertanda tangan di bawah ini, Pengurus Rukun Tetangga {{ $letter->rt }} dan Pengurus Rukun Warga 013 Kelurahan Suryatmajan, Kecamatan Danurejan, Kota Yogyakarta, menerangkan dengan sebenarnya bahwa:
             </p>
 
             {{-- TABEL BIODATA RESMI --}}
@@ -446,7 +446,7 @@
                     <td class="colon">:</td>
                     <td class="value">
                         {{ $letter->alamat_jalan }} No. {{ $letter->no_rumah }}, RT {{ $letter->rt }} / RW {{ $letter->rw }},<br>
-                        Kelurahan {{ $letter->kelurahan }}, Kecamatan {{ $letter->kecamatan }}, Kota Bandung, Jawa Barat ({{ $letter->kode_pos }})
+                        Kelurahan {{ $letter->kelurahan }}, Kecamatan {{ $letter->kecamatan }}, Kota Yogyakarta, DI Yogyakarta ({{ $letter->kode_pos }})
                     </td>
                 </tr>
             </table>
@@ -458,11 +458,11 @@
                 </p>
             @elseif($letter->jenis_surat === 'domisili')
                 <p class="surat-paragraf">
-                    Bahwa nama tersebut di atas adalah benar-benar warga yang berdomisili dan bertempat tinggal sah di alamat tersebut di wilayah Rukun Tetangga {{ $letter->rt }} Rukun Warga 013 Kelurahan Sukamiskin, Kecamatan Arcamanik, Kota Bandung.
+                    Bahwa nama tersebut di atas adalah benar-benar warga yang berdomisili dan bertempat tinggal sah di alamat tersebut di wilayah Rukun Tetangga {{ $letter->rt }} Rukun Warga 013 Kelurahan Suryatmajan, Kecamatan Danurejan, Kota Yogyakarta.
                 </p>
             @elseif($letter->jenis_surat === 'sktm' || $letter->jenis_surat === 'tidak-mampu')
                 <p class="surat-paragraf">
-                    Bahwa nama tersebut di atas adalah benar-benar warga yang berdomisili di lingkungan RT {{ $letter->rt }} / RW 013 Kelurahan Sukamiskin, Kecamatan Arcamanik, Kota Bandung, dan berdasarkan data verifikasi lapangan yang bersangkutan tergolong ke dalam <strong>Keluarga Kurang Mampu / Prasejahtera</strong>.
+                    Bahwa nama tersebut di atas adalah benar-benar warga yang berdomisili di lingkungan RT {{ $letter->rt }} / RW 013 Kelurahan Suryatmajan, Kecamatan Danurejan, Kota Yogyakarta, dan berdasarkan data verifikasi lapangan yang bersangkutan tergolong ke dalam <strong>Keluarga Kurang Mampu / Prasejahtera</strong>.
                 </p>
             @elseif($letter->jenis_surat === 'usaha' || $letter->jenis_surat === 'sku')
                 <p class="surat-paragraf">
@@ -493,11 +493,11 @@
             <div class="tanda-tangan-block" style="justify-content: flex-end;">
                 <div class="ttd-box">
                     <div style="font-size: 11pt; margin-bottom: 3px;">
-                        Bandung, {{ $letter->rt_approved_at ? $letter->rt_approved_at->translatedFormat('d F Y') : date('d F Y') }}
+                        Yogyakarta, {{ $letter->rt_approved_at ? $letter->rt_approved_at->translatedFormat('d F Y') : date('d F Y') }}
                     </div>
                     <div class="ttd-jabatan">
-                        Ketua RT {{ $letter->rt }} Kel. Sukamiskin<br>
-                        Kecamatan Arcamanik<br>
+                        Ketua RT {{ $letter->rt }} Kel. Suryatmajan<br>
+                        Kecamatan Danurejan<br>
                     </div>
 
                     {{-- Stempel Digital RT --}}
@@ -505,7 +505,7 @@
                         <div class="stempel-inner">
                             <span style="font-size: 6.5pt;">PENGURUS RT</span>
                             <span style="font-size: 9pt; font-weight: 800;">RT {{ $letter->rt }}</span>
-                            <span style="font-size: 5.5pt;">SUKAMISKIN</span>
+                            <span style="font-size: 5.5pt;">Suryatmajan</span>
                             <span style="font-size: 6pt; color:#16865D; font-weight: 800;">PENGESAHAN</span>
                         </div>
                     </div>
@@ -520,7 +520,7 @@
                 <div class="ttd-box">
                     <div style="font-size: 11pt; margin-bottom: 3px;">Mengetahui,</div>
                     <div class="ttd-jabatan">
-                        Ketua RT {{ $letter->rt }} Kel. Sukamiskin<br>
+                        Ketua RT {{ $letter->rt }} Kel. Suryatmajan<br>
                         <span style="font-size: 9.5pt; font-weight: normal; color: #444;">
                             Diverifikasi: {{ $letter->rt_approved_at ? $letter->rt_approved_at->translatedFormat('d F Y') : '-' }}
                         </span>
@@ -531,7 +531,7 @@
                         <div class="stempel-inner">
                             <span style="font-size: 6.5pt;">PENGURUS RT</span>
                             <span style="font-size: 9pt; font-weight: 800;">RT {{ $letter->rt }}</span>
-                            <span style="font-size: 5.5pt;">SUKAMISKIN</span>
+                            <span style="font-size: 5.5pt;">Suryatmajan</span>
                             <span style="font-size: 6pt; color:#16865D; font-weight: 800;">TERVERIFIKASI</span>
                         </div>
                     </div>
@@ -543,11 +543,11 @@
                 {{-- Kanan: Ketua RW --}}
                 <div class="ttd-box">
                     <div style="font-size: 11pt; margin-bottom: 3px;">
-                        Bandung, {{ $letter->rw_approved_at ? $letter->rw_approved_at->translatedFormat('d F Y') : date('d F Y') }}
+                        Yogyakarta, {{ $letter->rw_approved_at ? $letter->rw_approved_at->translatedFormat('d F Y') : date('d F Y') }}
                     </div>
                     <div class="ttd-jabatan">
-                        Ketua RW 013 Kel. Sukamiskin<br>
-                        Kecamatan Arcamanik<br>
+                        Ketua RW 013 Kel. Suryatmajan<br>
+                        Kecamatan Danurejan<br>
                     </div>
 
                     {{-- Stempel Digital RW --}}
@@ -555,7 +555,7 @@
                         <div class="stempel-inner">
                             <span style="font-size: 6.5pt;">PENGURUS RW</span>
                             <span style="font-size: 9.5pt; font-weight: 800;">RW 013</span>
-                            <span style="font-size: 5.5pt;">KOTA BANDUNG</span>
+                            <span style="font-size: 5.5pt;">Kota Yogyakarta</span>
                             <span style="font-size: 6pt; color:#1456A0; font-weight: 800;">PENGESAHAN</span>
                         </div>
                     </div>
@@ -614,7 +614,7 @@
             </div>
 
             <div style="text-align: right; max-width: 250px;">
-                <div>Dokumen sah tanda tangan elektronik berjenjang RT {{ $letter->rt }} - RW 013 Kota Bandung. Dicetak pada {{ date('d/m/Y H:i') }} WIB.</div>
+                <div>Dokumen sah tanda tangan elektronik berjenjang RT {{ $letter->rt }} - RW 013 Kota Yogyakarta. Dicetak pada {{ date('d/m/Y H:i') }} WIB.</div>
             </div>
         </div>
 

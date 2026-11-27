@@ -261,7 +261,7 @@ class Umkm extends Model
         if (str_starts_with($phone, '0')) {
             $phone = '62' . substr($phone, 1);
         }
-        $text = urlencode("Halo {$this->nama_umkm}, saya warga RW 013 Sukamiskin ingin memesan / menanyakan produk Anda.");
+        $text = urlencode("Halo {$this->nama_umkm}, saya warga RW 013 Suryatmajan ingin memesan / menanyakan produk Anda.");
         return "https://wa.me/{$phone}?text={$text}";
     }
 
@@ -273,7 +273,7 @@ class Umkm extends Model
         if ($this->latitude && $this->longitude) {
             return "https://www.google.com/maps/dir/?api=1&destination={$this->latitude},{$this->longitude}&travelmode=driving";
         }
-        $query = urlencode("{$this->nama_umkm}, {$this->alamat}, Sukamiskin, Arcamanik, Bandung");
+        $query = urlencode("{$this->nama_umkm}, {$this->alamat}, Suryatmajan, Danurejan, Yogyakarta");
         return "https://www.google.com/maps/search/?api=1&query={$query}";
     }
 

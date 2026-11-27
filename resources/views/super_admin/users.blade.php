@@ -181,7 +181,7 @@
 
         {{-- Tabel Daftar Pengguna --}}
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0" style="font-size: 0.83rem;">
+            <table class="table table-hover align-middle mb-0" style="min-width: 820px; font-size: 0.83rem;">
                 <thead class="table-light text-muted" style="font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.4px;">
                     <tr>
                         <th class="ps-4 py-3" style="width: 28%;">Nama & Akun</th>

@@ -10,7 +10,7 @@
             </a>
             <div>
                 <h4 class="fw-bold mb-0 text-dark">Laporan Akuntabilitas Bank Sampah Terpadu RW 013</h4>
-                <small class="text-muted">Kelurahan Sukamiskin, Kecamatan Arcamanik, Kota Bandung</small>
+                <small class="text-muted">Kelurahan Suryatmajan, Kecamatan Danurejan, Kota Yogyakarta</small>
             </div>
         </div>
         <div class="d-flex align-items-center gap-2">
@@ -71,8 +71,8 @@
         <!-- Kop Surat Resmi RW 013 -->
         <div class="border-bottom pb-3 mb-4 text-center">
             <h5 class="fw-bold mb-0 text-dark text-uppercase" style="letter-spacing: 0.5px;">RUKUN WARGA 013</h5>
-            <h6 class="fw-bold mb-1 text-dark text-uppercase">KELURAHAN SUKAMISKIN, KECAMATAN ARCAMANIK, KOTA BANDUNG</h6>
-            <p class="mb-0 text-muted small">Sekretariat: Balai RW 013, Jl. Golf Raya No. 15, Sukamiskin, Arcamanik, Bandung 40293</p>
+            <h6 class="fw-bold mb-1 text-dark text-uppercase">KELURAHAN Suryatmajan, KECAMATAN Danurejan, Kota Yogyakarta</h6>
+            <p class="mb-0 text-muted small">Sekretariat: Balai RW 013, Jl. Mataram No. 15, Suryatmajan, Danurejan, Yogyakarta 55213</p>
             <div style="border-top: 2px solid #000; border-bottom: 1px solid #000; height: 4px; margin-top: 8px;"></div>
         </div>
 
@@ -183,12 +183,12 @@
         <div class="row mt-5 pt-4">
             <div class="col-6 text-center">
                 <p class="mb-1 text-muted small">Mengetahui,</p>
-                <p class="fw-bold mb-5 text-dark">Ketua RW 013 Sukamiskin Arcamanik</p>
+                <p class="fw-bold mb-5 text-dark">Ketua RW 013 Suryatmajan Danurejan</p>
                 <p class="fw-bold text-dark mb-0 text-decoration-underline">( {{ \App\Models\User::where('role', 'rw')->value('name') ?? (Auth::user()->role === 'rw' ? Auth::user()->name : 'Ketua RW 013') }} )</p>
                 <small class="text-muted">Ketua RW 013</small>
             </div>
             <div class="col-6 text-center">
-                <p class="mb-1 text-muted small">Bandung, {{ Carbon\Carbon::now()->translatedFormat('d F Y') }}</p>
+                <p class="mb-1 text-muted small">Yogyakarta, {{ Carbon\Carbon::now()->translatedFormat('d F Y') }}</p>
                 <p class="fw-bold mb-5 text-dark">Koordinator Bank Sampah Terpadu</p>
                 <p class="fw-bold text-dark mb-0 text-decoration-underline">{{ $user->name }}</p>
                 <small class="text-muted">ID Petugas: #{{ $user->id }}</small>

@@ -67,7 +67,7 @@
                 <p class="text-primary fw-bold mb-1 fs-6 text-truncate" title="{{ $posyanduUnit->lokasi ?? 'Balai Pertemuan Warga RT ' . $rtStr }}">
                     {{ $posyanduUnit->lokasi ?? 'Balai Pertemuan Warga RT ' . $rtStr }}
                 </p>
-                <small class="text-muted">UPTD Puskesmas Arcamanik</small>
+                <small class="text-muted">UPTD Puskesmas Danurejan</small>
             </div>
         </div>
 
@@ -83,7 +83,7 @@
                     <small class="text-muted">{{ $kaders->first()->no_telepon ?? 'Hubungi Pengurus RT' }}</small>
                 @else
                     <p class="text-dark fw-bold mb-1">Pengurus RT {{ $rtStr }}</p>
-                    <small class="text-muted">Balai Warga Sukamiskin</small>
+                    <small class="text-muted">Balai Warga Suryatmajan</small>
                 @endif
             </div>
         </div>
@@ -248,7 +248,7 @@
                     <i data-lucide="clipboard-list" class="me-2 text-primary" style="width: 20px; height: 20px; vertical-align: middle;"></i>
                     Riwayat Kunjungan & Pengukuran Keluarga Anda
                 </h5>
-                <p class="mb-0 text-muted small">Catatan resmi pelayanan dari kader Posyandu dan tenaga kesehatan UPTD Puskesmas Arcamanik.</p>
+                <p class="mb-0 text-muted small">Catatan resmi pelayanan dari kader Posyandu dan tenaga kesehatan UPTD Puskesmas Danurejan.</p>
             </div>
         </div>
 

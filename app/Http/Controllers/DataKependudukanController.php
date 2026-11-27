@@ -519,7 +519,7 @@ class DataKependudukanController extends Controller
                     'password' => bcrypt('password123'),
                     'role' => 'warga',
                     'gender' => $validated['gender'],
-                    'tempat_lahir' => $validated['tempat_lahir'] ?? 'Bandung',
+                    'tempat_lahir' => $validated['tempat_lahir'] ?? 'Yogyakarta',
                     'tanggal_lahir' => $validated['tanggal_lahir'],
                     'kartu_keluarga_id' => $kk->id,
                     'no_kk' => $kk->no_kk,

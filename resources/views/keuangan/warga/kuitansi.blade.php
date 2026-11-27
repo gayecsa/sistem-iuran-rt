@@ -38,9 +38,9 @@
                 <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight mt-2 text-white">Bukti Pembayaran & Kuitansi Digital</h1>
                 <p class="text-blue-100 text-sm mt-1">
                     @if($kartuKeluarga)
-                        Keluarga {{ $kartuKeluarga->nama_kepala_keluarga }} • No. KK: {{ $kartuKeluarga->masked_no_kk }} • {{ $kartuKeluarga->clean_rt_label }} RW 013 Sukamiskin
+                        Keluarga {{ $kartuKeluarga->nama_kepala_keluarga }} • No. KK: {{ $kartuKeluarga->masked_no_kk }} • {{ $kartuKeluarga->clean_rt_label }} RW 013 Suryatmajan
                     @else
-                        Akun Warga RW 013 Sukamiskin
+                        Akun Warga RW 013 Suryatmajan
                     @endif
                 </p>
             </div>

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Pengumuman Resmi RW 013 Sukamiskin')
+@section('title', 'Pengumuman Resmi RW 013 Suryatmajan')
 
 @section('content')
 <!-- Tailwind CDN with Preflight Disabled to Prevent Conflict with Bootstrap & Warkas Theme -->
@@ -33,11 +33,11 @@
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
             <div>
                 <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/20 backdrop-blur-sm border border-white/30 text-white inline-block">
-                    Pusat Informasi & Pengumuman Resmi • RW 013 Sukamiskin
+                    Pusat Informasi & Pengumuman Resmi • RW 013 Suryatmajan
                 </span>
                 <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight mt-2 text-white">Pengumuman & Agenda Warga</h1>
                 <p class="text-blue-100 text-sm mt-1">
-                    Informasi resmi dan agenda kegiatan warga RW 013 Sukamiskin
+                    Informasi resmi dan agenda kegiatan warga RW 013 Suryatmajan
                 </p>
             </div>
 

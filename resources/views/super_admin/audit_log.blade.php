@@ -324,7 +324,7 @@
         </div>
 
         <div class="table-responsive">
-            <table class="table table-audit align-middle">
+            <table class="table table-audit align-middle" style="min-width: 900px;">
                 <thead>
                     <tr>
                         <th style="min-width: 150px;">Waktu &amp; IP</th>

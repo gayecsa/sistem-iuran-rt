@@ -17,11 +17,11 @@
             <h3 class="fw-bold text-dark mb-1 d-flex align-items-center gap-2">
                 <span>Katalog Layanan Surat Administrasi Terpadu</span>
                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2 py-1" style="font-size: 0.75rem; font-weight: 600;">
-                    18 Layanan Resmi &bull; RW 013 Sukamiskin
+                    18 Layanan Resmi &bull; RW 013 Suryatmajan
                 </span>
             </h3>
             <p class="text-muted mb-0" style="font-size: 0.9rem;">
-                Sistem pelayanan surat keterangan lingkungan, surat pengantar resmi, dan rekomendasi warga RT 001 - RT 008, Kelurahan Sukamiskin, Kecamatan Arcamanik, Kota Bandung 40293.
+                Sistem pelayanan surat keterangan lingkungan, surat pengantar resmi, dan rekomendasi warga RT 001 - RT 008, Kelurahan Suryatmajan, Kecamatan Danurejan, Kota Yogyakarta 55213.
             </p>
         </div>
 
@@ -179,7 +179,7 @@
                         <strong class="text-white small">Pengantar ke Kelurahan / Instansi</strong>
                     </div>
                     <div class="text-white text-opacity-80" style="font-size: 0.8rem; line-height: 1.45;">
-                        Untuk <strong>e-KTP, KK Baru, Pindah Domisili, Kematian, Acara Izin Keramaian</strong>. Menjadi surat pengantar resmi ke Kelurahan Sukamiskin, Disdukcapil, atau Polsek.
+                        Untuk <strong>e-KTP, KK Baru, Pindah Domisili, Kematian, Acara Izin Keramaian</strong>. Menjadi surat pengantar resmi ke Kelurahan Suryatmajan, Disdukcapil, atau Polsek.
                     </div>
                 </div>
             </div>
@@ -393,7 +393,7 @@
                     </div>
                     <h5 class="fw-bold text-dark mb-1">Belum Ada Pengajuan Surat</h5>
                     <p class="text-muted small mx-auto mb-3" style="max-width: 450px;">
-                        Anda belum memiliki riwayat pengajuan surat keterangan atau pengantar di lingkungan RW 013 Sukamiskin.
+                        Anda belum memiliki riwayat pengajuan surat keterangan atau pengantar di lingkungan RW 013 Suryatmajan.
                     </p>
                     <a href="#katalog-layanan" class="btn btn-primary btn-sm px-3 py-2 rounded-3">
                         <i data-lucide="plus" style="width:14px;height:14px;" class="me-1"></i>

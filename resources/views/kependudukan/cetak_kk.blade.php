@@ -108,15 +108,15 @@
                     <td style="width: 38%; font-weight: bold; text-transform: uppercase;">{{ $kk->nama_kepala_keluarga ?: '-' }}</td>
                     <td style="width: 18%;"><strong>Kecamatan</strong></td>
                     <td style="width: 2%;">:</td>
-                    <td style="width: 20%;">ARCAMANIK</td>
+                    <td style="width: 20%;">Danurejan</td>
                 </tr>
                 <tr>
                     <td><strong>Alamat</strong></td>
                     <td>:</td>
-                    <td>{{ $kk->alamat ?: 'RW 013 Sukamiskin' }}</td>
+                    <td>{{ $kk->alamat ?: 'RW 013 Suryatmajan' }}</td>
                     <td><strong>Kabupaten/Kota</strong></td>
                     <td>:</td>
-                    <td>KOTA BANDUNG</td>
+                    <td>Kota Yogyakarta</td>
                 </tr>
                 <tr>
                     <td><strong>RT / RW</strong></td>
@@ -124,15 +124,15 @@
                     <td>{{ str_pad($kk->rt, 3, '0', STR_PAD_LEFT) }} / 013</td>
                     <td><strong>Kode Pos</strong></td>
                     <td>:</td>
-                    <td>40293</td>
+                    <td>55213</td>
                 </tr>
                 <tr>
                     <td><strong>Kelurahan/Desa</strong></td>
                     <td>:</td>
-                    <td>SUKAMISKIN</td>
+                    <td>Suryatmajan</td>
                     <td><strong>Provinsi</strong></td>
                     <td>:</td>
-                    <td>JAWA BARAT</td>
+                    <td>DI Yogyakarta</td>
                 </tr>
             </table>
 
@@ -158,7 +158,7 @@
                             <td style="font-weight: bold; text-transform: uppercase;">{{ $m->name }}</td>
                             <td class="text-center" style="font-family: monospace;">{{ $m->nik }}</td>
                             <td class="text-center">{{ $m->gender === 'Laki-laki' ? 'LAKI-LAKI' : 'PEREMPUAN' }}</td>
-                            <td>{{ strtoupper($m->tempat_lahir ?: 'BANDUNG') }}</td>
+                            <td>{{ strtoupper($m->tempat_lahir ?: 'Yogyakarta') }}</td>
                             <td class="text-center">{{ $m->tanggal_lahir ? $m->tanggal_lahir->format('d-m-Y') : '-' }}</td>
                             <td class="text-center">{{ strtoupper($m->agama ?: 'ISLAM') }}</td>
                             <td>{{ strtoupper($m->pendidikan_terakhir ?: 'SLTA/SEDERAJAT') }}</td>
@@ -204,15 +204,15 @@
                     <p class="mb-1">STATUS DUKCAPIL:</p>
                     <div style="border: 1px dashed #000; padding: 6px; display: inline-block; font-size: 8.5pt;">
                         <strong>TERVERIFIKASI SAH</strong><br>
-                        RW 013 Sukamiskin Arcamanik<br>
+                        RW 013 Suryatmajan Danurejan<br>
                         Tgl: {{ $kk->verified_at ? $kk->verified_at->format('d/m/Y') : date('d/m/Y') }}
                     </div>
                 </div>
                 <div class="col-4 text-center">
-                    <p class="mb-0">Dikeluarkan di: Bandung</p>
+                    <p class="mb-0">Dikeluarkan di: Yogyakarta</p>
                     <p class="mb-4">Pada Tanggal: {{ $kk->tgl_diterbitkan_dukcapil ? $kk->tgl_diterbitkan_dukcapil->format('d F Y') : date('d F Y') }}</p>
                     <p style="margin-top: 38px; font-weight: bold; text-decoration: underline; text-transform: uppercase;">
-                        KETUA RW 013 SUKAMISKIN
+                        KETUA RW 013 Suryatmajan
                     </p>
                 </div>
             </div>

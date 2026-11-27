@@ -584,16 +584,16 @@
 
             <!-- Brand Sapaan & Wilayah -->
             <div class="wm-topbar-title">
-                {{-- Laptop / Desktop (>= 768px): Haven Portal • RW 013 Sukamiskin --}}
+                {{-- Laptop / Desktop (>= 768px): Haven Portal • RW 013 Suryatmajan --}}
                 <div class="d-none d-md-block text-truncate">
-                    <h6 class="mb-0 text-truncate">Haven Portal &bull; RW 013 Sukamiskin</h6>
+                    <h6 class="mb-0 text-truncate">Haven Portal &bull; RW 013 Suryatmajan</h6>
                     <small class="d-block text-truncate">Sistem Koordinasi &amp; Pelayanan Terpadu Warga</small>
                 </div>
 
                 {{-- HP / Mobile (< 768px): Ringkas 1 baris Haven Portal • RW 013 --}}
                 <div class="d-md-none text-truncate" style="max-width: 100%;">
                     <h6 class="mb-0 text-truncate" style="font-size: 0.95rem; line-height: 1.2;">Haven Portal <span class="fw-semibold" style="font-size: 0.80rem; opacity: 0.85;">&bull; RW 013</span></h6>
-                    <small class="d-block text-truncate" style="font-size: 0.68rem; line-height: 1.15;">RW 013 Sukamiskin</small>
+                    <small class="d-block text-truncate" style="font-size: 0.68rem; line-height: 1.15;">RW 013 Suryatmajan</small>
                 </div>
             </div>
         </div>
@@ -971,7 +971,7 @@
         <!-- Footer RW 013 -->
         <footer class="text-center py-4 mt-5 text-muted small" style="border-top: 1px solid var(--wm-border);">
             <p class="mb-1 fw-semibold">&copy; {{ date('Y') }} Haven Portal &bull; Safe Space, Seamless Service &bull; havenportal.mehape.com</p>
-            <p class="mb-0 text-secondary" style="font-size: 0.74rem;">Sistem Koordinasi &amp; Pelayanan Terpadu RW 013, Kelurahan Sukamiskin, Kec. Arcamanik, Kota Bandung 40293.</p>
+            <p class="mb-0 text-secondary" style="font-size: 0.74rem;">Sistem Koordinasi &amp; Pelayanan Terpadu RW 013, Kelurahan Suryatmajan, Kec. Danurejan, Kota Yogyakarta 55213.</p>
         </footer>
     </main>
 

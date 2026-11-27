@@ -539,7 +539,7 @@ class PosyanduController extends Controller
             'jam_selesai' => $validated['jam_selesai'],
             'lokasi' => $validated['lokasi'],
             'jenis_layanan_list' => $validated['jenis_layanan_list'],
-            'mitra_nakes' => $validated['mitra_nakes'] ?? 'UPTD Puskesmas Arcamanik Kota Bandung',
+            'mitra_nakes' => $validated['mitra_nakes'] ?? 'UPTD Puskesmas Danurejan Kota Yogyakarta',
             'status' => 'akan_datang',
             'keterangan' => $validated['keterangan'] ?? null,
             'created_by' => $user->id,

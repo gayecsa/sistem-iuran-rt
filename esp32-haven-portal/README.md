@@ -1,6 +1,6 @@
 # Panduan Perangkat Keras: ESP32 + RFID-RC522 Haven Portal RW 013
 
-Sistem gerbang pintar (Smart Gate) & pembaca kartu RFID terpadu untuk rukun warga RW 013 Sukamiskin Arcamanik Bandung, terhubung langsung ke web [havenportal.mehape.com](https://havenportal.mehape.com).
+Sistem gerbang pintar (Smart Gate) & pembaca kartu RFID terpadu untuk rukun warga RW 013 Suryatmajan Danurejan Kota Yogyakarta, terhubung langsung ke web [havenportal.mehape.com](https://havenportal.mehape.com).
 
 ---
 

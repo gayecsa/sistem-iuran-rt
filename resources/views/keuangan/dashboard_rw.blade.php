@@ -123,7 +123,7 @@
                 </div>
                 <h1 class="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight">Dashboard Keuangan RW 013</h1>
                 <p class="text-blue-100 text-xs sm:text-sm mt-1 max-w-2xl">
-                    <i data-lucide="map-pin" class="w-3.5 h-3.5 inline text-emerald-300"></i> Kelurahan Sukamiskin, Kecamatan Arcamanik, Kota Bandung &bull; Periode: <strong>{{ \Carbon\Carbon::parse($currentPeriode . '-01')->translatedFormat('F Y') }}</strong>
+                    <i data-lucide="map-pin" class="w-3.5 h-3.5 inline text-emerald-300"></i> Kelurahan Suryatmajan, Kecamatan Danurejan, Kota Yogyakarta &bull; Periode: <strong>{{ \Carbon\Carbon::parse($currentPeriode . '-01')->translatedFormat('F Y') }}</strong>
                 </p>
             </div>
 
@@ -342,7 +342,7 @@
                     </span>
                 </div>
                 <p class="text-xs text-slate-500 mt-1 mb-0">
-                    Pencatatan mutasi kas yang murni dimiliki oleh Pengurus RW 013 Sukamiskin. Bebas dari pencampuran kas RT maupun unit kerja.
+                    Pencatatan mutasi kas yang murni dimiliki oleh Pengurus RW 013 Suryatmajan. Bebas dari pencampuran kas RT maupun unit kerja.
                 </p>
             </div>
             <div class="flex items-center gap-2">
@@ -754,7 +754,7 @@
                         <h2 class="text-base font-bold text-slate-800 flex items-center gap-2 mb-0">
                             <i data-lucide="trending-up" class="w-5 h-5 text-[#1456A0]"></i> Perkembangan Saldo Kas RW
                         </h2>
-                        <p class="text-xs text-slate-500 mt-0.5 mb-0">Kurva saldo Kas Induk RW 013 Sukamiskin</p>
+                        <p class="text-xs text-slate-500 mt-0.5 mb-0">Kurva saldo Kas Induk RW 013 Suryatmajan</p>
                     </div>
                 </div>
 

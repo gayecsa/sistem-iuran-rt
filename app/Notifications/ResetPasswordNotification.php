@@ -44,12 +44,12 @@ class ResetPasswordNotification extends Notification
         ], false));
 
         return (new MailMessage)
-            ->subject('Reset Kata Sandi Akun Haven — RW 013 Sukamiskin')
+            ->subject('Reset Kata Sandi Akun Haven — RW 013 Suryatmajan')
             ->greeting('Halo, ' . ($notifiable->name ?? 'Warga RW 013') . '!')
-            ->line('Kami menerima permintaan untuk mengatur ulang kata sandi akun Haven Anda di RW 013 Kelurahan Sukamiskin.')
+            ->line('Kami menerima permintaan untuk mengatur ulang kata sandi akun Haven Anda di RW 013 Kelurahan Suryatmajan.')
             ->action('Atur Ulang Kata Sandi', $resetUrl)
             ->line('Tautan pengaturan ulang kata sandi ini akan kedaluwarsa dalam 60 menit.')
             ->line('Jika Anda tidak pernah meminta pengaturan ulang kata sandi, abaikan email ini dan kata sandi Anda akan tetap aman.')
-            ->salutation("Salam hangat,\nPengurus RW 013 Sukamiskin");
+            ->salutation("Salam hangat,\nPengurus RW 013 Suryatmajan");
     }
 }

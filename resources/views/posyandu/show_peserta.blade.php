@@ -80,7 +80,7 @@
                             <i data-lucide="line-chart" class="me-2 text-success" style="width: 20px; height: 20px; vertical-align: middle;"></i>
                             Buku Riwayat Perkembangan Fisik & Tanda Vital
                         </h5>
-                        <p class="mb-0 text-muted small">Rekam pengukuran berkala oleh kader posyandu dan tenaga medis Puskesmas Arcamanik.</p>
+                        <p class="mb-0 text-muted small">Rekam pengukuran berkala oleh kader posyandu dan tenaga medis Puskesmas Danurejan.</p>
                     </div>
                 </div>
 
@@ -88,7 +88,7 @@
                 <div class="alert alert-info border-0 rounded-3 p-3 mb-3 d-flex align-items-start gap-2" style="background: #E1F5FE; color: #0277BD;">
                     <i data-lucide="info" class="mt-1 flex-shrink-0" style="width: 16px; height: 16px;"></i>
                     <small style="font-size: 11px;">
-                        <strong>Catatan Resmi:</strong> Hasil pengukuran ini merupakan pencatatan deteksi tumbuh kembang dan skrining kesehatan awal di tingkat lingkungan. Diagnosis dan interpretasi medis resmi dilakukan oleh dokter atau bidan UPTD Puskesmas Arcamanik.
+                        <strong>Catatan Resmi:</strong> Hasil pengukuran ini merupakan pencatatan deteksi tumbuh kembang dan skrining kesehatan awal di tingkat lingkungan. Diagnosis dan interpretasi medis resmi dilakukan oleh dokter atau bidan UPTD Puskesmas Danurejan.
                     </small>
                 </div>
 
@@ -263,7 +263,7 @@
 
                     <div class="mb-3">
                         <label class="form-label fw-semibold small text-danger">Anjuran Tindak Lanjut / Rujukan ke Puskesmas (Jika Ada)</label>
-                        <input type="text" name="anjuran_rujukan" class="form-control border-danger" placeholder="Contoh: Disarankan periksa lanjutan ke Poli KIA Puskesmas Arcamanik">
+                        <input type="text" name="anjuran_rujukan" class="form-control border-danger" placeholder="Contoh: Disarankan periksa lanjutan ke Poli KIA Puskesmas Danurejan">
                     </div>
                 </div>
                 <div class="modal-footer border-top p-3">

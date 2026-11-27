@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kuitansi Iuran - {{ $tagihan->nomor_tagihan }} - RW 013 Sukamiskin</title>
+    <title>Kuitansi Iuran - {{ $tagihan->nomor_tagihan }} - RW 013 Suryatmajan</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -37,9 +37,9 @@
 
         <!-- Kop Surat RW 013 -->
         <div class="text-center pb-5 border-b-2 border-slate-900">
-            <p class="text-[11px] font-bold tracking-widest uppercase text-slate-500">Pemerintah Kota Bandung • Kecamatan Arcamanik</p>
-            <h1 class="text-lg font-black tracking-tight text-slate-900 uppercase">RUKUN WARGA 013 KELURAHAN SUKAMISKIN</h1>
-            <p class="text-xs text-slate-600 mt-0.5">Sekretariat: Jl. Pacuan Kuda No. 13 RW 013 Sukamiskin Arcamanik, Kota Bandung 40293</p>
+            <p class="text-[11px] font-bold tracking-widest uppercase text-slate-500">Pemerintah Kota Yogyakarta • Kecamatan Danurejan</p>
+            <h1 class="text-lg font-black tracking-tight text-slate-900 uppercase">RUKUN WARGA 013 KELURAHAN Suryatmajan</h1>
+            <p class="text-xs text-slate-600 mt-0.5">Sekretariat: Jl. Malioboro No. 13 RW 013 Suryatmajan Danurejan, Kota Yogyakarta 55213</p>
             <div class="mt-2 inline-block px-3 py-0.5 bg-slate-900 text-white text-[11px] font-bold tracking-wider rounded uppercase">
                 TANDA BUKTI PEMBAYARAN IURAN WARGA (KUITANSI SAH)
             </div>
@@ -137,7 +137,7 @@
         </div>
 
         <div class="mt-2 text-[11px] text-slate-500 italic">
-            Tanda bukti pembayaran sah digital diterbitkan oleh Pengurus RW 013 Sukamiskin.
+            Tanda bukti pembayaran sah digital diterbitkan oleh Pengurus RW 013 Suryatmajan.
         </div>
 
         <!-- Tanda Tangan & QR Validasi -->
@@ -155,13 +155,13 @@
             </div>
 
             <div class="text-right">
-                <p class="text-slate-500 text-[11px]">Sukamiskin, {{ $tagihan->tanggal_lunas ? $tagihan->tanggal_lunas->translatedFormat('d F Y') : \Carbon\Carbon::now()->translatedFormat('d F Y') }}</p>
+                <p class="text-slate-500 text-[11px]">Suryatmajan, {{ $tagihan->tanggal_lunas ? $tagihan->tanggal_lunas->translatedFormat('d F Y') : \Carbon\Carbon::now()->translatedFormat('d F Y') }}</p>
                 <p class="font-bold text-slate-800 text-[11px] mt-0.5">Bendahara RW 013 / Petugas Penerima</p>
                 <div class="h-12 flex items-center justify-end">
                     <span class="text-xs font-serif italic text-blue-900 font-bold underline">Gayeca / Pengurus RW</span>
                 </div>
                 <p class="font-bold text-slate-900 text-xs">Gayeca</p>
-                <p class="text-[10px] text-slate-400">Ketua RW 013 Kel. Sukamiskin</p>
+                <p class="text-[10px] text-slate-400">Ketua RW 013 Kel. Suryatmajan</p>
             </div>
         </div>
     </div>

@@ -31,7 +31,7 @@
                                 Laporan Kegiatan: {{ $laporan->jadwal->judul_kegiatan ?? 'Posyandu Melati 13 RT ' . $laporan->rt_number }}
                             </h4>
                             <p class="text-muted small mb-0">
-                                Diselenggarakan oleh Pengurus RT {{ $laporan->rt_number }} &bull; RW 013 Kelurahan Sukamiskin, Arcamanik
+                                Diselenggarakan oleh Pengurus RT {{ $laporan->rt_number }} &bull; RW 013 Kelurahan Suryatmajan, Danurejan
                             </p>
                         </div>
                     </div>

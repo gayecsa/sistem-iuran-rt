@@ -8,7 +8,7 @@
                     </div>
                     <div>
                         <h5 class="modal-title font-bold text-lg text-white" id="modalDaftarUmkmLabel">Pendaftaran Usaha UMKM Warga</h5>
-                        <p class="text-xs text-blue-100 mb-0">Daftarkan usaha Anda di katalog marketplace RW 013 Sukamiskin</p>
+                        <p class="text-xs text-blue-100 mb-0">Daftarkan usaha Anda di katalog marketplace RW 013 Suryatmajan</p>
                     </div>
                 </div>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -84,8 +84,8 @@
 
                         {{-- Alamat Lengkap --}}
                         <div class="col-span-1 sm:col-span-2">
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Alamat Tempat Usaha (Sukamiskin, Arcamanik) <span class="text-rose-500">*</span></label>
-                            <textarea name="alamat" rows="2" required placeholder="Contoh: Jl. Pacuan Kuda No. 12, RT 001 / RW 013, Kelurahan Sukamiskin" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:border-blue-600 outline-none">{{ auth()->user()->address }}</textarea>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Alamat Tempat Usaha (Suryatmajan, Danurejan) <span class="text-rose-500">*</span></label>
+                            <textarea name="alamat" rows="2" required placeholder="Contoh: Jl. Malioboro No. 12, RT 001 / RW 013, Kelurahan Suryatmajan" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:border-blue-600 outline-none">{{ auth()->user()->address }}</textarea>
                         </div>
 
                         {{-- Foto Usaha --}}

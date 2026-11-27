@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Haven Portal — Safe Space, Seamless Service</title>
-    <meta name="description" content="Haven Portal – Safe Space, Seamless Service. Sistem Informasi dan Layanan Terpadu RW 013 Sukamiskin Arcamanik Bandung. One Billing, Surat Digital, Ronda CCTV, dan Pelayanan Warga.">
+    <meta name="description" content="Haven Portal – Safe Space, Seamless Service. Sistem Informasi dan Layanan Terpadu RW 013 Suryatmajan Danurejan Yogyakarta. One Billing, Surat Digital, Ronda CCTV, dan Pelayanan Warga.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -979,7 +979,7 @@
                 @endif
 
                 <p class="lead">
-                    Selamat datang di <strong>Haven Portal</strong>. Portal digital terintegrasi warga RW 013 Kelurahan Sukamiskin, Kecamatan Arcamanik, Kota Bandung. Nikmati kemudahan iuran terpadu, surat pengantar digital, pemantauan keamanan lingkungan, hingga etalase UMKM warga.
+                    Selamat datang di <strong>Haven Portal</strong>. Portal digital terintegrasi warga RW 013 Kelurahan Suryatmajan, Kecamatan Danurejan, Kota Yogyakarta. Nikmati kemudahan iuran terpadu, surat pengantar digital, pemantauan keamanan lingkungan, hingga etalase UMKM warga.
                 </p>
 
                 <div class="cta-group">
@@ -1015,7 +1015,7 @@
             </div>
 
             <figure class="hero-art">
-                <img src="{{ asset('images/auth-warga.jpg') }}" alt="Ilustrasi kerukunan dan pelayanan keluarga warga di lingkungan RW 013 Sukamiskin Arcamanik">
+                <img src="{{ asset('images/auth-warga.jpg') }}" alt="Ilustrasi kerukunan dan pelayanan keluarga warga di lingkungan RW 013 Suryatmajan Danurejan">
             </figure>
         </section>
 
@@ -1194,7 +1194,7 @@
             <div class="section-header">
                 <span class="section-tag">INFORMASI &amp; AGENDA KEWILAYAHAN</span>
                 <h2>Pengumuman RW 013 Terbaru</h2>
-                <p>Tetap terinformasi seputar pengumuman resmi pengurus, kegiatan gotong royong, dan kabar penting di lingkungan Sukamiskin Arcamanik.</p>
+                <p>Tetap terinformasi seputar pengumuman resmi pengurus, kegiatan gotong royong, dan kabar penting di lingkungan Suryatmajan Danurejan.</p>
             </div>
 
             <div class="announcements-grid">
@@ -1289,7 +1289,7 @@
                 <ul class="footer-list">
                     <li>
                         <i class="fas fa-map-pin"></i>
-                        <span>Balai Warga RW 013, Kelurahan Sukamiskin, Kecamatan Arcamanik, Kota Bandung, Jawa Barat 40293</span>
+                        <span>Balai Warga RW 013, Kelurahan Suryatmajan, Kecamatan Danurejan, Kota Yogyakarta, DI Yogyakarta 55213</span>
                     </li>
                     <li>
                         <i class="fas fa-clock"></i>
@@ -1309,7 +1309,7 @@
                 
                 <div class="contact-emergency-box">
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-                        <span style="font-size: .82rem; font-weight: 700; color: var(--primary);">Bandung Siaga (Polisi / Medis / Damkar)</span>
+                        <span style="font-size: .82rem; font-weight: 700; color: var(--primary);">Jogja Siaga (112) (Polisi / Medis / Damkar)</span>
                         <a href="tel:112" class="btn btn-primary" style="padding: 4px 10px; font-size: .75rem; border-radius: 8px; background: #DC2626;">
                             <i class="fas fa-phone"></i> 112
                         </a>
@@ -1328,7 +1328,7 @@
         </div>
 
         <div class="footer-bottom">
-            &copy; {{ date('Y') }} Haven Portal &bull; Safe Space, Seamless Service &bull; havenportal.mehape.com &bull; Rukun Warga 013, Kelurahan Sukamiskin, Kecamatan Arcamanik, Kota Bandung 40293. Seluruh hak cipta dilindungi.
+            &copy; {{ date('Y') }} Haven Portal &bull; Safe Space, Seamless Service &bull; havenportal.mehape.com &bull; Rukun Warga 013, Kelurahan Suryatmajan, Kecamatan Danurejan, Kota Yogyakarta 55213. Seluruh hak cipta dilindungi.
         </div>
     </div>
 </footer>

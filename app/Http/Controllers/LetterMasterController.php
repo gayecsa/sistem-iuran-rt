@@ -71,7 +71,7 @@ class LetterMasterController extends Controller
 
         $defaultTemplate = $request->filled('template_body') 
             ? $request->template_body 
-            : "Menerangkan dengan sebenarnya bahwa warga yang bersangkutan adalah penduduk resmi RW 013 Kelurahan Sukamiskin Kecamatan Arcamanik Kota Bandung, dan surat ini dibuat untuk keperluan [KEPERLUAN].";
+            : "Menerangkan dengan sebenarnya bahwa warga yang bersangkutan adalah penduduk resmi RW 013 Kelurahan Suryatmajan Kecamatan Danurejan Kota Yogyakarta, dan surat ini dibuat untuk keperluan [KEPERLUAN].";
 
         $maxUrutan = LetterType::max('urutan') ?: 0;
 

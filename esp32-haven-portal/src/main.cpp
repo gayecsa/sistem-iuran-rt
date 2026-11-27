@@ -1,7 +1,7 @@
 /**
  * ============================================================================
  * HAVEN PORTAL - FIRMWARE ESP32 + RFID RC522 MULTI-MODE READER
- * RW 013 Kelurahan Sukamiskin, Arcamanik, Kota Bandung
+ * RW 013 Kelurahan Suryatmajan, Danurejan, Kota Yogyakarta
  * ============================================================================
  * Mendukung 4 Mode Operasi Otomatis dari Cloud Backend:
  * 1. Portal Gerbang Masuk (Buka Palang Otomatis)

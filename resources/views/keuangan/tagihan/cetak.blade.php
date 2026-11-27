@@ -137,9 +137,9 @@
     </div>
 
     <div class="header-kop">
-        <h2>Pemerintah Kota Bandung • Kecamatan Arcamanik</h2>
-        <h3>Rukun Warga 013 Sukamiskin • Rekapitulasi Tagihan & Realisasi Iuran Warga</h3>
-        <p>Sekretariat: Jl. Pacantel No. 12, RW 013 Sukamiskin, Arcamanik, Bandung 40293 • Warkas Machi Integrated System</p>
+        <h2>Pemerintah Kota Yogyakarta • Kecamatan Danurejan</h2>
+        <h3>Rukun Warga 013 Suryatmajan • Rekapitulasi Tagihan & Realisasi Iuran Warga</h3>
+        <p>Sekretariat: Jl. Pacantel No. 12, RW 013 Suryatmajan, Danurejan, Yogyakarta 55213 • Warkas Machi Integrated System</p>
     </div>
 
     <div class="meta-info">
@@ -246,8 +246,8 @@
             <div class="ttd-line">Pengurus Rukun Tetangga</div>
         </div>
         <div class="ttd-box">
-            Bandung, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}<br>
-            <strong>Ketua RW 013 Sukamiskin</strong>
+            Yogyakarta, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}<br>
+            <strong>Ketua RW 013 Suryatmajan</strong>
             <div class="ttd-line">Pengurus Rukun Warga</div>
         </div>
     </div>

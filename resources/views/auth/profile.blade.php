@@ -429,7 +429,7 @@
                     @endif
                 </span>
                 <span class="text-white-50 small">•</span>
-                <span class="text-white small fw-medium">Kelurahan Sukamiskin, Arcamanik</span>
+                <span class="text-white small fw-medium">Kelurahan Suryatmajan, Danurejan</span>
             </div>
             <h3 class="fw-bold mb-1 text-white">Pengaturan Profil Saya</h3>
             <p class="mb-0 text-white-50 small">Kelola informasi pribadi, data akun, keamanan sesi, dan preferensi privasi Anda</p>
@@ -732,7 +732,7 @@
                     <div>
                         <h6 class="fw-bold mb-1 small" style="color: var(--wm-primary-dark);">Integritas Data Kependudukan</h6>
                         <p class="mb-0 text-muted" style="font-size: 0.77rem; line-height: 1.45;">
-                            Data kependudukan RW 013 Sukamiskin terintegrasi aman. Perubahan data NIK/No. KK wajib melalui validasi pengurus RT setempat.
+                            Data kependudukan RW 013 Suryatmajan terintegrasi aman. Perubahan data NIK/No. KK wajib melalui validasi pengurus RT setempat.
                         </p>
                     </div>
                 </div>
@@ -934,7 +934,7 @@
                             {{-- Wilayah RW --}}
                             <div class="col-12 col-md-6">
                                 <label class="wm-label">Wilayah RW</label>
-                                <input type="text" class="form-control wm-input wm-input-readonly" readonly value="RW {{ $user->rw_number ? str_pad($user->rw_number, 3, '0', STR_PAD_LEFT) : '013' }} Kelurahan Sukamiskin">
+                                <input type="text" class="form-control wm-input wm-input-readonly" readonly value="RW {{ $user->rw_number ? str_pad($user->rw_number, 3, '0', STR_PAD_LEFT) : '013' }} Kelurahan Suryatmajan">
                             </div>
                         </div>
                     </div>
@@ -1394,7 +1394,7 @@
                     <div class="p-3 rounded-3 border mb-4" style="background: #F8FAFD;">
                         <h6 class="fw-bold mb-2 small" style="color: var(--wm-primary-dark);">
                             <i data-lucide="info" style="width: 15px; height: 15px; vertical-align: middle;" class="me-1"></i>
-                            Kebijakan Perlindungan Data Kependudukan RW 013 Sukamiskin
+                            Kebijakan Perlindungan Data Kependudukan RW 013 Suryatmajan
                         </h6>
                         <ul class="text-muted small mb-0 ps-3" style="font-size: 0.79rem; line-height: 1.5;">
                             <li>Seluruh berkas dokumen KTP dan KK disimpan di penyimpanan terproteksi dan hanya digunakan untuk verifikasi administrasi kependudukan.</li>

@@ -52,7 +52,7 @@
             <!-- Header Resi -->
             <div class="text-center border-bottom pb-3 mb-3">
                 <h5 class="fw-bold mb-0 text-uppercase">BANK SAMPAH TERPADU RW 013</h5>
-                <small class="text-muted d-block">Kel. Sukamiskin, Kec. Arcamanik, Kota Bandung 40293</small>
+                <small class="text-muted d-block">Kel. Suryatmajan, Kec. Danurejan, Kota Yogyakarta 55213</small>
                 <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill mt-2 fw-bold">
                     BUKTI PENIMBANGAN & TABUNGAN SAMPAH
                 </span>
@@ -129,7 +129,7 @@
             </div>
 
             <div class="text-center text-muted mt-4 pt-2 border-top" style="font-size: 11px;">
-                <em>Haven &bull; Safe Space, Seamless Service &bull; RW 013 Sukamiskin Arcamanik</em>
+                <em>Haven &bull; Safe Space, Seamless Service &bull; RW 013 Suryatmajan Danurejan</em>
             </div>
         </div>
     </div>

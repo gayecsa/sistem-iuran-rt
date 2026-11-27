@@ -353,7 +353,7 @@ class RealisticFiveMonthFinanceSeeder extends Seeder
                 'saldo_sebelumnya' => 0,
                 'saldo_setelahnya' => 0,
                 'metode_pembayaran' => 'tunai',
-                'penyetor_penerima' => 'Toko Buku & ATK Sukamiskin',
+                'penyetor_penerima' => 'Toko Buku & ATK Suryatmajan',
                 'keterangan' => "Belanja ATK Sekretariat RW Bulan {$mName} 2026",
                 'status' => 'selesai',
             ]);
@@ -447,7 +447,7 @@ class RealisticFiveMonthFinanceSeeder extends Seeder
                 'saldo_sebelumnya' => 0,
                 'saldo_setelahnya' => 0,
                 'metode_pembayaran' => 'tunai',
-                'penyetor_penerima' => 'Toko Listrik Sukamiskin',
+                'penyetor_penerima' => 'Toko Listrik Suryatmajan',
                 'keterangan' => "Perlengkapan Jaga Malam Bulan {$mName} 2026",
                 'status' => 'selesai',
             ]);
@@ -570,7 +570,7 @@ class RealisticFiveMonthFinanceSeeder extends Seeder
             'saldo_sebelumnya' => 0,
             'saldo_setelahnya' => 0,
             'metode_pembayaran' => 'tunai',
-            'penyetor_penerima' => 'Rental Tenda Sukamiskin',
+            'penyetor_penerima' => 'Rental Tenda Suryatmajan',
             'keterangan' => 'Sewa Panggung & Sound System Peringatan HUT RI',
             'status' => 'selesai',
         ]);

@@ -12,7 +12,7 @@
                             <i data-lucide="shield-check" style="width: 14px; height: 14px; vertical-align: middle;"></i> PUSAT PEMANTAUAN TERPADU
                         </span>
                         <span class="badge bg-white text-dark fw-bold px-3 py-1 rounded-pill opacity-90" style="font-size: 11px;">
-                            RW 013 Sukamiskin Arcamanik
+                            RW 013 Suryatmajan Danurejan
                         </span>
                         <span class="badge bg-emerald-500 text-white fw-bold px-3 py-1 rounded-pill" style="background: #10B981 !important; font-size: 11px;">
                             RT 001 s/d RT 008
