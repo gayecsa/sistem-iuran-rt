@@ -45,12 +45,17 @@
                 </p>
             </div>
 
-            <!-- Kontras Tinggi: Card Putih Solid dengan Text Navy & Green -->
-            <div class="text-right bg-white rounded-xl px-5 py-3.5 shadow-md border border-blue-100 flex-shrink-0">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block">Total Iuran Terbayar</span>
-                <p class="text-xl font-black text-[#16865D] mt-0.5">
-                    Rp {{ number_format($totalIuranTerkumpul, 0, ',', '.') }}
-                </p>
+            <!-- Kontras Tinggi: Card Putih Solid dengan Ikon Dompet Terverifikasi -->
+            <div class="bg-white rounded-xl px-4 py-3 shadow-md border border-blue-100 flex-shrink-0 flex items-center gap-3.5">
+                <div class="w-10 h-10 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="wallet" class="w-5 h-5 text-[#16865D]"></i>
+                </div>
+                <div class="text-right">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 block leading-tight">Total Iuran Terbayar</span>
+                    <p class="text-lg md:text-xl font-black text-[#16865D] mt-0.5 leading-none">
+                        Rp {{ number_format($totalIuranTerkumpul, 0, ',', '.') }}
+                    </p>
+                </div>
             </div>
         </div>
     </div>

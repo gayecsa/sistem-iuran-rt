@@ -1368,8 +1368,8 @@ class DashboardController extends Controller
     public function setPortalMode(Request $request)
     {
         $user = Auth::user();
-        if (!$user->isSuperAdmin() && !$user->isRw() && !$user->isRt()) {
-            return back()->with('error', 'Anda tidak memiliki hak akses untuk mengubah mode portal.');
+        if (!$user->isSuperAdmin() && !$user->isRw()) {
+            abort(403, 'Akses ditolak. Pengaturan mode gerbang & RFID hanya diizinkan untuk Super Admin dan Pengurus RW.');
         }
 
         $request->validate([
@@ -1386,15 +1386,6 @@ class DashboardController extends Controller
             }
 
             $targetUser = User::findOrFail($request->target_user_id);
-
-            if ($user->isRt() && !$user->isRw() && !$user->isSuperAdmin()) {
-                $cleanRt = str_pad($user->clean_rt_number, 3, '0', STR_PAD_LEFT);
-                $targetRt = str_pad($targetUser->clean_rt_number ?? $targetUser->rt_number, 3, '0', STR_PAD_LEFT);
-                if ($targetUser->id !== $user->id && $cleanRt !== $targetRt) {
-                    return back()->with('error', 'Ketua RT hanya berhak mendaftarkan akun sendiri atau warga di wilayah RT-nya.');
-                }
-            }
-
             $targetUserId = $targetUser->id;
         }
 
@@ -1428,8 +1419,8 @@ class DashboardController extends Controller
     public function manualRegisterPortal(Request $request)
     {
         $user = Auth::user();
-        if (!$user->isSuperAdmin() && !$user->isRw() && !$user->isRt()) {
-            return back()->with('error', 'Anda tidak memiliki hak akses.');
+        if (!$user->isSuperAdmin() && !$user->isRw()) {
+            abort(403, 'Akses ditolak. Perekaman e-KTP / RFID hanya diizinkan untuk Super Admin dan Pengurus RW.');
         }
 
         $request->validate([
@@ -1444,14 +1435,6 @@ class DashboardController extends Controller
         }
 
         $targetUser = User::findOrFail($request->user_id);
-
-        if ($user->isRt() && !$user->isRw() && !$user->isSuperAdmin()) {
-            $cleanRt = str_pad($user->clean_rt_number, 3, '0', STR_PAD_LEFT);
-            $targetRt = str_pad($targetUser->clean_rt_number ?? $targetUser->rt_number, 3, '0', STR_PAD_LEFT);
-            if ($targetUser->id !== $user->id && $cleanRt !== $targetRt) {
-                return back()->with('error', 'Ketua RT hanya dapat mendaftarkan kartu untuk akun sendiri atau warga di wilayah RT-nya.');
-            }
-        }
 
         $existing = User::where('rfid_uid', $uid)->where('id', '!=', $targetUser->id)->first();
         if ($existing) {
@@ -1473,8 +1456,8 @@ class DashboardController extends Controller
     public function unlinkPortalRfid(Request $request)
     {
         $user = Auth::user();
-        if (!$user->isSuperAdmin() && !$user->isRw() && !$user->isRt()) {
-            return back()->with('error', 'Anda tidak memiliki hak akses.');
+        if (!$user->isSuperAdmin() && !$user->isRw()) {
+            abort(403, 'Akses ditolak. Pencabutan e-KTP / RFID hanya diizinkan untuk Super Admin dan Pengurus RW.');
         }
 
         $request->validate([
@@ -1482,14 +1465,6 @@ class DashboardController extends Controller
         ]);
 
         $targetUser = User::findOrFail($request->user_id);
-
-        if ($user->isRt() && !$user->isRw() && !$user->isSuperAdmin()) {
-            $cleanRt = str_pad($user->clean_rt_number, 3, '0', STR_PAD_LEFT);
-            $targetRt = str_pad($targetUser->clean_rt_number ?? $targetUser->rt_number, 3, '0', STR_PAD_LEFT);
-            if ($targetUser->id !== $user->id && $cleanRt !== $targetRt) {
-                return back()->with('error', 'Ketua RT hanya dapat mencabut kartu akun sendiri atau warga di wilayah RT-nya.');
-            }
-        }
 
         $oldUid = $targetUser->rfid_uid;
         $targetUser->update(['rfid_uid' => null]);

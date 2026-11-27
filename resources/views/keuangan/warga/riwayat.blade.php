@@ -65,49 +65,49 @@
             </p>
         </div>
     @else
-        <!-- Ringkasan Statistik -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block">Total Iuran Terbayar (Lunas)</span>
-                <p class="text-2xl font-black text-[#16865D] mt-1">
+        <!-- Ringkasan Statistik: Grid Compact Mobile (2 kolom & 1 full width) -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+            <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200 shadow-sm col-span-1">
+                <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 block truncate">Total Terbayar</span>
+                <p class="text-lg sm:text-2xl font-black text-[#16865D] mt-1 truncate">
                     Rp {{ number_format($totalLunas, 0, ',', '.') }}
                 </p>
-                <span class="text-[11px] text-slate-400 mt-0.5 block">Akumulasi iuran terverifikasi</span>
+                <span class="text-[10px] sm:text-xs text-slate-400 mt-0.5 sm:mt-1 block truncate">Akumulasi iuran lunas</span>
             </div>
 
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block">Sisa Kewajiban Saat Ini</span>
-                <p class="text-2xl font-black {{ $totalTertunggak > 0 ? 'text-rose-600' : 'text-slate-800' }} mt-1">
+            <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200 shadow-sm col-span-1">
+                <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 block truncate">Sisa Kewajiban</span>
+                <p class="text-lg sm:text-2xl font-black {{ $totalTertunggak > 0 ? 'text-rose-600' : 'text-slate-800' }} mt-1 truncate">
                     Rp {{ number_format($totalTertunggak, 0, ',', '.') }}
                 </p>
-                <span class="text-[11px] text-slate-400 mt-0.5 block">Tagihan belum dibayar / sebagian</span>
+                <span class="text-[10px] sm:text-xs text-slate-400 mt-0.5 sm:mt-1 block truncate">Belum dibayar</span>
             </div>
 
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block">Total Transaksi</span>
-                <p class="text-2xl font-black text-[#1456A0] mt-1">
-                    {{ $pembayarans->total() }} <span class="text-sm font-semibold text-slate-500">kali bayar</span>
+            <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200 shadow-sm col-span-2 sm:col-span-1">
+                <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 block truncate">Total Transaksi</span>
+                <p class="text-lg sm:text-2xl font-black text-[#1456A0] mt-1">
+                    {{ $pembayarans->total() }} <span class="text-xs sm:text-sm font-semibold text-slate-500">kali bayar</span>
                 </p>
-                <span class="text-[11px] text-slate-400 mt-0.5 block">Tercatat dalam sistem kas terpadu</span>
+                <span class="text-[10px] sm:text-xs text-slate-400 mt-0.5 sm:mt-1 block truncate">Tercatat dalam sistem kas</span>
             </div>
         </div>
 
         <!-- Tabel Log Transaksi Pembayaran -->
-        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
-                    <i data-lucide="history" class="w-5 h-5 text-[#1456A0]"></i> Catatan Riwayat Transaksi Pembayaran
+        <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-sm space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 gap-2">
+                <h2 class="text-sm sm:text-base font-bold text-slate-800 flex items-center gap-2">
+                    <i data-lucide="history" class="w-4 h-4 sm:w-5 sm:h-5 text-[#1456A0]"></i> Catatan Riwayat Transaksi Pembayaran
                 </h2>
-                <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">
+                <span class="self-start sm:self-auto text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">
                     {{ $pembayarans->total() }} Data
                 </span>
             </div>
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs text-slate-600">
+            <div class="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+                <table class="w-full text-left text-xs text-slate-600 min-w-[680px]">
                     <thead class="bg-slate-50 text-slate-700 font-bold uppercase tracking-wider text-[11px]">
                         <tr>
-                            <th class="py-3 px-4">Tanggal Bayar</th>
+                            <th class="py-3 px-4 whitespace-nowrap">Tanggal Bayar</th>
                             <th class="py-3 px-4">No. Pembayaran</th>
                             <th class="py-3 px-4">Periode Tagihan</th>
                             <th class="py-3 px-4 text-right">Nominal Bayar</th>

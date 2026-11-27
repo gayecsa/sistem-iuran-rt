@@ -721,12 +721,19 @@
                 max-width: 240px !important;
             }
             .hero-art {
+                width: 100% !important;
                 max-width: 100% !important;
-                margin: 0 auto 4px !important;
+                margin: 0 auto 8px !important;
             }
             .hero-art img {
-                max-height: 155px !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                height: 185px !important;
+                max-height: 185px !important;
+                object-fit: cover !important;
+                object-position: center top !important;
                 border-radius: 14px !important;
+                display: block !important;
             }
             .pillars {
                 grid-template-columns: repeat(4, 1fr) !important;

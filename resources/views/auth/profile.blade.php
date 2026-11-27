@@ -602,20 +602,27 @@
                     @endif
                 </div>
 
-                <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-bold" data-bs-toggle="modal" data-bs-target="#modalProfileRekamEktp" style="font-size: 0.78rem;">
-                        <i data-lucide="scan" style="width: 13px; height: 13px; vertical-align: -1px;"></i> {{ $user->rfid_uid ? 'Ganti e-KTP' : 'Rekam e-KTP' }}
-                    </button>
-                    @if($user->rfid_uid)
-                        <form action="{{ route('ronda.portal.unlink') }}" method="POST" class="d-inline" onsubmit="return confirm('Cabut tautan chip e-KTP/RFID dari akun Anda?');">
-                            @csrf
-                            <input type="hidden" name="user_id" value="{{ $user->id }}">
-                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-bold" style="font-size: 0.78rem;">
-                                <i data-lucide="trash-2" style="width: 13px; height: 13px; vertical-align: -1px;"></i> Cabut
-                            </button>
-                        </form>
-                    @endif
-                </div>
+                @if($user->isSuperAdmin() || $user->isRw())
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-bold" data-bs-toggle="modal" data-bs-target="#modalProfileRekamEktp" style="font-size: 0.78rem;">
+                            <i data-lucide="scan" style="width: 13px; height: 13px; vertical-align: -1px;"></i> {{ $user->rfid_uid ? 'Ganti e-KTP' : 'Rekam e-KTP' }}
+                        </button>
+                        @if($user->rfid_uid)
+                            <form action="{{ route('ronda.portal.unlink') }}" method="POST" class="d-inline" onsubmit="return confirm('Cabut tautan chip e-KTP/RFID dari akun Anda?');">
+                                @csrf
+                                <input type="hidden" name="user_id" value="{{ $user->id }}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-bold" style="font-size: 0.78rem;">
+                                    <i data-lucide="trash-2" style="width: 13px; height: 13px; vertical-align: -1px;"></i> Cabut
+                                </button>
+                            </form>
+                        @endif
+                    </div>
+                @else
+                    <div class="text-secondary small" style="font-size: 0.76rem;">
+                        <i data-lucide="info" style="width: 13px; height: 13px; display: inline-block; vertical-align: -1px;" class="me-1 text-primary"></i>
+                        Perekaman dan penggantian e-KTP/RFID dilayani langsung oleh Pengurus RW 013 atau Super Admin.
+                    </div>
+                @endif
             </div>
 
             {{-- Kartu Menu 6 Tab Vertikal --}}
@@ -1416,6 +1423,7 @@
     </div>
 </div>
 
+@if($user->isSuperAdmin() || $user->isRw())
 {{-- MODAL REKAM e-KTP PROFIL SAYA --}}
 <div class="modal fade" id="modalProfileRekamEktp" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -1435,27 +1443,25 @@
                     </div>
                 </div>
 
-                @if($user->isSuperAdmin() || $user->isRw() || $user->isRt())
-                    {{-- Opsi 1: Pindai via Reader ESP32 --}}
-                    <div class="p-3 rounded-3 bg-white border mb-3">
-                        <h6 class="fw-bold text-dark small mb-1 d-flex align-items-center gap-1.5">
-                            <i data-lucide="scan" style="width: 15px; height: 15px; color: #D97706;"></i>
-                            Opsi 1: Pindai Otomatis via Reader ESP32
-                        </h6>
-                        <p class="text-muted small mb-2" style="font-size: 0.76rem;">
-                            Aktifkan mode pendaftaran pada reader gerbang GATE-01, lalu tempelkan e-KTP fisik ke reader.
-                        </p>
-                        <form action="{{ route('ronda.portal.set-mode') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="mode" value="register">
-                            <input type="hidden" name="target_user_id" value="{{ $user->id }}">
-                            <input type="hidden" name="redirect_to" value="portal">
-                            <button type="submit" class="btn btn-sm btn-warning text-dark fw-bold rounded-pill px-3">
-                                <i data-lucide="play" style="width: 13px; height: 13px; vertical-align: -1px;"></i> Aktifkan Scanner ESP32
-                            </button>
-                        </form>
-                    </div>
-                @endif
+                {{-- Opsi 1: Pindai via Reader ESP32 --}}
+                <div class="p-3 rounded-3 bg-white border mb-3">
+                    <h6 class="fw-bold text-dark small mb-1 d-flex align-items-center gap-1.5">
+                        <i data-lucide="scan" style="width: 15px; height: 15px; color: #D97706;"></i>
+                        Opsi 1: Pindai Otomatis via Reader ESP32
+                    </h6>
+                    <p class="text-muted small mb-2" style="font-size: 0.76rem;">
+                        Aktifkan mode pendaftaran pada reader gerbang GATE-01, lalu tempelkan e-KTP fisik ke reader.
+                    </p>
+                    <form action="{{ route('ronda.portal.set-mode') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="mode" value="register">
+                        <input type="hidden" name="target_user_id" value="{{ $user->id }}">
+                        <input type="hidden" name="redirect_to" value="portal">
+                        <button type="submit" class="btn btn-sm btn-warning text-dark fw-bold rounded-pill px-3">
+                            <i data-lucide="play" style="width: 13px; height: 13px; vertical-align: -1px;"></i> Aktifkan Scanner ESP32
+                        </button>
+                    </form>
+                </div>
 
                 {{-- Opsi 2: Simpan UID Manual Langsung --}}
                 <div class="p-3 rounded-3 bg-white border">
@@ -1484,6 +1490,7 @@
         </div>
     </div>
 </div>
+@endif
 @endsection
 
 @push('scripts')

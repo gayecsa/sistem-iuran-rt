@@ -45,12 +45,17 @@
                 </p>
             </div>
 
-            <!-- Kontras Tinggi: Card Putih Solid -->
-            <div class="text-right bg-white rounded-xl px-5 py-3.5 shadow-md border border-blue-100 flex-shrink-0">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block">Total Iuran Terbayar</span>
-                <p class="text-xl font-black text-[#16865D] mt-0.5">
-                    Rp {{ number_format($totalIuranTerkumpul, 0, ',', '.') }}
-                </p>
+            <!-- Kontras Tinggi: Card Putih Solid dengan Ikon Dompet Terverifikasi -->
+            <div class="bg-white rounded-xl px-4 py-3 shadow-md border border-blue-100 flex-shrink-0 flex items-center gap-3.5">
+                <div class="w-10 h-10 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="wallet" class="w-5 h-5 text-[#16865D]"></i>
+                </div>
+                <div class="text-right">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 block leading-tight">Total Iuran Terbayar</span>
+                    <p class="text-lg md:text-xl font-black text-[#16865D] mt-0.5 leading-none">
+                        Rp {{ number_format($totalIuranTerkumpul, 0, ',', '.') }}
+                    </p>
+                </div>
             </div>
         </div>
     </div>
@@ -83,24 +88,24 @@
         </div>
     @else
         <!-- Tab Bar Bersih Tepat di Bawah Header -->
-        <div class="bg-white p-1.5 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row gap-1.5">
+        <div class="bg-white p-1.5 rounded-2xl border border-slate-200 shadow-sm flex flex-row overflow-x-auto gap-1.5 scrollbar-none">
             <!-- Tab 1 Button -->
             <button type="button" onclick="switchWargaTab('tagihan')" id="tab-btn-tagihan"
-                    class="flex-1 py-3 px-4 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 border {{ $activeTab === 'tagihan' ? 'bg-[#1456A0] text-white shadow-sm border-[#1456A0]' : 'text-slate-600 hover:bg-blue-50/60 hover:text-[#1456A0] border-transparent' }}">
-                <i data-lucide="receipt" class="w-4 h-4"></i>
+                    class="flex-1 min-w-[110px] sm:min-w-0 py-2.5 px-3 sm:py-3 sm:px-4 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border whitespace-nowrap {{ $activeTab === 'tagihan' ? 'bg-[#1456A0] text-white shadow-sm border-[#1456A0]' : 'text-slate-600 hover:bg-blue-50/60 hover:text-[#1456A0] border-transparent' }}">
+                <i data-lucide="receipt" class="w-4 h-4 flex-shrink-0"></i>
                 <span>1. Tagihan Aktif</span>
                 @if($tagihanBulanIni && in_array($tagihanBulanIni->status, ['Belum Dibayar', 'Terlambat', 'Dibayar Sebagian']))
-                    <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+                    <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse flex-shrink-0"></span>
                 @endif
             </button>
 
             <!-- Tab 2 Button -->
             <button type="button" onclick="switchWargaTab('bayar')" id="tab-btn-bayar"
-                    class="flex-1 py-3 px-4 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 border {{ $activeTab === 'bayar' ? 'bg-[#1456A0] text-white shadow-sm border-[#1456A0]' : 'text-slate-600 hover:bg-blue-50/60 hover:text-[#1456A0] border-transparent' }}">
-                <i data-lucide="credit-card" class="w-4 h-4"></i>
-                <span>2. Bayar & Konfirmasi</span>
+                    class="flex-1 min-w-[125px] sm:min-w-0 py-2.5 px-3 sm:py-3 sm:px-4 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border whitespace-nowrap {{ $activeTab === 'bayar' ? 'bg-[#1456A0] text-white shadow-sm border-[#1456A0]' : 'text-slate-600 hover:bg-blue-50/60 hover:text-[#1456A0] border-transparent' }}">
+                <i data-lucide="credit-card" class="w-4 h-4 flex-shrink-0"></i>
+                <span>2. Bayar &amp; Konfirmasi</span>
                 @if($pendingTagihans->count() > 0)
-                    <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $activeTab === 'bayar' ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-800' }}">
+                    <span class="px-1.5 py-0.2 rounded-full text-[10px] flex-shrink-0 {{ $activeTab === 'bayar' ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-800' }}">
                         {{ $pendingTagihans->count() }}
                     </span>
                 @endif
@@ -108,10 +113,10 @@
 
             <!-- Tab 3 Button -->
             <button type="button" onclick="switchWargaTab('riwayat')" id="tab-btn-riwayat"
-                    class="flex-1 py-3 px-4 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 border {{ $activeTab === 'riwayat' ? 'bg-[#1456A0] text-white shadow-sm border-[#1456A0]' : 'text-slate-600 hover:bg-blue-50/60 hover:text-[#1456A0] border-transparent' }}">
-                <i data-lucide="history" class="w-4 h-4"></i>
-                <span>3. Riwayat & Kuitansi</span>
-                <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $activeTab === 'riwayat' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-700' }}">
+                    class="flex-1 min-w-[125px] sm:min-w-0 py-2.5 px-3 sm:py-3 sm:px-4 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border whitespace-nowrap {{ $activeTab === 'riwayat' ? 'bg-[#1456A0] text-white shadow-sm border-[#1456A0]' : 'text-slate-600 hover:bg-blue-50/60 hover:text-[#1456A0] border-transparent' }}">
+                <i data-lucide="history" class="w-4 h-4 flex-shrink-0"></i>
+                <span>3. Riwayat &amp; Kuitansi</span>
+                <span class="px-1.5 py-0.2 rounded-full text-[10px] flex-shrink-0 {{ $activeTab === 'riwayat' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-700' }}">
                     {{ $pembayarans->total() }}
                 </span>
             </button>
@@ -527,58 +532,58 @@
         <!-- TAB 3: RIWAYAT & KUITANSI -->
         <!-- ==================================================================== -->
         <div id="tab-pane-riwayat" class="{{ $activeTab === 'riwayat' ? '' : 'hidden' }} space-y-6">
-            <!-- Ringkasan Statistik -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block">Total Iuran Terbayar (Lunas)</span>
-                    <p class="text-2xl font-black text-[#16865D] mt-1">
+            <!-- Ringkasan Statistik: Grid Compact Mobile (2 kolom & 1 full width) -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+                <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200 shadow-sm col-span-1">
+                    <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 block truncate">Total Terbayar</span>
+                    <p class="text-lg sm:text-2xl font-black text-[#16865D] mt-1 truncate">
                         Rp {{ number_format($totalLunas, 0, ',', '.') }}
                     </p>
-                    <span class="text-xs text-slate-500 mt-1 block">Akumulasi iuran terverifikasi</span>
+                    <span class="text-[10px] sm:text-xs text-slate-400 sm:text-slate-500 mt-0.5 sm:mt-1 block truncate">Akumulasi iuran lunas</span>
                 </div>
 
-                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block">Sisa Kewajiban Saat Ini</span>
-                    <p class="text-2xl font-black {{ $totalTertunggak > 0 ? 'text-rose-600' : 'text-slate-800' }} mt-1">
+                <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200 shadow-sm col-span-1">
+                    <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 block truncate">Sisa Kewajiban</span>
+                    <p class="text-lg sm:text-2xl font-black {{ $totalTertunggak > 0 ? 'text-rose-600' : 'text-slate-800' }} mt-1 truncate">
                         Rp {{ number_format($totalTertunggak, 0, ',', '.') }}
                     </p>
-                    <span class="text-xs text-slate-500 mt-1 block">Tagihan belum dibayar / sebagian</span>
+                    <span class="text-[10px] sm:text-xs text-slate-400 sm:text-slate-500 mt-0.5 sm:mt-1 block truncate">Belum dibayar</span>
                 </div>
 
-                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block">Total Transaksi</span>
-                    <p class="text-2xl font-black text-[#1456A0] mt-1">
-                        {{ $pembayarans->total() }} <span class="text-base font-semibold text-slate-500">kali bayar</span>
+                <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200 shadow-sm col-span-2 sm:col-span-1">
+                    <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 block truncate">Total Transaksi</span>
+                    <p class="text-lg sm:text-2xl font-black text-[#1456A0] mt-1">
+                        {{ $pembayarans->total() }} <span class="text-xs sm:text-base font-semibold text-slate-500">kali bayar</span>
                     </p>
-                    <span class="text-xs text-slate-500 mt-1 block">Tercatat dalam sistem kas terpadu</span>
+                    <span class="text-[10px] sm:text-xs text-slate-400 sm:text-slate-500 mt-0.5 sm:mt-1 block truncate">Tercatat dalam sistem kas</span>
                 </div>
             </div>
 
             <!-- Tabel Log Transaksi Pembayaran + Tombol Cetak Kuitansi Terintegrasi -->
-            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
-                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-sm space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 gap-2">
                     <div>
-                        <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
-                            <i data-lucide="history" class="w-5 h-5 text-[#1456A0]"></i> Catatan Riwayat Pembayaran & Kuitansi Sah
+                        <h2 class="text-sm sm:text-base font-bold text-slate-800 flex items-center gap-2">
+                            <i data-lucide="history" class="w-4 h-4 sm:w-5 sm:h-5 text-[#1456A0]"></i> Catatan Riwayat Pembayaran &amp; Kuitansi Sah
                         </h2>
-                        <p class="text-sm text-slate-500 mt-0.5">Semua bukti transfer dan kuitansi resmi atas pembayaran iuran keluarga Anda.</p>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Semua bukti transfer dan kuitansi resmi atas pembayaran iuran keluarga Anda.</p>
                     </div>
-                    <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">
+                    <span class="self-start sm:self-auto text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">
                         {{ $pembayarans->total() }} Data
                     </span>
                 </div>
 
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm text-slate-600">
+                <div class="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+                    <table class="w-full text-left text-sm text-slate-600 min-w-[680px]">
                         <thead class="bg-slate-50 text-slate-700 font-bold uppercase tracking-wider text-xs">
                             <tr>
-                                <th class="py-3.5 px-4">Tanggal Bayar</th>
-                                <th class="py-3.5 px-4">No. Pembayaran</th>
-                                <th class="py-3.5 px-4">Periode Tagihan</th>
-                                <th class="py-3.5 px-4 text-right">Nominal Bayar</th>
-                                <th class="py-3.5 px-4">Metode & Kanal</th>
-                                <th class="py-3.5 px-4 text-center">Status</th>
-                                <th class="py-3.5 px-4 text-center">Kuitansi / Bukti</th>
+                                <th class="py-3.5 px-4 whitespace-nowrap">Tanggal Bayar</th>
+                                <th class="py-3.5 px-4 whitespace-nowrap">No. Pembayaran</th>
+                                <th class="py-3.5 px-4 whitespace-nowrap">Periode Tagihan</th>
+                                <th class="py-3.5 px-4 text-right whitespace-nowrap">Nominal Bayar</th>
+                                <th class="py-3.5 px-4 whitespace-nowrap">Metode &amp; Kanal</th>
+                                <th class="py-3.5 px-4 text-center whitespace-nowrap">Status</th>
+                                <th class="py-3.5 px-4 text-center whitespace-nowrap">Kuitansi / Bukti</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 font-medium">
