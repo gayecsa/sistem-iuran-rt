@@ -616,8 +616,8 @@
                             <rect x="2" y="2" width="40" height="30" rx="4" stroke="#D97706" stroke-width="1.5"/>
                             <path d="M2 17H16M28 17H42M16 2V32M28 2V32M16 10H28M16 24H28" stroke="#B45309" stroke-width="1.5"/>
                         </svg>
-                        <span class="badge bg-white bg-opacity-20 text-white rounded-pill px-2.5 py-1" style="font-size: 0.7rem;">
-                            RFID-RC522 Contactless
+                        <span class="badge rounded-pill fw-bold px-2.5 py-1" style="background: rgba(255, 255, 255, 0.22); color: #FFFFFF; border: 1px solid rgba(255, 255, 255, 0.45); font-size: 0.72rem; backdrop-filter: blur(4px);">
+                            <i data-lucide="radio" style="width: 11px; height: 11px; vertical-align: middle;"></i> RFID-RC522 Contactless
                         </span>
                     </div>
 

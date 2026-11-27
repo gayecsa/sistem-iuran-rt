@@ -759,7 +759,7 @@
                 {{-- Banner Ganti Foto Profil --}}
                 <div class="p-3 rounded-3 mb-4 d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3" style="background: #F8FAFC; border: 1px dashed #CBD5E1;">
                     <div class="d-flex align-items-center gap-3">
-                        <img src="{{ $avatarUrl }}" alt="{{ $user->name }}" class="rounded-circle border" style="width: 52px; height: 52px; object-fit: cover;">
+                        <img src="{{ $user->avatar_url }}" onerror="this.onerror=null;this.src='{{ $user->initials_svg }}';" alt="{{ $user->name }}" class="rounded-circle border" style="width: 52px; height: 52px; object-fit: cover;">
                         <div>
                             <div class="fw-bold small" style="color: var(--wm-text-dark);">Foto Profil Akun</div>
                             <div class="text-muted" style="font-size: 0.78rem;">Format didukung: JPG, PNG, atau WEBP. Maksimal 2 MB.</div>

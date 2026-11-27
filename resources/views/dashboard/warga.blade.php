@@ -123,12 +123,12 @@
         <div class="p-3 p-md-4">
             <div class="row align-items-center g-3">
                 <div class="col-12 col-md-7">
-                    <div class="d-flex align-items-center gap-2 mb-1">
-                        <span class="badge rounded-pill bg-white text-primary fw-bold px-2.5 py-0.5" style="font-size: 0.72rem;">
+                    <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                        <span class="badge rounded-pill fw-bold px-2.5 py-1" style="background: rgba(255, 255, 255, 0.95); color: #1456A0; font-size: 0.72rem; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
                             <i data-lucide="radar" style="width: 12px; height: 12px; vertical-align: middle;"></i> SMART GATEWAY RW 013
                         </span>
-                        <span class="badge rounded-pill bg-white bg-opacity-20 text-white border border-white border-opacity-25 px-2 py-0.5" style="font-size: 0.7rem;">
-                            GPS Auto-Detect
+                        <span class="badge rounded-pill fw-bold px-2.5 py-1" style="background: rgba(255, 255, 255, 0.22); color: #FFFFFF; border: 1px solid rgba(255, 255, 255, 0.45); font-size: 0.72rem; backdrop-filter: blur(4px);">
+                            <i data-lucide="map-pin" style="width: 11px; height: 11px; vertical-align: middle;"></i> GPS Auto-Detect
                         </span>
                     </div>
                     <h5 class="fw-bold mb-1 text-white">Buka Portal Gerbang Masuk (GPS HP)</h5>
