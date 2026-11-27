@@ -202,13 +202,13 @@
 
     {{-- GoPay-Style 4-Column Quick Menu Grid (Khusus Mobile < 768px) --}}
     <div class="haven-quick-grid d-md-none mb-4">
-        <a href="{{ route('super-admin.users') }}" class="haven-quick-item">
+        <a href="{{ route('super-admin.users.index') }}" class="haven-quick-item">
             <div class="haven-quick-icon-wrap" style="background: #EAF3FF; color: #1456A0;">
                 <i data-lucide="users" style="width: 22px; height: 22px;"></i>
             </div>
             <span class="haven-quick-label">Pengguna</span>
         </a>
-        <a href="{{ route('super-admin.buku-kas.index') }}" class="haven-quick-item">
+        <a href="{{ route('keuangan.buku_kas.index') }}" class="haven-quick-item">
             <div class="haven-quick-icon-wrap" style="background: #E8F5E9; color: #2E7D32;">
                 <i data-lucide="wallet" style="width: 22px; height: 22px;"></i>
             </div>
@@ -232,7 +232,7 @@
             </div>
             <span class="haven-quick-label">GPS Gerbang</span>
         </a>
-        <a href="{{ route('super-admin.tarif-iuran.index') }}" class="haven-quick-item">
+        <a href="{{ route('super-admin.master-keuangan.index') }}" class="haven-quick-item">
             <div class="haven-quick-icon-wrap" style="background: #FFEDD5; color: #C2410C;">
                 <i data-lucide="tag" style="width: 22px; height: 22px;"></i>
             </div>

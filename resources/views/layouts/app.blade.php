@@ -977,7 +977,7 @@
             $homeRoute = route('dashboard');
             if ($u->isSuperAdmin()) {
                 $homeRoute = route('dashboard.super-admin');
-                $financeRoute = route('super-admin.buku-kas.index');
+                $financeRoute = route('super-admin.master-keuangan.index');
                 $portalRoute = route('ronda.index', ['tab' => 'portal']);
             } elseif ($u->isRw() || in_array($u->role, ['admin', 'bendahara'])) {
                 $homeRoute = route('dashboard.rw');
@@ -1005,7 +1005,7 @@
                 </a>
 
                 {{-- 2. Keuangan / Kas --}}
-                <a href="{{ $financeRoute }}" class="haven-bottom-nav-item {{ (request()->routeIs('keuangan.*') || request()->routeIs('kas-rw.*') || request()->routeIs('super-admin.buku-kas.*')) ? 'active' : '' }}">
+                <a href="{{ $financeRoute }}" class="haven-bottom-nav-item {{ (request()->routeIs('keuangan.*') || request()->routeIs('kas-rw.*') || request()->routeIs('super-admin.master-keuangan.*')) ? 'active' : '' }}">
                     <div class="haven-bottom-nav-icon">
                         <i data-lucide="wallet"></i>
                     </div>
@@ -1029,7 +1029,7 @@
                 </button>
 
                 {{-- 5. Profil Saya --}}
-                <a href="{{ route('profile.show') }}" class="haven-bottom-nav-item {{ request()->routeIs('profile.*') ? 'active' : '' }}">
+                <a href="{{ route('profile.edit') }}" class="haven-bottom-nav-item {{ request()->routeIs('profile.*') ? 'active' : '' }}">
                     <div class="haven-bottom-nav-icon">
                         <i data-lucide="user"></i>
                     </div>

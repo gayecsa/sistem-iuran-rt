@@ -100,7 +100,7 @@
         </a>
 
         {{-- 7. Agenda RW --}}
-        <a href="{{ route('agenda.index') }}" class="haven-quick-item">
+        <a href="{{ route('agenda-rw.index') }}" class="haven-quick-item">
             <div class="haven-quick-icon-wrap" style="background: #E0F2FE; color: #0284C7;">
                 <i data-lucide="calendar"></i>
             </div>
