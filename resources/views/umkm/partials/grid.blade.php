@@ -1,4 +1,4 @@
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+<div class="space-y-3 sm:space-y-0 sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:gap-6">
     @forelse($umkms as $umkm)
         @php
             $isBuka = $umkm->is_buka_sekarang;
@@ -6,7 +6,86 @@
             $isMyBusiness = auth()->check() && (auth()->user()->id === $umkm->user_id);
         @endphp
 
-        <div class="wm-umkm-card bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group cursor-pointer relative"
+        <!-- ==============================================================
+             KARTU MOBILE (KHUSUS < 768px, TAMPILAN ALA GOFOOD / FAMIGO)
+             ============================================================== -->
+        <div class="block sm:hidden bg-white rounded-2xl border border-slate-200 p-3 shadow-sm hover:shadow-md transition-all cursor-pointer relative"
+             onclick="openUmkmDetail({{ $umkm->id }})">
+            <div class="flex items-start gap-3">
+                {{-- Thumbnail Foto Kotak di Kiri (~88px x 88px) --}}
+                <div class="relative w-[88px] h-[88px] rounded-xl overflow-hidden bg-slate-100 flex-shrink-0 border border-slate-100">
+                    <img src="{{ $umkm->foto_url }}" 
+                         alt="{{ $umkm->nama_umkm }}" 
+                         class="w-full h-full object-cover"
+                         loading="lazy"
+                         onerror="this.onerror=null; this.src='{{ $umkm->category_placeholder_image }}';">
+                    
+                    {{-- Status Buka / Tutup Dot/Badge di thumbnail --}}
+                    <div class="absolute bottom-1 left-1 z-10">
+                        @if($isBuka)
+                            <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-emerald-600 text-white shadow-xs leading-none">
+                                <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                                Buka
+                            </span>
+                        @else
+                            <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-slate-800/80 text-slate-200 shadow-xs leading-none">
+                                Tutup
+                            </span>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- Konten Kanan: Nama, RT, Kategori, Harga, Aksi --}}
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between gap-1 mb-0.5">
+                        <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-100">
+                            {{ $umkm->clean_rt_label }}
+                        </span>
+                        @if($umkm->jam_buka && $umkm->jam_tutup)
+                            <span class="text-[10px] text-slate-400 font-medium">
+                                {{ substr($umkm->jam_buka, 0, 5) }} - {{ substr($umkm->jam_tutup, 0, 5) }}
+                            </span>
+                        @endif
+                    </div>
+
+                    <h4 class="font-bold text-slate-900 text-sm leading-tight truncate mb-1" title="{{ $umkm->nama_umkm }}">
+                        {{ $umkm->nama_umkm }}
+                    </h4>
+
+                    <div class="flex items-center gap-1.5 text-[11px] text-slate-500 mb-1.5 flex-wrap">
+                        <span class="font-semibold" style="color: {{ $badge['text'] }};">{{ $badge['label'] }}</span>
+                        <span>&bull;</span>
+                        <span class="font-black text-emerald-600">{{ $umkm->kisaran_harga_formatted }}</span>
+                    </div>
+
+                    {{-- Tombol Aksi Compact --}}
+                    <div class="flex items-center gap-1.5 pt-1 border-t border-slate-100" onclick="event.stopPropagation();">
+                        <button type="button" 
+                                onclick="openUmkmDetail({{ $umkm->id }})"
+                                class="flex-1 py-1 px-2.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white font-bold text-[11px] text-center transition-colors">
+                            {{ $isMyBusiness ? 'Kelola' : 'Detail Menu' }}
+                        </button>
+                        <a href="{{ $umkm->whatsapp_url }}" 
+                           target="_blank" 
+                           title="Chat WhatsApp"
+                           class="w-7 h-7 flex items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-colors">
+                            <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                        </a>
+                        <a href="{{ $umkm->google_maps_url }}" 
+                           target="_blank" 
+                           title="Lokasi Maps"
+                           class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-700 hover:text-white transition-colors">
+                            <i data-lucide="map" class="w-3.5 h-3.5"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==============================================================
+             KARTU DESKTOP (KHUSUS >= 768px, GRID VERTIKAL 100% UTUH)
+             ============================================================== -->
+        <div class="hidden sm:flex wm-umkm-card bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex-col group cursor-pointer relative"
              onclick="openUmkmDetail({{ $umkm->id }})">
             
             {{-- Foto Banner UMKM dengan Overlay Badges --}}

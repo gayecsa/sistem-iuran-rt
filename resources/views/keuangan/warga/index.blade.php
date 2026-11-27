@@ -88,12 +88,12 @@
         </div>
     @else
         <!-- Tab Bar Bersih Tepat di Bawah Header -->
-        <div class="bg-white p-1.5 rounded-2xl border border-slate-200 shadow-sm flex flex-row overflow-x-auto gap-1.5 scrollbar-none">
+        <div class="bg-white p-1.5 rounded-2xl border border-slate-200 shadow-sm flex flex-row overflow-x-auto gap-2 scrollbar-none" style="-webkit-overflow-scrolling: touch;">
             <!-- Tab 1 Button -->
             <button type="button" onclick="switchWargaTab('tagihan')" id="tab-btn-tagihan"
-                    class="flex-1 min-w-[110px] sm:min-w-0 py-2.5 px-3 sm:py-3 sm:px-4 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border whitespace-nowrap {{ $activeTab === 'tagihan' ? 'bg-[#1456A0] text-white shadow-sm border-[#1456A0]' : 'text-slate-600 hover:bg-blue-50/60 hover:text-[#1456A0] border-transparent' }}">
+                    class="flex-1 flex-shrink-0 min-w-max py-2.5 px-3.5 sm:py-3 sm:px-4 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 border whitespace-nowrap {{ $activeTab === 'tagihan' ? 'bg-[#1456A0] text-white shadow-sm border-[#1456A0]' : 'text-slate-600 hover:bg-blue-50/60 hover:text-[#1456A0] border-transparent' }}">
                 <i data-lucide="receipt" class="w-4 h-4 flex-shrink-0"></i>
-                <span>1. Tagihan Aktif</span>
+                <span class="inline-block">1. Tagihan Aktif</span>
                 @if($tagihanBulanIni && in_array($tagihanBulanIni->status, ['Belum Dibayar', 'Terlambat', 'Dibayar Sebagian']))
                     <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse flex-shrink-0"></span>
                 @endif
@@ -101,11 +101,11 @@
 
             <!-- Tab 2 Button -->
             <button type="button" onclick="switchWargaTab('bayar')" id="tab-btn-bayar"
-                    class="flex-1 min-w-[125px] sm:min-w-0 py-2.5 px-3 sm:py-3 sm:px-4 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border whitespace-nowrap {{ $activeTab === 'bayar' ? 'bg-[#1456A0] text-white shadow-sm border-[#1456A0]' : 'text-slate-600 hover:bg-blue-50/60 hover:text-[#1456A0] border-transparent' }}">
+                    class="flex-1 flex-shrink-0 min-w-max py-2.5 px-3.5 sm:py-3 sm:px-4 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 border whitespace-nowrap {{ $activeTab === 'bayar' ? 'bg-[#1456A0] text-white shadow-sm border-[#1456A0]' : 'text-slate-600 hover:bg-blue-50/60 hover:text-[#1456A0] border-transparent' }}">
                 <i data-lucide="credit-card" class="w-4 h-4 flex-shrink-0"></i>
-                <span>2. Bayar &amp; Konfirmasi</span>
+                <span class="inline-block">2. Bayar &amp; Konfirmasi</span>
                 @if($pendingTagihans->count() > 0)
-                    <span class="px-1.5 py-0.2 rounded-full text-[10px] flex-shrink-0 {{ $activeTab === 'bayar' ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-800' }}">
+                    <span class="px-1.5 py-0.5 rounded-full text-[10px] flex-shrink-0 leading-none {{ $activeTab === 'bayar' ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-800' }}">
                         {{ $pendingTagihans->count() }}
                     </span>
                 @endif
@@ -113,10 +113,10 @@
 
             <!-- Tab 3 Button -->
             <button type="button" onclick="switchWargaTab('riwayat')" id="tab-btn-riwayat"
-                    class="flex-1 min-w-[125px] sm:min-w-0 py-2.5 px-3 sm:py-3 sm:px-4 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border whitespace-nowrap {{ $activeTab === 'riwayat' ? 'bg-[#1456A0] text-white shadow-sm border-[#1456A0]' : 'text-slate-600 hover:bg-blue-50/60 hover:text-[#1456A0] border-transparent' }}">
+                    class="flex-1 flex-shrink-0 min-w-max py-2.5 px-3.5 sm:py-3 sm:px-4 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 border whitespace-nowrap {{ $activeTab === 'riwayat' ? 'bg-[#1456A0] text-white shadow-sm border-[#1456A0]' : 'text-slate-600 hover:bg-blue-50/60 hover:text-[#1456A0] border-transparent' }}">
                 <i data-lucide="history" class="w-4 h-4 flex-shrink-0"></i>
-                <span>3. Riwayat &amp; Kuitansi</span>
-                <span class="px-1.5 py-0.2 rounded-full text-[10px] flex-shrink-0 {{ $activeTab === 'riwayat' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-700' }}">
+                <span class="inline-block">3. Riwayat &amp; Kuitansi</span>
+                <span class="px-1.5 py-0.5 rounded-full text-[10px] flex-shrink-0 leading-none {{ $activeTab === 'riwayat' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-700' }}">
                     {{ $pembayarans->total() }}
                 </span>
             </button>

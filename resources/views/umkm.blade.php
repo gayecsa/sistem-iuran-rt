@@ -61,57 +61,57 @@
     {{-- ======================================================================
          1. HERO HEADER: JELAJAHI UMKM RW 013
          ====================================================================== --}}
-    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F3966] via-[#1456A0] to-[#1D68FE] text-white p-6 sm:p-8 md:p-10 shadow-lg umkm-hero-header">
+    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#0F3966] via-[#1456A0] to-[#1D68FE] text-white p-4 sm:p-8 md:p-10 shadow-lg umkm-hero-header">
         {{-- Decorative Background Elements --}}
         <div class="absolute -right-16 -top-16 w-80 h-80 rounded-full bg-white/5 blur-2xl pointer-events-none"></div>
         <div class="absolute right-1/4 -bottom-24 w-96 h-96 rounded-full bg-blue-400/10 blur-3xl pointer-events-none"></div>
 
-        <div class="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-            <div class="max-w-3xl space-y-3">
+        <div class="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 sm:gap-6">
+            <div class="max-w-3xl space-y-2 sm:space-y-3">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-semibold text-blue-100">
                     <i data-lucide="shopping-bag" class="w-3.5 h-3.5 text-amber-300"></i>
-                    <span>Marketplace Lokal Warga RW 013 Suryatmajan, Danurejan</span>
+                    <span>Marketplace Warga RW 013 Suryatmajan</span>
                 </div>
 
-                <h1 class="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-white leading-tight">
+                <h1 class="text-xl sm:text-3xl md:text-4xl font-black tracking-tight text-white leading-tight">
                     Jelajahi UMKM RW 013
                 </h1>
 
-                <p class="text-blue-100/90 text-sm sm:text-base leading-relaxed">
+                <p class="hidden sm:block text-blue-100/90 text-sm sm:text-base leading-relaxed">
                     Temukan kuliner, produk lokal, toko, dan berbagai jasa milik warga RW 013. Dukung perputaran ekonomi mandiri dan pertumbuhan usaha tetangga kita.
                 </p>
 
                 {{-- Counter Badges & Info --}}
-                <div class="flex flex-wrap items-center gap-2 pt-2 text-xs">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/15 backdrop-blur-md border border-white/10 font-bold">
-                        <i data-lucide="store" class="w-4 h-4 text-emerald-300"></i>
-                        <span>{{ $totalUmkm }} UMKM Terdaftar</span>
+                <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 pt-1 text-xs">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl bg-white/15 backdrop-blur-md border border-white/10 font-bold">
+                        <i data-lucide="store" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-300"></i>
+                        <span>{{ $totalUmkm }} UMKM</span>
                     </span>
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/15 backdrop-blur-md border border-white/10 font-bold">
-                        <i data-lucide="layers" class="w-4 h-4 text-cyan-300"></i>
-                        <span>{{ count($kategoriList) - 1 }} Kategori Usaha</span>
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl bg-white/15 backdrop-blur-md border border-white/10 font-bold">
+                        <i data-lucide="layers" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-300"></i>
+                        <span>{{ count($kategoriList) - 1 }} Kategori</span>
                     </span>
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/15 backdrop-blur-md border border-white/10 font-bold">
-                        <i data-lucide="utensils" class="w-4 h-4 text-amber-300"></i>
-                        <span>{{ $totalProduk }}+ Produk & Menu</span>
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl bg-white/15 backdrop-blur-md border border-white/10 font-bold">
+                        <i data-lucide="utensils" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-300"></i>
+                        <span>{{ $totalProduk }}+ Produk</span>
                     </span>
                 </div>
             </div>
 
             {{-- Action Buttons --}}
-            <div class="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full lg:w-auto">
+            <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 w-full lg:w-auto">
                 <button type="button" 
                         onclick="openDaftarModal()" 
-                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-blue-800 hover:bg-blue-50 font-extrabold text-sm shadow-md transition-all duration-200 umkm-hero-btn-white">
+                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-2xl bg-white text-blue-800 hover:bg-blue-50 font-extrabold text-xs sm:text-sm shadow-md transition-all duration-200 umkm-hero-btn-white">
                     <i data-lucide="plus-circle" class="w-4 h-4 text-blue-600"></i>
                     <span>Daftarkan Usaha Saya</span>
                 </button>
 
                 @if(auth()->check() && in_array(auth()->user()->role, ['rw', 'admin', 'super_admin', 'rt']))
                     <a href="{{ route('umkm.moderasi') }}" 
-                       class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-emerald-500 text-white hover:bg-emerald-600 font-extrabold text-sm shadow-md transition-all duration-200 umkm-hero-btn-green">
+                       class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:px-4 sm:py-3 rounded-2xl bg-emerald-500 text-white hover:bg-emerald-600 font-extrabold text-xs sm:text-sm shadow-md transition-all duration-200 umkm-hero-btn-green">
                         <i data-lucide="shield-check" class="w-4 h-4"></i>
-                        <span>Menu Pengawasan</span>
+                        <span>Pengawasan</span>
                     </a>
                 @endif
             </div>
