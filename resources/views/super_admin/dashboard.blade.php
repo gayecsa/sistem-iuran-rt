@@ -226,7 +226,7 @@
             </div>
             <span class="haven-quick-label">Switch Role</span>
         </a>
-        <a href="#card-gps-gerbang" class="haven-quick-item">
+        <a href="{{ route('ronda.index', ['tab' => 'portal']) }}" class="haven-quick-item">
             <div class="haven-quick-icon-wrap" style="background: #CCFBF1; color: #0F766E;">
                 <i data-lucide="map-pin" style="width: 22px; height: 22px;"></i>
             </div>
@@ -238,7 +238,7 @@
             </div>
             <span class="haven-quick-label">Tarif Iuran</span>
         </a>
-        <a href="{{ route('ronda.index', ['tab' => 'portal']) }}" class="haven-quick-item">
+        <a href="{{ route('ronda.index') }}" class="haven-quick-item">
             <div class="haven-quick-icon-wrap" style="background: #E0F2FE; color: #0284C7;">
                 <i data-lucide="cctv" style="width: 22px; height: 22px;"></i>
             </div>
@@ -673,7 +673,7 @@
                                 <small class="text-muted font-monospace" style="font-size: 0.72rem;">{{ $log->ip_address ?: '127.0.0.1' }}</small>
                             </td>
                             <td>
-                                <span class="badge rounded-pill fw-bold {{ $log->category_badge_class }}" style="font-size: 0.7rem;">
+                                <span class="badge rounded-pill fw-bold {{ $log->category_badge_class }}" style="font-size: 0.7rem; padding: 4px 10px;">
                                     {{ $log->category_label }}
                                 </span>
                             </td>

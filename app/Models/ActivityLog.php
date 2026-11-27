@@ -140,13 +140,23 @@ class ActivityLog extends Model
      */
     public function getCategoryBadgeClassAttribute(): string
     {
-        return match ($this->category) {
-            'auth' => 'bg-info-subtle text-info border border-info border-opacity-25',
-            'super_admin' => 'bg-purple-subtle text-purple border border-primary border-opacity-25',
-            'keuangan' => 'bg-success-subtle text-success border border-success border-opacity-25',
-            'keamanan' => 'bg-danger-subtle text-danger border border-danger border-opacity-25',
-            'profil' => 'bg-primary-subtle text-primary border border-primary border-opacity-25',
-            default => 'bg-secondary-subtle text-secondary border border-secondary border-opacity-25',
+        $cat = strtolower(str_replace('-', '_', $this->category ?? ''));
+        if (empty($cat) || $cat === 'null') {
+            $act = strtolower($this->action ?? $this->activity ?? '');
+            if (str_starts_with($act, 'super_admin') || str_starts_with($act, 'super-admin')) $cat = 'super_admin';
+            elseif (str_starts_with($act, 'auth')) $cat = 'auth';
+            elseif (str_starts_with($act, 'keuangan') || str_starts_with($act, 'kas')) $cat = 'keuangan';
+            elseif (str_starts_with($act, 'keamanan') || str_starts_with($act, 'ronda') || str_starts_with($act, 'portal')) $cat = 'keamanan';
+            elseif (str_starts_with($act, 'profil') || str_starts_with($act, 'profile')) $cat = 'profil';
+        }
+
+        return match ($cat) {
+            'auth' => 'badge-cat-auth',
+            'super_admin' => 'badge-cat-super-admin',
+            'keuangan' => 'badge-cat-keuangan',
+            'keamanan' => 'badge-cat-keamanan',
+            'profil' => 'badge-cat-profil',
+            default => 'badge-cat-sistem',
         };
     }
 
@@ -155,7 +165,18 @@ class ActivityLog extends Model
      */
     public function getCategoryLabelAttribute(): string
     {
-        return match ($this->category) {
+        $cat = strtolower(str_replace('-', '_', $this->category ?? ''));
+        if (empty($cat) || $cat === 'null') {
+            $act = strtolower($this->action ?? $this->activity ?? '');
+            if (str_starts_with($act, 'super_admin') || str_starts_with($act, 'super-admin')) return 'Super Admin';
+            if (str_starts_with($act, 'auth')) return 'Otentikasi & Akun';
+            if (str_starts_with($act, 'keuangan') || str_starts_with($act, 'kas')) return 'Keuangan & Kas';
+            if (str_starts_with($act, 'keamanan') || str_starts_with($act, 'ronda') || str_starts_with($act, 'portal')) return 'Keamanan & CCTV';
+            if (str_starts_with($act, 'profil') || str_starts_with($act, 'profile')) return 'Profil & Akun';
+            return 'Sistem & Operasional';
+        }
+
+        return match ($cat) {
             'auth' => 'Otentikasi & Akun',
             'super_admin' => 'Super Admin',
             'keuangan' => 'Keuangan & Kas',

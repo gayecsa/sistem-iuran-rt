@@ -158,6 +158,13 @@
                     </a>
                 </li>
                 <li class="wm-nav-item">
+                    <a href="{{ route('ronda.index', ['tab' => 'portal']) }}" class="wm-nav-link {{ (request()->routeIs('ronda.*') && request('tab') === 'portal') ? 'active' : '' }}" title="GPS Gerbang & Smart Portal RFID">
+                        <span class="wm-nav-icon"><i data-lucide="radio"></i></span>
+                        <span class="wm-nav-text">GPS & Smart Portal</span>
+                        <span class="wm-nav-badge" style="background:#059669;">IoT</span>
+                    </a>
+                </li>
+                <li class="wm-nav-item">
                     <a href="{{ route('super-admin.audit-log.index') }}" class="wm-nav-link {{ request()->routeIs('super-admin.audit-log.*') ? 'active' : '' }}" title="Log Aktivitas & Audit Trail">
                         <span class="wm-nav-icon"><i data-lucide="history"></i></span>
                         <span class="wm-nav-text">Log Aktivitas</span>
@@ -1040,30 +1047,11 @@
     @endauth
 
     {{-- ======================================================================
-         FLOATING SPEED DIAL CONTACT WIDGET (WHATSAPP & TELEGRAM) - DIPERTAHANKAN
+         FLOATING TOMBOL TELEGRAM RW (POJOK KANAN BAWAH)
          ====================================================================== --}}
-    <div class="floating-contact-container" id="floatingContactContainer">
-        <!-- Bubble Telegram -->
-        <a href="https://t.me/icrvye" target="_blank" rel="noopener noreferrer" class="contact-bubble-item telegram-bubble" id="telegramBubble" title="Hubungi via Telegram">
-            <span class="bubble-icon-box">
-                <i class="fab fa-telegram-plane"></i>
-            </span>
-            <span class="bubble-label-text">Telegram RW</span>
-        </a>
-
-        <!-- Bubble WhatsApp -->
-        <div class="contact-bubble-item whatsapp-bubble" id="whatsappBubble" onclick="toggleContactBubbles(event)" title="Pusat Bantuan WhatsApp">
-            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $admin_contact_phone ?? '6281234567890') }}" target="_blank" rel="noopener noreferrer" class="whatsapp-link-area text-white text-decoration-none d-flex align-items-center gap-2" onclick="event.stopPropagation();">
-                <span class="bubble-icon-box">
-                    <i class="fab fa-whatsapp"></i>
-                </span>
-                <span class="bubble-label-text">WhatsApp RW</span>
-            </a>
-            <button type="button" class="bubble-toggle-arrow" title="Tampilkan Pilihan Kontak">
-                <i class="fas fa-chevron-up" id="arrowToggleIcon"></i>
-            </button>
-        </div>
-    </div>
+    <a href="https://t.me/paparazzied" target="_blank" rel="noopener noreferrer" class="haven-floating-telegram" aria-label="Telegram" title="Hubungi via Telegram">
+        <i class="fab fa-telegram-plane"></i>
+    </a>
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -1333,32 +1321,32 @@
                                 </div>
                             </div>
 
-                            {{-- Tab 2: RT (Dinamis dari Database) --}}
+                            {{-- Tab 2: RT (Dinamis dari Database - Grid 2 Kolom Ringkas di Mobile) --}}
                             <div class="tab-pane fade" id="pills-rt" role="tabpanel">
-                                <div class="row g-2.5">
+                                <div class="row g-2 g-md-2.5">
                                     @forelse($allRtUsers as $rtUser)
-                                        <div class="col-md-6">
-                                            <div class="card border-0 rounded-4 shadow-sm p-3 bg-white h-100 d-flex flex-column justify-content-between">
+                                        <div class="col-6 col-md-6">
+                                            <div class="card border-0 rounded-4 shadow-sm p-2.5 p-md-3 bg-white h-100 d-flex flex-column justify-content-between rt-modal-card">
                                                 <div>
                                                     <div class="d-flex justify-content-between align-items-start">
-                                                        <span class="badge bg-success text-white rounded-pill px-2.5 py-1 fw-bold" style="font-size: 0.72rem;">
+                                                        <span class="badge bg-success text-white rounded-pill px-2 py-0.5 px-md-2.5 py-md-1 fw-bold" style="font-size: 0.72rem;">
                                                             {{ $rtUser->clean_rt_label }}
                                                         </span>
                                                         @if(Auth::id() === $rtUser->id)
-                                                            <span class="badge bg-warning text-dark rounded-pill px-2 py-0.5" style="font-size: 0.68rem;">Sedang Aktif</span>
+                                                            <span class="badge bg-warning text-dark rounded-pill px-1.5 py-0.5" style="font-size: 0.65rem;">Aktif</span>
                                                         @endif
                                                     </div>
-                                                    <h6 class="fw-bold text-dark mt-2 mb-0" style="font-size: 0.9rem;">{{ $rtUser->name }}</h6>
-                                                    <small class="text-muted d-block" style="font-size: 0.75rem;">{{ $rtUser->phone ?? '-' }} &bull; {{ $rtUser->address ?? 'Wilayah ' . $rtUser->clean_rt_label }}</small>
+                                                    <h6 class="fw-bold text-dark mt-1.5 mb-0 text-truncate" style="font-size: 0.85rem;" title="{{ $rtUser->name }}">{{ $rtUser->name }}</h6>
+                                                    <small class="text-muted d-none d-md-block" style="font-size: 0.75rem;">{{ $rtUser->phone ?? '-' }} &bull; {{ $rtUser->address ?? 'Wilayah ' . $rtUser->clean_rt_label }}</small>
                                                 </div>
-                                                <form method="POST" action="{{ route('switch.role') }}" class="m-0 mt-3">
+                                                <form method="POST" action="{{ route('switch.role') }}" class="m-0 mt-2 mt-md-3">
                                                     @csrf
                                                     <input type="hidden" name="target_role" value="rt">
                                                     <input type="hidden" name="rt_number" value="{{ $rtUser->rt_number }}">
                                                     <input type="hidden" name="target_user_id" value="{{ $rtUser->id }}">
                                                     <input type="hidden" name="mode" class="modal-form-mode-input" value="view_only">
-                                                    <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill w-100 fw-bold d-flex align-items-center justify-content-center gap-1" {{ Auth::id() === $rtUser->id ? 'disabled' : '' }}>
-                                                        <i data-lucide="shuffle" style="width: 13px; height: 13px;"></i> Simulasi {{ $rtUser->clean_rt_label }}
+                                                    <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill w-100 fw-bold d-flex align-items-center justify-content-center gap-1" style="font-size: 0.74rem; padding: 4px 8px;" {{ Auth::id() === $rtUser->id ? 'disabled' : '' }}>
+                                                        <i data-lucide="shuffle" style="width: 12px; height: 12px;"></i> Simulasi
                                                     </button>
                                                 </form>
                                             </div>

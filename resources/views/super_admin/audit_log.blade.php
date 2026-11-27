@@ -350,7 +350,7 @@
 
                             {{-- Kategori --}}
                             <td>
-                                <span class="badge rounded-pill fw-bold {{ $log->category_badge_class }}" style="font-size: 0.72rem;">
+                                <span class="badge rounded-pill fw-bold {{ $log->category_badge_class }}" style="font-size: 0.72rem; padding: 4px 10px;">
                                     {{ $log->category_label }}
                                 </span>
                             </td>

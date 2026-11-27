@@ -586,30 +586,331 @@
             }
         }
 
-        @media (max-width: 640px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-                gap: 14px;
+        /* Floating Telegram Button */
+        .haven-floating-telegram {
+            position: fixed;
+            bottom: 26px;
+            right: 22px;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2AABEE 0%, #229ED9 100%);
+            color: #FFFFFF !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 18px rgba(34, 158, 217, 0.42);
+            z-index: 1035;
+            text-decoration: none !important;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .haven-floating-telegram:hover {
+            transform: scale(1.08) translateY(-2px);
+            box-shadow: 0 6px 22px rgba(34, 158, 217, 0.55);
+            color: #FFFFFF !important;
+        }
+        .haven-floating-telegram:active {
+            transform: scale(0.95);
+        }
+
+        /* ---------- Mobile Compact Styles (< 768px) - TANPA MENGUBAH DESKTOP >= 768px ---------- */
+        @media (max-width: 767.98px) {
+            /* 1. Navbar Mobile: Logo + Haven Portal + Masuk + Mode Muat Rapi 1 Baris */
+            .navbar {
+                padding: 10px 14px !important;
+                gap: 8px !important;
             }
-            .services-grid {
-                grid-template-columns: 1fr;
+            .logo {
+                gap: 8px !important;
+                min-width: 0 !important;
+                flex: 1 1 auto !important;
             }
-            .announcements-grid {
-                grid-template-columns: 1fr;
+            .logo svg {
+                width: 34px !important;
+                height: 34px !important;
+                border-radius: 10px !important;
             }
-            .footer-grid {
-                grid-template-columns: 1fr;
+            .logo strong {
+                font-size: 1.05rem !important;
+                white-space: nowrap !important;
             }
-            .pillars {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 16px;
+            .logo small {
+                display: none !important; /* Sembunyikan slogan panjang agar tidak wrap bertumpuk di mobile */
+            }
+            .nav-actions {
+                gap: 6px !important;
+                flex-shrink: 0 !important;
+            }
+            .nav-actions .btn {
+                padding: 6px 12px !important;
+                font-size: 0.8rem !important;
+                border-radius: 9px !important;
+                gap: 5px !important;
+            }
+            .icon-btn {
+                width: 34px !important;
+                height: 34px !important;
+                font-size: 0.85rem !important;
+            }
+
+            /* 2. Container & Spacing Umum */
+            .container {
+                padding: 0 14px !important;
+            }
+            section.page-section {
+                padding: 28px 0 !important;
+            }
+            .section-header {
+                margin-bottom: 20px !important;
+            }
+            .section-tag {
+                font-size: 0.65rem !important;
+                padding: 4px 10px !important;
+                margin-bottom: 6px !important;
+            }
+            .section-header h2 {
+                font-size: 1.25rem !important;
+                line-height: 1.3 !important;
+                margin-bottom: 6px !important;
+            }
+            .section-header p {
+                font-size: 0.8rem !important;
+                line-height: 1.4 !important;
+            }
+
+            /* 3. Hero Section */
+            .hero {
+                padding: 14px 0 20px !important;
+                gap: 14px !important;
+            }
+            .hero-badge {
+                font-size: 0.65rem !important;
+                padding: 4px 10px !important;
+                margin-bottom: 8px !important;
+            }
+            .hero h1 {
+                font-size: 1.45rem !important;
+                line-height: 1.22 !important;
+                margin-bottom: 4px !important;
+            }
+            .underline {
+                width: 48px !important;
+                height: 3px !important;
+                margin: 6px auto 10px !important;
+            }
+            .hero p.lead {
+                font-size: 0.82rem !important;
+                line-height: 1.45 !important;
+                margin-bottom: 14px !important;
+            }
+            .cta-group {
+                gap: 8px !important;
+                margin-bottom: 16px !important;
             }
             .cta-group .btn {
-                width: 100%;
-                justify-content: center;
+                padding: 8px 14px !important;
+                font-size: 0.8rem !important;
+                border-radius: 10px !important;
+                flex: 1 1 calc(50% - 6px);
+                max-width: 175px;
+                justify-content: center !important;
             }
+            .cta-group .btn-soft {
+                flex: 1 1 100% !important;
+                max-width: 240px !important;
+            }
+            .hero-art {
+                max-width: 100% !important;
+                margin: 0 auto 4px !important;
+            }
+            .hero-art img {
+                max-height: 155px !important;
+                border-radius: 14px !important;
+            }
+            .pillars {
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 6px !important;
+                padding-top: 10px !important;
+            }
+            .pillar {
+                font-size: 0.65rem !important;
+                line-height: 1.2 !important;
+            }
+            .pillar i {
+                width: 32px !important;
+                height: 32px !important;
+                font-size: 0.82rem !important;
+                margin: 0 auto 4px !important;
+                border-radius: 8px !important;
+            }
+
+            /* 4. Strip Statistik Biru: Grid 2x2 Ringkas */
             .stats-section {
-                padding: 28px 18px;
+                padding: 16px 12px !important;
+                border-radius: 16px !important;
+                margin-bottom: 26px !important;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 8px !important;
+            }
+            .stat-card {
+                padding: 10px 8px !important;
+                border-radius: 12px !important;
+            }
+            .stat-icon {
+                width: 32px !important;
+                height: 32px !important;
+                font-size: 0.95rem !important;
+                margin: 0 auto 6px !important;
+            }
+            .stat-value {
+                font-size: 1.25rem !important;
+                margin-bottom: 2px !important;
+            }
+            .stat-label {
+                font-size: 0.72rem !important;
+                line-height: 1.2 !important;
+            }
+            .stat-sub {
+                font-size: 0.62rem !important;
+                margin-top: 1px !important;
+                opacity: 0.8 !important;
+            }
+
+            /* 5. 6 Layanan Terpadu: Grid 2 Kolom Ringkas */
+            .services-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 8px !important;
+            }
+            .service-card {
+                padding: 12px 10px !important;
+                border-radius: 14px !important;
+            }
+            .service-icon-box {
+                width: 36px !important;
+                height: 36px !important;
+                border-radius: 10px !important;
+                font-size: 1rem !important;
+                margin-bottom: 6px !important;
+            }
+            .service-tag {
+                font-size: 0.6rem !important;
+                margin-bottom: 2px !important;
+            }
+            .service-card h3 {
+                font-size: 0.82rem !important;
+                line-height: 1.25 !important;
+                margin-bottom: 4px !important;
+            }
+            .service-card p {
+                font-size: 0.7rem !important;
+                line-height: 1.35 !important;
+                margin-bottom: 8px !important;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+            .service-link {
+                font-size: 0.72rem !important;
+            }
+
+            /* 6. Pengumuman Terbaru: Horizontal-Scroll Compact Tanpa Banner Tinggi */
+            .announcements-grid {
+                display: flex !important;
+                overflow-x: auto !important;
+                scroll-snap-type: x mandatory !important;
+                gap: 10px !important;
+                padding-bottom: 8px !important;
+                -webkit-overflow-scrolling: touch !important;
+            }
+            .announcement-card {
+                min-width: 250px !important;
+                max-width: 260px !important;
+                flex-shrink: 0 !important;
+                scroll-snap-align: start !important;
+                border-radius: 14px !important;
+            }
+            .announcement-media {
+                height: 70px !important; /* Padatkan dari tinggi 170px */
+            }
+            .announcement-media i {
+                font-size: 1.3rem !important;
+                margin-bottom: 2px !important;
+            }
+            .announcement-media span {
+                font-size: 0.65rem !important;
+            }
+            .announcement-badge-abs {
+                top: 6px !important;
+                left: 6px !important;
+                font-size: 0.62rem !important;
+                padding: 2px 7px !important;
+            }
+            .announcement-body {
+                padding: 12px 10px !important;
+            }
+            .announcement-meta {
+                font-size: 0.68rem !important;
+                margin-bottom: 4px !important;
+            }
+            .announcement-body h4 {
+                font-size: 0.85rem !important;
+                line-height: 1.3 !important;
+                margin-bottom: 4px !important;
+                -webkit-line-clamp: 2 !important;
+            }
+            .announcement-body p {
+                font-size: 0.74rem !important;
+                line-height: 1.35 !important;
+                margin-bottom: 8px !important;
+                -webkit-line-clamp: 2 !important;
+            }
+
+            /* 7. Footer Ringkas */
+            footer.footer-main {
+                padding: 24px 0 16px !important;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr !important;
+                gap: 16px !important;
+                margin-bottom: 16px !important;
+            }
+            .footer-col h5 {
+                font-size: 0.92rem !important;
+                margin-bottom: 8px !important;
+            }
+            .footer-col p {
+                font-size: 0.78rem !important;
+                line-height: 1.45 !important;
+                margin-bottom: 8px !important;
+            }
+            .footer-list {
+                font-size: 0.78rem !important;
+            }
+            .footer-list li {
+                margin-bottom: 6px !important;
+            }
+            .contact-emergency-box {
+                padding: 10px 12px !important;
+                border-radius: 10px !important;
+                margin-top: 6px !important;
+            }
+            .footer-bottom {
+                padding-top: 14px !important;
+                font-size: 0.7rem !important;
+                line-height: 1.4 !important;
+            }
+
+            /* 8. Floating Telegram di Mobile */
+            .haven-floating-telegram {
+                bottom: 82px !important;
+                right: 14px !important;
+                width: 48px !important;
+                height: 48px !important;
+                font-size: 22px !important;
             }
         }
     </style>
@@ -1031,6 +1332,11 @@
         </div>
     </div>
 </footer>
+
+{{-- Floating Tombol Telegram (Pojok Kanan Bawah) --}}
+<a href="https://t.me/paparazzied" target="_blank" rel="noopener noreferrer" class="haven-floating-telegram" aria-label="Telegram" title="Hubungi via Telegram">
+    <i class="fab fa-telegram-plane"></i>
+</a>
 
 <script>
     (function () {
