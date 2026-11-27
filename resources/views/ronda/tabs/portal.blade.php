@@ -90,7 +90,7 @@
                 <form action="{{ route('ronda.portal.set-mode') }}" method="POST">
                     @csrf
                     <input type="hidden" name="mode" value="portal">
-                    <button type="submit" class="btn w-100 text-start p-3 rounded-3 border transition-all {{ $iotDevice->mode === 'portal' ? 'bg-primary text-white shadow-sm' : 'bg-light text-dark' }}">
+                    <button type="submit" class="btn w-100 text-start p-2.5 p-md-3 rounded-3 border transition-all {{ $iotDevice->mode === 'portal' ? 'bg-primary text-white shadow-sm' : 'bg-light text-dark' }}">
                         <div class="d-flex align-items-center justify-content-between mb-2">
                             <i data-lucide="shield-check" style="width: 20px; height: 20px;"></i>
                             @if($iotDevice->mode === 'portal')
@@ -107,7 +107,7 @@
                 <form action="{{ route('ronda.portal.set-mode') }}" method="POST">
                     @csrf
                     <input type="hidden" name="mode" value="ronda">
-                    <button type="submit" class="btn w-100 text-start p-3 rounded-3 border transition-all {{ $iotDevice->mode === 'ronda' ? 'text-white shadow-sm' : 'bg-light text-dark' }}" style="{{ $iotDevice->mode === 'ronda' ? 'background: #7C3AED; border-color: #7C3AED;' : '' }}">
+                    <button type="submit" class="btn w-100 text-start p-2.5 p-md-3 rounded-3 border transition-all {{ $iotDevice->mode === 'ronda' ? 'text-white shadow-sm' : 'bg-light text-dark' }}" style="{{ $iotDevice->mode === 'ronda' ? 'background: #7C3AED; border-color: #7C3AED;' : '' }}">
                         <div class="d-flex align-items-center justify-content-between mb-2">
                             <i data-lucide="moon" style="width: 20px; height: 20px;"></i>
                             @if($iotDevice->mode === 'ronda')
@@ -124,7 +124,7 @@
                 <form action="{{ route('ronda.portal.set-mode') }}" method="POST">
                     @csrf
                     <input type="hidden" name="mode" value="bank_sampah">
-                    <button type="submit" class="btn w-100 text-start p-3 rounded-3 border transition-all {{ $iotDevice->mode === 'bank_sampah' ? 'text-white shadow-sm' : 'bg-light text-dark' }}" style="{{ $iotDevice->mode === 'bank_sampah' ? 'background: #16865D; border-color: #16865D;' : '' }}">
+                    <button type="submit" class="btn w-100 text-start p-2.5 p-md-3 rounded-3 border transition-all {{ $iotDevice->mode === 'bank_sampah' ? 'text-white shadow-sm' : 'bg-light text-dark' }}" style="{{ $iotDevice->mode === 'bank_sampah' ? 'background: #16865D; border-color: #16865D;' : '' }}">
                         <div class="d-flex align-items-center justify-content-between mb-2">
                             <i data-lucide="recycle" style="width: 20px; height: 20px;"></i>
                             @if($iotDevice->mode === 'bank_sampah')
@@ -138,7 +138,7 @@
             </div>
 
             <div class="col-6 col-md-3">
-                <button type="button" class="btn w-100 text-start p-3 rounded-3 border transition-all {{ $iotDevice->mode === 'register' ? 'text-white shadow-sm' : 'bg-light text-dark' }}" style="{{ $iotDevice->mode === 'register' ? 'background: #D97706; border-color: #D97706;' : '' }}" data-bs-toggle="collapse" data-bs-target="#collapseRegisterCard" aria-expanded="{{ $iotDevice->mode === 'register' ? 'true' : 'false' }}">
+                <button type="button" class="btn w-100 text-start p-2.5 p-md-3 rounded-3 border transition-all {{ $iotDevice->mode === 'register' ? 'text-white shadow-sm' : 'bg-light text-dark' }}" style="{{ $iotDevice->mode === 'register' ? 'background: #D97706; border-color: #D97706;' : '' }}" data-bs-toggle="collapse" data-bs-target="#collapseRegisterCard" aria-expanded="{{ $iotDevice->mode === 'register' ? 'true' : 'false' }}">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <i data-lucide="scan" style="width: 20px; height: 20px;"></i>
                         @if($iotDevice->mode === 'register')
@@ -176,12 +176,21 @@
                         @csrf
                         <input type="hidden" name="mode" value="register">
                         <div class="mb-3">
-                            <label class="form-label fw-semibold small text-muted">Pilih Warga Target:</label>
+                            <label class="form-label fw-semibold small text-muted">Pilih Pengguna / Warga Target:</label>
                             <select name="target_user_id" class="form-select form-select-sm" required>
-                                <option value="">-- Pilih Warga --</option>
+                                <option value="">-- Pilih Pengguna (Super Admin / RW / RT / Warga) --</option>
                                 @foreach($wargaRfidList as $w)
+                                    @php
+                                        $roleTag = match($w->role) {
+                                            'super_admin' => 'Super Admin',
+                                            'rw', 'admin' => 'Ketua RW',
+                                            'bendahara' => 'Bendahara RW',
+                                            'rt' => 'Ketua RT ' . ($w->clean_rt_number ? str_pad($w->clean_rt_number, 3, '0', STR_PAD_LEFT) : $w->rt_number),
+                                            default => 'Warga RT ' . ($w->clean_rt_number ? str_pad($w->clean_rt_number, 3, '0', STR_PAD_LEFT) : $w->rt_number)
+                                        };
+                                    @endphp
                                     <option value="{{ $w->id }}" {{ $iotDevice->target_user_id == $w->id ? 'selected' : '' }}>
-                                        {{ $w->name }} (RT {{ $w->clean_rt_number ?? $w->rt_number }}) - {{ $w->rfid_uid ? 'Sudah Ada UID (' . $w->masked_rfid_uid . ')' : 'Belum Ada e-KTP/Kartu' }}
+                                        [{{ $roleTag }}] {{ $w->name }} - {{ $w->rfid_uid ? 'Sudah Ada UID (' . $w->masked_rfid_uid . ')' : 'Belum Ada e-KTP/Kartu' }}
                                     </option>
                                 @endforeach
                             </select>
@@ -206,10 +215,19 @@
                         <div class="row g-2 mb-2">
                             <div class="col-7">
                                 <select name="user_id" class="form-select form-select-sm" required>
-                                    <option value="">-- Pilih Warga --</option>
+                                    <option value="">-- Pilih Pengguna --</option>
                                     @foreach($wargaRfidList as $w)
+                                        @php
+                                            $roleTag = match($w->role) {
+                                                'super_admin' => 'Super Admin',
+                                                'rw', 'admin' => 'Ketua RW',
+                                                'bendahara' => 'Bendahara RW',
+                                                'rt' => 'Ketua RT ' . ($w->clean_rt_number ? str_pad($w->clean_rt_number, 3, '0', STR_PAD_LEFT) : $w->rt_number),
+                                                default => 'Warga RT ' . ($w->clean_rt_number ? str_pad($w->clean_rt_number, 3, '0', STR_PAD_LEFT) : $w->rt_number)
+                                            };
+                                        @endphp
                                         <option value="{{ $w->id }}">
-                                            {{ $w->name }} (RT {{ $w->clean_rt_number ?? $w->rt_number }})
+                                            [{{ $roleTag }}] {{ $w->name }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -227,6 +245,78 @@
             </div>
         </div>
     </div>
+
+    {{-- KHUSUS SUPER ADMIN: PENGATURAN TITIK GPS GERBANG & RADIUS AKSES --}}
+    @if(Auth::user()->isSuperAdmin())
+        <div class="wm-card-box mb-4" style="background: linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%); border-left: 4px solid #1456A0;">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="p-2 rounded-3 text-white" style="background: #1456A0;">
+                        <i data-lucide="map-pin" style="width: 18px; height: 18px;"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-0 text-dark">Konfigurasi Titik GPS Gerbang &amp; Radius Akses HP</h6>
+                        <small class="text-muted">Khusus Super Admin: Menentukan koordinat fisik palang gerbang dan radius maksimal pembukaan via GPS HP</small>
+                    </div>
+                </div>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1 fw-bold">
+                    Super Admin Only
+                </span>
+            </div>
+
+            <form action="{{ route('ronda.portal.update-gps') }}" method="POST">
+                @csrf
+                <div class="row g-3 align-items-end">
+                    <div class="col-12 col-md-4">
+                        <label class="form-label small fw-bold text-dark mb-1">
+                            <i data-lucide="crosshair" style="width: 14px; height: 14px; display: inline-block; vertical-align: -2px;"></i>
+                            Latitude Gerbang
+                        </label>
+                        <input type="number" step="0.0000001" name="gate_latitude" id="inputGateLat" class="form-control font-monospace" placeholder="-6.9147440" value="{{ old('gate_latitude', $iotDevice->gate_latitude) }}" required>
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <label class="form-label small fw-bold text-dark mb-1">
+                            <i data-lucide="compass" style="width: 14px; height: 14px; display: inline-block; vertical-align: -2px;"></i>
+                            Longitude Gerbang
+                        </label>
+                        <input type="number" step="0.0000001" name="gate_longitude" id="inputGateLng" class="form-control font-monospace" placeholder="107.6098100" value="{{ old('gate_longitude', $iotDevice->gate_longitude) }}" required>
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <label class="form-label small fw-bold text-dark mb-1">
+                            <i data-lucide="radar" style="width: 14px; height: 14px; display: inline-block; vertical-align: -2px;"></i>
+                            Radius Maksimal (Meter)
+                        </label>
+                        <div class="input-group">
+                            <input type="number" min="3" max="500" name="gate_radius_meters" id="inputGateRadius" class="form-control font-monospace" placeholder="15" value="{{ old('gate_radius_meters', $iotDevice->gate_radius_meters ?? 15) }}" required>
+                            <span class="input-group-text bg-light text-muted small">Meter</span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 d-flex justify-content-between align-items-center flex-wrap gap-2 pt-2">
+                        <button type="button" class="btn btn-outline-secondary rounded-pill btn-sm px-3 fw-semibold" id="btnGetAdminLocation">
+                            <i data-lucide="locate-fixed" style="width: 14px; height: 14px; display: inline-block; vertical-align: -2px;"></i>
+                            Ambil Lokasi Saat Ini (GPS HP / Laptop)
+                        </button>
+
+                        <div class="d-flex align-items-center gap-2">
+                            @if($iotDevice->gate_latitude && $iotDevice->gate_longitude)
+                                <a href="https://www.google.com/maps?q={{ $iotDevice->gate_latitude }},{{ $iotDevice->gate_longitude }}" target="_blank" class="btn btn-light border rounded-pill btn-sm px-3 text-muted">
+                                    <i data-lucide="external-link" style="width: 14px; height: 14px; display: inline-block; vertical-align: -2px;"></i>
+                                    Cek di Google Maps
+                                </a>
+                            @endif
+                            <button type="submit" class="btn btn-primary rounded-pill btn-sm px-4 fw-bold shadow-sm" style="background: #1456A0;">
+                                <i data-lucide="save" style="width: 14px; height: 14px; display: inline-block; vertical-align: -2px;"></i>
+                                Simpan Titik &amp; Radius Gerbang
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    @endif
 
     {{-- 3. VISUALISASI REAL-TIME PALANG GERBANG & SMART READER --}}
     <div class="row g-4 mb-4">
@@ -375,8 +465,17 @@
                             </td>
                             <td>
                                 @if($log->user)
+                                    @php
+                                        $logRoleLabel = match($log->user->role) {
+                                            'super_admin' => 'Super Admin Haven',
+                                            'rw', 'admin' => 'Ketua RW 013',
+                                            'bendahara' => 'Bendahara RW 013',
+                                            'rt' => 'Ketua RT ' . ($log->user->clean_rt_number ? str_pad($log->user->clean_rt_number, 3, '0', STR_PAD_LEFT) : $log->user->rt_number),
+                                            default => 'Warga RT ' . ($log->user->clean_rt_number ? str_pad($log->user->clean_rt_number, 3, '0', STR_PAD_LEFT) : $log->user->rt_number)
+                                        };
+                                    @endphp
                                     <div class="fw-bold text-dark" style="font-size: 0.85rem;">{{ $log->user->name }}</div>
-                                    <small class="text-muted" style="font-size: 0.74rem;">RT {{ $log->user->clean_rt_number ?? $log->user->rt_number }} &bull; {{ ucfirst($log->user->role) }}</small>
+                                    <small class="text-muted" style="font-size: 0.74rem;">{{ $logRoleLabel }}</small>
                                 @else
                                     <span class="text-muted fst-italic">Kartu Tidak Dikenal</span>
                                 @endif
@@ -424,19 +523,35 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr style="font-size: 0.8rem; text-transform: uppercase;">
-                        <th>Nama Warga</th>
-                        <th>Wilayah RT</th>
+                        <th>Pengguna &amp; Peran</th>
+                        <th>Wilayah</th>
                         <th>No. Rumah</th>
-                        <th>UID Kartu RFID</th>
+                        <th>UID Kartu e-KTP / RFID</th>
                         <th>Status Kartu</th>
                         <th class="text-end">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($wargaRfidList as $w)
+                        @php
+                            $roleBadge = match($w->role) {
+                                'super_admin' => ['Super Admin', 'bg-dark text-white'],
+                                'rw', 'admin' => ['Ketua RW', 'bg-primary text-white'],
+                                'bendahara' => ['Bendahara RW', 'bg-primary text-white'],
+                                'rt' => ['Ketua RT ' . ($w->clean_rt_number ? str_pad($w->clean_rt_number, 3, '0', STR_PAD_LEFT) : $w->rt_number), 'bg-success text-white'],
+                                default => ['Warga', 'bg-light text-dark border']
+                            };
+                            $wilayahBadge = match($w->role) {
+                                'super_admin', 'rw', 'admin', 'bendahara' => 'RW 013 (Wilayah)',
+                                default => 'RT ' . ($w->clean_rt_number ? str_pad($w->clean_rt_number, 3, '0', STR_PAD_LEFT) : ($w->rt_number ?? '001'))
+                            };
+                        @endphp
                         <tr>
-                            <td class="fw-bold text-dark">{{ $w->name }}</td>
-                            <td><span class="badge bg-light text-dark border">RT {{ $w->clean_rt_number ?? $w->rt_number }}</span></td>
+                            <td>
+                                <div class="fw-bold text-dark">{{ $w->name }}</div>
+                                <span class="badge {{ $roleBadge[1] }}" style="font-size: 0.68rem;">{{ $roleBadge[0] }}</span>
+                            </td>
+                            <td><span class="badge bg-light text-dark border">{{ $wilayahBadge }}</span></td>
                             <td class="small text-muted">{{ $w->house_number ?? '-' }}</td>
                             <td>
                                 @if($w->rfid_uid)

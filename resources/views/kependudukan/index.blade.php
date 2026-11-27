@@ -341,9 +341,15 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <span class="badge bg-secondary-subtle text-secondary border fw-bold">
-                                        RT {{ str_pad($w->rt_number, 3, '0', STR_PAD_LEFT) }}
-                                    </span>
+                                    @if(in_array($w->role, ['super_admin', 'rw', 'admin', 'bendahara']))
+                                        <span class="badge bg-primary-subtle text-primary border fw-bold">
+                                            {{ $w->role === 'super_admin' ? 'Super Admin' : 'Pengurus RW' }}
+                                        </span>
+                                    @else
+                                        <span class="badge bg-secondary-subtle text-secondary border fw-bold">
+                                            RT {{ str_pad($w->rt_number ?: '001', 3, '0', STR_PAD_LEFT) }}
+                                        </span>
+                                    @endif
                                 </td>
                                 <td>
                                     <span class="small text-dark d-block">{{ Str::limit($w->address ?? '-', 35) }}</span>
@@ -376,7 +382,7 @@
                                             <button type="button" class="btn btn-sm btn-outline-warning text-dark rounded-pill px-2.5 py-1 fw-bold btn-rekam-ektp" 
                                                 data-id="{{ $w->id }}" 
                                                 data-name="{{ $w->name }}" 
-                                                data-rt="{{ $w->clean_rt_label ?? 'RT ' . str_pad($w->rt_number, 3, '0', STR_PAD_LEFT) }}"
+                                                data-rt="{{ in_array($w->role, ['super_admin', 'rw', 'admin', 'bendahara']) ? ($w->role === 'super_admin' ? 'Super Admin' : 'Pengurus RW') : ($w->clean_rt_label ?? 'RT ' . str_pad($w->rt_number ?: '001', 3, '0', STR_PAD_LEFT)) }}"
                                                 data-uid="{{ $w->rfid_uid ?? '' }}"
                                                 data-masked-uid="{{ $w->masked_rfid_uid }}"
                                                 title="Rekam atau perbarui chip e-KTP / RFID warga">

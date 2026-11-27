@@ -197,7 +197,8 @@
                         <tr>
                             <td class="ps-4 py-3">
                                 <div class="d-flex align-items-center gap-2.5">
-                                    <img src="{{ $u->profile_photo ? asset('storage/' . $u->profile_photo) : 'https://ui-avatars.com/api/?name=' . urlencode($u->name) . '&background=1456A0&color=FFFFFF' }}"
+                                    <img src="{{ $u->avatar_url }}"
+                                         onerror="this.onerror=null;this.src='{{ $u->initials_svg }}';"
                                          alt="Avatar" class="rounded-circle border flex-shrink-0" style="width: 36px; height: 36px; object-fit: cover;">
                                     <div class="overflow-hidden">
                                         <strong class="text-dark d-block text-truncate" style="font-size: 0.86rem;">
@@ -244,6 +245,17 @@
                                     @if($u->nik)
                                         <div><small class="text-secondary">NIK: {{ substr($u->nik, 0, 6) }}******</small></div>
                                     @endif
+                                    <div class="mt-1">
+                                        @if($u->rfid_uid)
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0.5" style="font-size: 0.68rem;" title="UID: {{ $u->rfid_uid }}">
+                                                <i data-lucide="radio" style="width: 10px; height: 10px; display: inline-block; vertical-align: -1px;"></i> e-KTP ({{ $u->masked_rfid_uid }})
+                                            </span>
+                                        @else
+                                            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2 py-0.5" style="font-size: 0.68rem;">
+                                                Belum Ada e-KTP
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
                             </td>
                             <td class="text-center">
@@ -258,6 +270,11 @@
                                     {{-- Tombol Edit User --}}
                                     <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-2.5 py-1" data-bs-toggle="modal" data-bs-target="#modalEditUser{{ $u->id }}" title="Edit Pengguna">
                                         <i data-lucide="edit" style="width: 13px; height: 13px;"></i> Edit
+                                    </button>
+
+                                    {{-- Tombol Rekam / Kelola e-KTP --}}
+                                    <button type="button" class="btn btn-sm btn-outline-info rounded-pill px-2 py-1 text-dark" data-bs-toggle="modal" data-bs-target="#modalRfidUser{{ $u->id }}" title="Rekam & Kelola e-KTP / RFID">
+                                        <i data-lucide="radio" style="width: 13px; height: 13px; color: #0284C7;"></i>
                                     </button>
 
                                     {{-- Tombol Reset Password --}}
@@ -385,6 +402,108 @@
                                                     <button type="submit" class="btn btn-warning rounded-pill px-4 py-1.5 fw-bold small text-dark">Reset Password Sekarang</button>
                                                 </div>
                                             </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- MODAL REKAM & KELOLA e-KTP / RFID --}}
+                                <div class="modal fade" id="modalRfidUser{{ $u->id }}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content border-0 shadow-lg text-start" style="border-radius: 18px; overflow: hidden;">
+                                            <div class="modal-header p-3.5 text-white" style="background: linear-gradient(135deg, #0284C7 0%, #1456A0 100%);">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <i data-lucide="radio" style="width: 18px; height: 18px;"></i>
+                                                    <h6 class="modal-title fw-bold mb-0">Rekam &amp; Kelola e-KTP / RFID</h6>
+                                                </div>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body p-4 bg-light">
+                                                <div class="p-3 rounded-3 bg-white border mb-3">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <div>
+                                                            <small class="text-muted d-block" style="font-size: 0.72rem;">Pengguna Target:</small>
+                                                            <strong class="text-dark">{{ $u->name }}</strong>
+                                                            <div class="small text-muted">{{ $u->email }} &bull; Role: {{ ucfirst(str_replace('_', ' ', $u->role)) }}</div>
+                                                        </div>
+                                                        <div>
+                                                            @if($u->rfid_uid)
+                                                                <span class="badge bg-success rounded-pill px-2.5 py-1">UID Terdaftar</span>
+                                                            @else
+                                                                <span class="badge bg-secondary rounded-pill px-2.5 py-1">Belum Terdaftar</span>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                    @if($u->rfid_uid)
+                                                        <div class="mt-2 pt-2 border-top d-flex justify-content-between align-items-center">
+                                                            <span class="small text-muted">UID Kartu Aktif:</span>
+                                                            <span class="font-monospace fw-bold text-primary">{{ $u->rfid_uid }} ({{ $u->masked_rfid_uid }})</span>
+                                                        </div>
+                                                    @endif
+                                                </div>
+
+                                                {{-- Opsi 1: Aktifkan Standby Reader ESP32 --}}
+                                                <div class="p-3 rounded-3 bg-white border mb-3">
+                                                    <h6 class="fw-bold text-dark small mb-1 d-flex align-items-center gap-1.5">
+                                                        <i data-lucide="scan" style="width: 15px; height: 15px; color: #D97706;"></i>
+                                                        Opsi 1: Pindai Otomatis via Reader ESP32
+                                                    </h6>
+                                                    <p class="text-muted small mb-2" style="font-size: 0.76rem;">
+                                                        Aktifkan mode rekam pada reader gerbang GATE-01 untuk akun ini, lalu tempelkan e-KTP fisik atau kartu RFID.
+                                                    </p>
+                                                    <form action="{{ route('ronda.portal.set-mode') }}" method="POST">
+                                                        @csrf
+                                                        <input type="hidden" name="mode" value="register">
+                                                        <input type="hidden" name="target_user_id" value="{{ $u->id }}">
+                                                        <input type="hidden" name="redirect_to" value="portal">
+                                                        <button type="submit" class="btn btn-sm btn-warning text-dark fw-bold rounded-pill px-3">
+                                                            <i data-lucide="play" style="width: 13px; height: 13px; vertical-align: -1px;"></i> Aktifkan Reader &amp; Buka Tab Portal
+                                                        </button>
+                                                    </form>
+                                                </div>
+
+                                                {{-- Opsi 2: Input Manual UID --}}
+                                                <div class="p-3 rounded-3 bg-white border mb-3">
+                                                    <h6 class="fw-bold text-dark small mb-1 d-flex align-items-center gap-1.5">
+                                                        <i data-lucide="keyboard" style="width: 15px; height: 15px; color: #1456A0;"></i>
+                                                        Opsi 2: Simpan UID Manual Langsung
+                                                    </h6>
+                                                    <p class="text-muted small mb-2" style="font-size: 0.76rem;">
+                                                        Ketik nomor seri chip e-KTP (14 hex) atau kartu RFID (8 hex) secara langsung.
+                                                    </p>
+                                                    <form action="{{ route('ronda.portal.manual-register') }}" method="POST">
+                                                        @csrf
+                                                        <input type="hidden" name="user_id" value="{{ $u->id }}">
+                                                        <div class="input-group input-group-sm mb-1">
+                                                            <input type="text" name="rfid_uid" class="form-control font-monospace text-uppercase" placeholder="Contoh: 04A1B2C3D4E5F6" value="{{ $u->rfid_uid }}" required>
+                                                            <button type="submit" class="btn btn-primary fw-bold" style="background: #1456A0;">
+                                                                <i data-lucide="save" style="width: 13px; height: 13px; vertical-align: -1px;"></i> Simpan
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+
+                                                {{-- Opsi 3: Cabut / Hapus Kartu (Jika ada) --}}
+                                                @if($u->rfid_uid)
+                                                    <div class="p-3 rounded-3 bg-white border border-danger border-opacity-25">
+                                                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                                            <div>
+                                                                <strong class="small text-danger d-block">Cabut Tautan Kartu</strong>
+                                                                <small class="text-muted" style="font-size: 0.72rem;">Kartu tidak dapat digunakan lagi untuk akses gerbang/ronda.</small>
+                                                            </div>
+                                                            <form action="{{ route('ronda.portal.unlink') }}" method="POST" onsubmit="return confirm('Cabut UID kartu dari {{ $u->name }}?');">
+                                                                @csrf
+                                                                <input type="hidden" name="user_id" value="{{ $u->id }}">
+                                                                <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold">
+                                                                    <i data-lucide="trash-2" style="width: 12px; height: 12px; vertical-align: -1px;"></i> Cabut Kartu
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                            <div class="modal-footer p-2.5 bg-white border-top">
+                                                <button type="button" class="btn btn-light rounded-pill px-3 py-1 small" data-bs-dismiss="modal">Tutup</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

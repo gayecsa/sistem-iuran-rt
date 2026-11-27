@@ -107,6 +107,75 @@
     </div>
 
     {{-- ======================================================================
+         MENU CEPAT MOBILE ALA GOPAY (KHUSUS < 768px - d-md-none)
+         ====================================================================== --}}
+    <div class="haven-quick-grid d-md-none mb-4">
+        {{-- 1. Data Warga --}}
+        <a href="{{ route('warga.index') }}" class="haven-quick-item">
+            <div class="haven-quick-icon-wrap" style="background: #EAF3FF; color: #1456A0;">
+                <i data-lucide="users"></i>
+            </div>
+            <span class="haven-quick-label">Data Warga</span>
+        </a>
+
+        {{-- 2. Kas RT --}}
+        <a href="{{ route('kas-rt.index') }}" class="haven-quick-item">
+            <div class="haven-quick-icon-wrap" style="background: #E8F5E9; color: #16A34A;">
+                <i data-lucide="wallet"></i>
+            </div>
+            <span class="haven-quick-label">Kas RT</span>
+        </a>
+
+        {{-- 3. Surat Warga --}}
+        <a href="{{ route('rt.surat.index') }}" class="haven-quick-item">
+            <div class="haven-quick-icon-wrap" style="background: #FEF3C7; color: #D97706;">
+                <i data-lucide="file-check"></i>
+            </div>
+            <span class="haven-quick-label">Verif Surat</span>
+        </a>
+
+        {{-- 4. Pengaduan --}}
+        <a href="{{ route('pengaduan.index') }}" class="haven-quick-item">
+            <div class="haven-quick-icon-wrap" style="background: #FEE2E2; color: #DC2626;">
+                <i data-lucide="message-square-plus"></i>
+            </div>
+            <span class="haven-quick-label">Aduan RT</span>
+        </a>
+
+        {{-- 5. Laporan RW --}}
+        <a href="{{ route('rt.laporan.create') }}" class="haven-quick-item">
+            <div class="haven-quick-icon-wrap" style="background: #ECFDF5; color: #059669;">
+                <i data-lucide="send"></i>
+            </div>
+            <span class="haven-quick-label">Kirim Lap.</span>
+        </a>
+
+        {{-- 6. Ronda & Portal --}}
+        <a href="{{ route('ronda.index', ['tab' => 'portal']) }}" class="haven-quick-item">
+            <div class="haven-quick-icon-wrap" style="background: #EDE9FE; color: #7C3AED;">
+                <i data-lucide="shield-check"></i>
+            </div>
+            <span class="haven-quick-label">Portal & Ronda</span>
+        </a>
+
+        {{-- 7. Posyandu --}}
+        <a href="{{ route('posyandu') }}" class="haven-quick-item">
+            <div class="haven-quick-icon-wrap" style="background: #FCE7F3; color: #DB2777;">
+                <i data-lucide="heart-pulse"></i>
+            </div>
+            <span class="haven-quick-label">Posyandu</span>
+        </a>
+
+        {{-- 8. Menu Lengkap --}}
+        <button type="button" class="haven-quick-item" onclick="toggleMobileSidebar()">
+            <div class="haven-quick-icon-wrap" style="background: #F1F5F9; color: #475569;">
+                <i data-lucide="layout-grid"></i>
+            </div>
+            <span class="haven-quick-label">Lainnya</span>
+        </button>
+    </div>
+
+    {{-- ======================================================================
          RINGKASAN KEUANGAN RT & LINGKUNGAN (100% DATA DINAMIS DATABASE)
          ====================================================================== --}}
     <div class="wm-card mb-4">

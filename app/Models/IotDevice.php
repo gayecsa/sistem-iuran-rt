@@ -16,10 +16,16 @@ class IotDevice extends Model
         'target_user_id',
         'last_seen_at',
         'last_uid',
+        'gate_latitude',
+        'gate_longitude',
+        'gate_radius_meters',
     ];
 
     protected $casts = [
         'last_seen_at' => 'datetime',
+        'gate_latitude' => 'float',
+        'gate_longitude' => 'float',
+        'gate_radius_meters' => 'integer',
     ];
 
     public function targetUser()

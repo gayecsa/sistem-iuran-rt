@@ -5,8 +5,8 @@
     <!-- Breadcrumb & Top Bar -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div class="d-flex align-items-center gap-2">
-            <a href="{{ route('kependudukan.index', ['tab' => 'keluarga']) }}" class="btn btn-outline-secondary rounded-pill btn-sm px-3 fw-semibold">
-                <i data-lucide="arrow-left" style="width: 14px; height: 14px; vertical-align: middle;"></i> Data Kependudukan
+            <a href="{{ route('kependudukan.index', ['tab' => 'keluarga']) }}" class="btn btn-outline-secondary rounded-pill btn-sm px-3 fw-semibold shadow-sm d-inline-flex align-items-center gap-1">
+                <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i> Kembali ke Data Kependudukan
             </a>
             <div>
                 <h4 class="fw-bold mb-0 text-dark">Detail Terpadu Kartu Keluarga</h4>

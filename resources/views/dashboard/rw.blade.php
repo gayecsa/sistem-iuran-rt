@@ -50,6 +50,58 @@
         </div>
     </div>
 
+    {{-- GoPay-Style 4-Column Quick Menu Grid (Khusus Mobile < 768px) --}}
+    <div class="haven-quick-grid d-md-none mb-4">
+        <a href="{{ route('monitoring-rt.index') }}" class="haven-quick-item">
+            <div class="haven-quick-icon-wrap" style="background: #EAF3FF; color: #1456A0;">
+                <i data-lucide="clipboard-check" style="width: 22px; height: 22px;"></i>
+            </div>
+            <span class="haven-quick-label">Audit 8 RT</span>
+        </a>
+        <a href="{{ route('kas-rw.index') }}" class="haven-quick-item">
+            <div class="haven-quick-icon-wrap" style="background: #E8F5E9; color: #2E7D32;">
+                <i data-lucide="wallet-cards" style="width: 22px; height: 22px;"></i>
+            </div>
+            <span class="haven-quick-label">Kas RW</span>
+        </a>
+        <a href="{{ route('rt.akun.index') }}" class="haven-quick-item">
+            <div class="haven-quick-icon-wrap" style="background: #FEF3C7; color: #B45309;">
+                <i data-lucide="key-round" style="width: 22px; height: 22px;"></i>
+            </div>
+            <span class="haven-quick-label">Akun RT</span>
+        </a>
+        <a href="{{ route('pengaduan.index') }}" class="haven-quick-item">
+            <div class="haven-quick-icon-wrap" style="background: #FEE2E2; color: #DC2626;">
+                <i data-lucide="message-square-plus" style="width: 22px; height: 22px;"></i>
+            </div>
+            <span class="haven-quick-label">Aduan</span>
+        </a>
+        <a href="{{ route('kependudukan.index') }}" class="haven-quick-item">
+            <div class="haven-quick-icon-wrap" style="background: #F3E8FF; color: #7E22CE;">
+                <i data-lucide="users" style="width: 22px; height: 22px;"></i>
+            </div>
+            <span class="haven-quick-label">Penduduk</span>
+        </a>
+        <a href="{{ route('rw.surat.index') }}" class="haven-quick-item">
+            <div class="haven-quick-icon-wrap" style="background: #E0F2FE; color: #0284C7;">
+                <i data-lucide="file-check-2" style="width: 22px; height: 22px;"></i>
+            </div>
+            <span class="haven-quick-label">Surat RW</span>
+        </a>
+        <a href="{{ route('ronda.index', ['tab' => 'portal']) }}" class="haven-quick-item">
+            <div class="haven-quick-icon-wrap" style="background: #CCFBF1; color: #0F766E;">
+                <i data-lucide="shield-check" style="width: 22px; height: 22px;"></i>
+            </div>
+            <span class="haven-quick-label">Portal & CCTV</span>
+        </a>
+        <a href="javascript:void(0)" onclick="toggleMobileSidebar()" class="haven-quick-item">
+            <div class="haven-quick-icon-wrap" style="background: #F1F5F9; color: #475569;">
+                <i data-lucide="layout-grid" style="width: 22px; height: 22px;"></i>
+            </div>
+            <span class="haven-quick-label">Lainnya</span>
+        </a>
+    </div>
+
     {{-- ======================================================================
          RINGKASAN KEUANGAN KAS INDUK RW 013 & GABUNGAN KAS WILAYAH
          ====================================================================== --}}

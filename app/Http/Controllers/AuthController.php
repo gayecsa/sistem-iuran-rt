@@ -16,6 +16,8 @@ use App\Models\KartuKeluarga;
 use App\Models\ActivityLog;
 use App\Models\Cctv;
 use App\Models\Pengumuman;
+use App\Models\WargaStatusHistory;
+use Carbon\Carbon;
 
 class AuthController extends Controller
 {
@@ -161,41 +163,289 @@ class AuthController extends Controller
     {
         return view('auth.register');
     }
+
+    /**
+     * AJAX Endpoint: Auto-detect NIK dan Nomor KK saat registrasi mandiri
+     */
+    public function checkNikKk(Request $request)
+    {
+        $nik = preg_replace('/[^0-9]/', '', (string)$request->input('nik'));
+        $noKk = preg_replace('/[^0-9]/', '', (string)$request->input('no_kk'));
+
+        // Cek jika NIK sudah 16 digit
+        if (strlen($nik) === 16) {
+            $userByNik = User::where('nik', $nik)->first();
+
+            if ($userByNik) {
+                // Skenario 1 vs 2: Apakah akun sudah aktif diklaim oleh pemilik pribadi?
+                // Akun dianggap belum diklaim mandiri jika last_login_at masih null dan emailnya berakhiran domain sistem internal (@haven.local, @havenportal.id, @rt001.com, @warkas.local)
+                $emailDomain = substr(strrchr($userByNik->email, '@') ?: '', 1);
+                $isInternalDomain = in_array($emailDomain, ['haven.local', 'havenportal.id', 'rt001.com', 'warkas.local', 'warga.local']);
+                $isUnclaimed = ($userByNik->last_login_at === null && $isInternalDomain);
+
+                // Dapatkan nama kepala keluarga dan RT
+                $kk = null;
+                if ($userByNik->kartu_keluarga_id) {
+                    $kk = KartuKeluarga::find($userByNik->kartu_keluarga_id);
+                } elseif ($userByNik->no_kk) {
+                    $kk = KartuKeluarga::where('no_kk', $userByNik->no_kk)->first();
+                }
+
+                $kepalaKeluarga = $kk ? $kk->nama_kepala_keluarga : ($userByNik->name ?: 'Kepala Keluarga');
+                $rtLabel = str_pad(intval($userByNik->rt_number ?: ($kk ? $kk->rt : 1)), 3, '0', STR_PAD_LEFT);
+
+                if ($isUnclaimed) {
+                    return response()->json([
+                        'status' => 'claim_existing',
+                        'message' => "Data NIK ditemukan di keluarga {$kepalaKeluarga} • RT {$rtLabel}. Anda dapat melanjutkan aktivasi akun ini.",
+                        'user' => [
+                            'id' => $userByNik->id,
+                            'name' => $userByNik->name,
+                            'nik' => $userByNik->nik,
+                            'no_kk' => $userByNik->no_kk ?: ($kk ? $kk->no_kk : ''),
+                            'gender' => $userByNik->gender,
+                            'tempat_lahir' => $userByNik->tempat_lahir,
+                            'tanggal_lahir' => $userByNik->tanggal_lahir ? (is_string($userByNik->tanggal_lahir) ? substr($userByNik->tanggal_lahir, 0, 10) : $userByNik->tanggal_lahir->format('Y-m-d')) : null,
+                            'agama' => $userByNik->agama,
+                            'pekerjaan' => $userByNik->pekerjaan,
+                            'phone' => $userByNik->phone,
+                            'rt_number' => $rtLabel,
+                            'house_number' => $userByNik->house_number ?: ($kk ? $kk->nomor_rumah : ''),
+                            'status_rumah' => $userByNik->status_rumah ?: ($kk ? $kk->status_rumah : 'Milik Sendiri'),
+                            'address' => $userByNik->address ?: ($kk ? $kk->alamat : ''),
+                            'hubungan_keluarga' => $userByNik->hubungan_keluarga ?: 'Anggota Keluarga',
+                        ],
+                        'family' => [
+                            'nama_kepala_keluarga' => $kepalaKeluarga,
+                            'rt' => $rtLabel,
+                            'rw' => '013',
+                        ]
+                    ]);
+                } else {
+                    return response()->json([
+                        'status' => 'nik_exists_active',
+                        'message' => 'NIK ini sudah terdaftar dan memiliki akun aktif. Silakan masuk menggunakan email terdaftar Anda atau reset password jika lupa.',
+                        'user_id' => $userByNik->id,
+                    ]);
+                }
+            }
+        }
+
+        // Skenario 3: NIK belum ada di sistem, tapi No. KK sudah ada (16 digit)
+        if (strlen($noKk) === 16) {
+            $kkRecord = KartuKeluarga::where('no_kk', $noKk)->first();
+
+            // Bisa juga mencari dari user lain yang punya no_kk ini jika record kartu_keluarga belum ada
+            if (!$kkRecord) {
+                $userWithKk = User::where('no_kk', $noKk)->first();
+                if ($userWithKk) {
+                    $rtVal = str_pad(intval($userWithKk->rt_number ?: 1), 3, '0', STR_PAD_LEFT);
+                    return response()->json([
+                        'status' => 'join_kk',
+                        'message' => "Terhubung ke Kartu Keluarga {$userWithKk->name} • RT {$rtVal}.",
+                        'kk' => [
+                            'no_kk' => $noKk,
+                            'nama_kepala_keluarga' => $userWithKk->name,
+                            'rt' => $rtVal,
+                            'rw' => '013',
+                            'house_number' => $userWithKk->house_number,
+                            'status_rumah' => $userWithKk->status_rumah ?: 'Milik Sendiri',
+                            'address' => $userWithKk->address,
+                        ]
+                    ]);
+                }
+            } else {
+                $rtVal = str_pad(intval($kkRecord->rt ?: 1), 3, '0', STR_PAD_LEFT);
+                return response()->json([
+                    'status' => 'join_kk',
+                    'message' => "Terhubung ke Kartu Keluarga {$kkRecord->nama_kepala_keluarga} • RT {$rtVal}.",
+                    'kk' => [
+                        'id' => $kkRecord->id,
+                        'no_kk' => $kkRecord->no_kk,
+                        'nama_kepala_keluarga' => $kkRecord->nama_kepala_keluarga,
+                        'rt' => $rtVal,
+                        'rw' => '013',
+                        'house_number' => $kkRecord->nomor_rumah,
+                        'status_rumah' => $kkRecord->status_rumah ?: 'Milik Sendiri',
+                        'address' => $kkRecord->alamat,
+                    ]
+                ]);
+            }
+        }
+
+        // Skenario 4: NIK & KK baru
+        return response()->json([
+            'status' => 'new',
+            'message' => 'NIK & Nomor KK belum terdata. Anda akan mendaftar sebagai warga / KK baru.',
+        ]);
+    }
     
     public function register(Request $request)
     {
+        $nik = preg_replace('/[^0-9]/', '', (string)$request->input('nik'));
+        $noKk = preg_replace('/[^0-9]/', '', (string)$request->input('no_kk'));
+        $regMode = $request->input('reg_mode', 'new'); // 'claim_existing', 'join_kk', atau 'new'
+
+        // Cek jika akun existing didata RT diklaim
+        $claimUserId = $request->input('claim_user_id');
+        $existingUser = null;
+        if ($claimUserId) {
+            $existingUser = User::find($claimUserId);
+        } elseif ($nik && strlen($nik) === 16) {
+            $candidate = User::where('nik', $nik)->first();
+            if ($candidate) {
+                $emailDomain = substr(strrchr($candidate->email, '@') ?: '', 1);
+                $isInternalDomain = in_array($emailDomain, ['haven.local', 'havenportal.id', 'rt001.com', 'warkas.local', 'warga.local']);
+                if ($candidate->last_login_at === null && $isInternalDomain) {
+                    $existingUser = $candidate;
+                }
+            }
+        }
+
+        $emailRule = 'required|string|email|max:255|unique:users,email' . ($existingUser ? (',' . $existingUser->id) : '');
+        $nikRule = 'required|string|size:16|regex:/^[0-9]{16}$/|unique:users,nik' . ($existingUser ? (',' . $existingUser->id) : '');
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => $emailRule,
             'password' => 'required|string|min:6|confirmed',
-            'house_number' => 'required|string|max:10',
-            'phone' => 'required|string|max:15',
+            'nik' => $nikRule,
+            'no_kk' => 'required|string|size:16|regex:/^[0-9]{16}$/',
+            'gender' => 'nullable|in:Laki-laki,Perempuan',
+            'tanggal_lahir' => 'nullable|date|before_or_equal:today',
+            'tempat_lahir' => 'nullable|string|max:100',
+            'agama' => 'nullable|string|max:50',
+            'pekerjaan' => 'nullable|string|max:100',
+            'hubungan_keluarga' => 'nullable|string|max:50',
+            'rt_number' => 'nullable|string|max:10',
+            'house_number' => 'required|string|max:20',
+            'phone' => 'required|string|max:20',
+            'status_rumah' => 'required|string|max:50',
             'address' => 'required|string',
-            'nik' => 'nullable|string|max:20|unique:users,nik',
-            'no_kk' => 'nullable|string|max:20|unique:users,no_kk',
+        ], [
+            'nik.required' => 'NIK (16 Digit) wajib diisi sesuai KTP.',
+            'nik.size' => 'NIK harus tepat 16 digit angka.',
+            'nik.regex' => 'NIK hanya boleh berupa deretan angka 16 digit.',
+            'nik.unique' => 'NIK ini sudah terdaftar dan aktif. Silakan masuk di halaman Login.',
+            'no_kk.required' => 'Nomor KK (16 Digit) wajib diisi.',
+            'no_kk.size' => 'Nomor KK harus tepat 16 digit angka.',
+            'no_kk.regex' => 'Nomor KK hanya boleh berupa deretan angka 16 digit.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok dengan password.',
+            'email.unique' => 'Email ini sudah digunakan oleh akun lain.',
         ]);
         
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
-        
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'warga',
-            'rt_number' => '001',
-            'house_number' => $request->house_number,
-            'phone' => $request->phone,
-            'address' => $request->address,
-            'status_rumah' => $request->status_rumah ?? 'milik_sendiri',
-            'nik' => $request->nik,
-            'no_kk' => $request->no_kk,
-        ]);
-        
-        Auth::login($user);
-        
-        return redirect()->route('dashboard')->with('success', 'Pendaftaran berhasil! Selamat datang di RT 001');
+
+        $rtNumber = str_pad(intval($request->rt_number ?: 1), 3, '0', STR_PAD_LEFT);
+
+        DB::beginTransaction();
+        try {
+            // Cek atau hubungkan KartuKeluarga
+            $kkRecord = KartuKeluarga::where('no_kk', $noKk)->first();
+            if (!$kkRecord) {
+                $kkRecord = KartuKeluarga::create([
+                    'no_kk' => $noKk,
+                    'nama_kepala_keluarga' => ($request->hubungan_keluarga === 'Kepala Keluarga') ? $request->name : 'Keluarga ' . $request->name,
+                    'nik_kepala_keluarga' => ($request->hubungan_keluarga === 'Kepala Keluarga') ? $nik : null,
+                    'alamat' => $request->address,
+                    'rt' => $rtNumber,
+                    'rw' => '013',
+                    'nomor_rumah' => $request->house_number,
+                    'kelurahan' => 'Sukamiskin',
+                    'kecamatan' => 'Arcamanik',
+                    'kota' => 'Kota Bandung',
+                    'provinsi' => 'Jawa Barat',
+                    'kode_pos' => '40293',
+                    'status_rumah' => $request->status_rumah,
+                    'status_verifikasi_dukcapil' => 'Belum Ada Dokumen',
+                    'status_dokumen' => 'Aktif',
+                ]);
+            }
+
+            if ($existingUser) {
+                // Skenario 1: Klaim akun yang sudah di-input oleh RT
+                $existingUser->update([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                    'phone' => $request->phone,
+                    'house_number' => $request->house_number,
+                    'address' => $request->address,
+                    'status_rumah' => $request->status_rumah,
+                    'rt_number' => $rtNumber,
+                    'gender' => $request->gender ?: $existingUser->gender,
+                    'tanggal_lahir' => $request->tanggal_lahir ?: $existingUser->tanggal_lahir,
+                    'tempat_lahir' => $request->tempat_lahir ?: $existingUser->tempat_lahir,
+                    'agama' => $request->agama ?: ($existingUser->agama ?: 'Islam'),
+                    'pekerjaan' => $request->pekerjaan ?: $existingUser->pekerjaan,
+                    'hubungan_keluarga' => $request->hubungan_keluarga ?: ($existingUser->hubungan_keluarga ?: 'Kepala Keluarga'),
+                    'kartu_keluarga_id' => $kkRecord->id,
+                    'no_kk' => $noKk,
+                    'is_active' => true,
+                    'last_login_at' => Carbon::now(),
+                ]);
+
+                $user = $existingUser;
+
+                // Catat history
+                try {
+                    WargaStatusHistory::create([
+                        'user_id' => $user->id,
+                        'kartu_keluarga_id' => $kkRecord->id,
+                        'tipe_perubahan' => 'Aktivasi Akun Mandiri',
+                        'status_lama' => 'Didata RT (Belum Aktif)',
+                        'status_baru' => 'Akun Aktif Terverifikasi',
+                        'petugas_id' => $user->id,
+                        'petugas_nama' => $user->name,
+                        'petugas_role' => 'warga',
+                        'catatan' => 'Warga melakukan aktivasi dan verifikasi akun mandiri via Haven Portal.',
+                        'created_at' => now(),
+                    ]);
+                } catch (\Throwable $e) {}
+
+                DB::commit();
+                Auth::login($user);
+
+                return redirect()->route('dashboard.warga')->with('success', 'Selamat, akun Anda berhasil diaktivasi dan terhubung ke data RT ' . $rtNumber . '!');
+            } else {
+                // Skenario 3 & 4: Buat user baru (Join KK atau KK Baru)
+                $user = User::create([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                    'role' => 'warga',
+                    'rt_number' => $rtNumber,
+                    'rw_number' => '013',
+                    'house_number' => $request->house_number,
+                    'phone' => $request->phone,
+                    'address' => $request->address,
+                    'status_rumah' => $request->status_rumah,
+                    'nik' => $nik,
+                    'no_kk' => $noKk,
+                    'kartu_keluarga_id' => $kkRecord->id,
+                    'gender' => $request->gender ?: 'Laki-laki',
+                    'tanggal_lahir' => $request->tanggal_lahir,
+                    'tempat_lahir' => $request->tempat_lahir,
+                    'agama' => $request->agama ?: 'Islam',
+                    'pekerjaan' => $request->pekerjaan,
+                    'hubungan_keluarga' => $request->hubungan_keluarga ?: 'Kepala Keluarga',
+                    'status_domisili' => 'Warga Tetap',
+                    'status_verifikasi' => 'Terverifikasi RT',
+                    'is_active' => true,
+                    'last_login_at' => Carbon::now(),
+                ]);
+
+                DB::commit();
+                Auth::login($user);
+
+                return redirect()->route('dashboard.warga')->with('success', 'Pendaftaran akun berhasil! Selamat datang di Haven Portal RW 013.');
+            }
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return back()->withErrors(['general' => 'Terjadi kesalahan saat memproses pendaftaran: ' . $e->getMessage()])->withInput();
+        }
     }
     
     public function showProfile(Request $request)

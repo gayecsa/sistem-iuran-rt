@@ -11,6 +11,7 @@ use App\Models\BukuKas;
 use App\Models\TransaksiKeuangan;
 use App\Models\IuranTarif;
 use App\Models\ActivityLog;
+use App\Models\IotDevice;
 
 class SuperAdminController extends Controller
 {
@@ -108,6 +109,9 @@ class SuperAdminController extends Controller
         // 5. Data 5 Aktivitas Sistem Terbaru untuk Widget Dashboard
         $recentLogs = ActivityLog::with(['user', 'impersonator'])->latest()->limit(5)->get();
 
+        // 6. Data Perangkat Gerbang Utama IoT
+        $iotDevice = IotDevice::getDefault();
+
         return view('super_admin.dashboard', compact(
             'user',
             'userStats',
@@ -121,7 +125,8 @@ class SuperAdminController extends Controller
             'totalKonsolidasiWilayah',
             'rwUser',
             'rtUsers',
-            'recentLogs'
+            'recentLogs',
+            'iotDevice'
         ));
     }
 

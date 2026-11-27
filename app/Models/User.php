@@ -240,6 +240,27 @@ class User extends Authenticatable
         return 'Warga ' . $this->clean_rt_label;
     }
 
+    public function getInitialsAttribute(): string
+    {
+        $words = preg_split('/\s+/', trim($this->name ?? ''));
+        $initials = '';
+        foreach ($words as $w) {
+            if (!empty($w)) {
+                $initials .= mb_strtoupper(mb_substr($w, 0, 1));
+            }
+            if (mb_strlen($initials) >= 2) {
+                break;
+            }
+        }
+        return $initials ?: 'U';
+    }
+
+    public function getInitialsSvgAttribute(): string
+    {
+        $in = htmlspecialchars($this->initials, ENT_QUOTES, 'UTF-8');
+        return "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><rect width='100%25' height='100%25' rx='50' fill='%231456A0'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' fill='%23FFFFFF' font-family='system-ui, -apple-system, sans-serif' font-weight='800' font-size='38'>{$in}</text></svg>";
+    }
+
     public function getAvatarUrlAttribute(): string
     {
         if ($this->foto_profil && file_exists(public_path('storage/' . $this->foto_profil))) {
@@ -248,7 +269,7 @@ class User extends Authenticatable
         if ($this->profile_photo && file_exists(public_path('storage/' . $this->profile_photo))) {
             return asset('storage/' . $this->profile_photo);
         }
-        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=1456A0&color=FFFFFF&bold=true';
+        return $this->initials_svg;
     }
 
     public function getAgeAttribute(): ?int

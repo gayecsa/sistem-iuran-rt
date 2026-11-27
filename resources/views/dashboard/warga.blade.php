@@ -31,6 +31,9 @@
             </div>
 
             <div class="d-flex align-items-center gap-2 flex-wrap">
+                <button type="button" class="btn text-white rounded-pill px-3 py-2 fw-bold shadow-sm d-inline-flex align-items-center gap-2" id="btnScrollToGateGps" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); font-size: 0.88rem;">
+                    <i data-lucide="shield-check" style="width: 17px; height: 17px;"></i> Buka Portal (GPS)
+                </button>
                 <a href="{{ route('keuangan.dashboard', ['tab' => 'bayar']) }}" class="wm-btn-primary">
                     <i data-lucide="credit-card" style="width: 17px; height: 17px;"></i> Bayar Iuran
                 </a>
@@ -40,6 +43,117 @@
                 <a href="{{ route('pengaduan.index') }}" class="wm-btn-success">
                     <i data-lucide="message-square-plus" style="width: 17px; height: 17px;"></i> Sampaikan Aduan
                 </a>
+            </div>
+        </div>
+    </div>
+
+    {{-- ======================================================================
+         MENU CEPAT MOBILE ALA GOPAY (KHUSUS < 768px - d-md-none)
+         ====================================================================== --}}
+    <div class="haven-quick-grid d-md-none mb-4">
+        {{-- 1. Buka Portal GPS --}}
+        <button type="button" class="haven-quick-item" onclick="document.getElementById('btnOpenGateGps').click()">
+            <div class="haven-quick-icon-wrap" style="background: #E8F5E9; color: #16A34A;">
+                <i data-lucide="shield-check"></i>
+            </div>
+            <span class="haven-quick-label">Buka Portal</span>
+        </button>
+
+        {{-- 2. Bayar Iuran --}}
+        <a href="{{ route('keuangan.dashboard', ['tab' => 'bayar']) }}" class="haven-quick-item">
+            <div class="haven-quick-icon-wrap" style="background: #EAF3FF; color: #1456A0;">
+                <i data-lucide="credit-card"></i>
+            </div>
+            <span class="haven-quick-label">Bayar Iuran</span>
+        </a>
+
+        {{-- 3. Ajukan Surat --}}
+        <a href="{{ route('surat.create') }}" class="haven-quick-item">
+            <div class="haven-quick-icon-wrap" style="background: #FEF3C7; color: #D97706;">
+                <i data-lucide="file-signature"></i>
+            </div>
+            <span class="haven-quick-label">Ajukan Surat</span>
+        </a>
+
+        {{-- 4. Pengaduan --}}
+        <a href="{{ route('pengaduan.index') }}" class="haven-quick-item">
+            <div class="haven-quick-icon-wrap" style="background: #FEE2E2; color: #DC2626;">
+                <i data-lucide="message-square-plus"></i>
+            </div>
+            <span class="haven-quick-label">Lapor Aduan</span>
+        </a>
+
+        {{-- 5. Tabungan Sampah --}}
+        <a href="{{ route('bank-sampah') }}" class="haven-quick-item">
+            <div class="haven-quick-icon-wrap" style="background: #ECFDF5; color: #059669;">
+                <i data-lucide="recycle"></i>
+            </div>
+            <span class="haven-quick-label">Bank Sampah</span>
+        </a>
+
+        {{-- 6. Pantau CCTV --}}
+        <a href="{{ route('ronda.index', ['tab' => 'cctv']) }}" class="haven-quick-item">
+            <div class="haven-quick-icon-wrap" style="background: #EDE9FE; color: #7C3AED;">
+                <i data-lucide="video"></i>
+            </div>
+            <span class="haven-quick-label">CCTV RW</span>
+        </a>
+
+        {{-- 7. Agenda RW --}}
+        <a href="{{ route('agenda.index') }}" class="haven-quick-item">
+            <div class="haven-quick-icon-wrap" style="background: #E0F2FE; color: #0284C7;">
+                <i data-lucide="calendar"></i>
+            </div>
+            <span class="haven-quick-label">Agenda RW</span>
+        </a>
+
+        {{-- 8. Semua Layanan --}}
+        <button type="button" class="haven-quick-item" onclick="toggleMobileSidebar()">
+            <div class="haven-quick-icon-wrap" style="background: #F1F5F9; color: #475569;">
+                <i data-lucide="layout-grid"></i>
+            </div>
+            <span class="haven-quick-label">Lainnya</span>
+        </button>
+    </div>
+
+    {{-- ======================================================================
+         FITUR MOBILE FIRST: BUKA PORTAL GERBANG VIA GPS HP
+         ====================================================================== --}}
+    <div class="wm-card mb-4" id="cardBukaPortalGps" style="background: linear-gradient(135deg, #0F2B48 0%, #1456A0 60%, #1D4ED8 100%); color: #FFFFFF; border-radius: 18px; border: none; box-shadow: 0 8px 24px rgba(20, 86, 160, 0.18);">
+        <div class="p-3 p-md-4">
+            <div class="row align-items-center g-3">
+                <div class="col-12 col-md-7">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="badge rounded-pill bg-white text-primary fw-bold px-2.5 py-0.5" style="font-size: 0.72rem;">
+                            <i data-lucide="radar" style="width: 12px; height: 12px; vertical-align: middle;"></i> SMART GATEWAY RW 013
+                        </span>
+                        <span class="badge rounded-pill bg-white bg-opacity-20 text-white border border-white border-opacity-25 px-2 py-0.5" style="font-size: 0.7rem;">
+                            GPS Auto-Detect
+                        </span>
+                    </div>
+                    <h5 class="fw-bold mb-1 text-white">Buka Portal Gerbang Masuk (GPS HP)</h5>
+                    <p class="text-white text-opacity-75 small mb-2" style="line-height: 1.45; font-size: 0.82rem;">
+                        Dekati pos gerbang utama RW 013, aktifkan GPS di HP Anda, lalu tekan tombol untuk membuka palang pintu secara instan tanpa perlu kartu fisik.
+                    </p>
+
+                    <!-- Real-Time Distance Live Indicator -->
+                    <div id="gpsStatusBox" class="p-2.5 rounded-3 d-inline-flex align-items-center gap-2" style="background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.15); max-width: 100%;">
+                        <span class="cctv-pulse-dot" style="background: #34D399; width: 8px; height: 8px;"></span>
+                        <span id="gpsDistanceText" class="small fw-semibold text-white" style="font-size: 0.78rem;">
+                            Tekan tombol untuk membaca posisi &amp; jarak ke gerbang
+                        </span>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-5 text-md-end text-center">
+                    <button type="button" class="btn btn-lg rounded-pill px-4 py-3 fw-bold shadow-lg w-100 w-md-auto d-inline-flex align-items-center justify-content-center gap-2 transition-all" id="btnOpenGateGps" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: #FFFFFF; border: none; font-size: 1rem;">
+                        <i data-lucide="key-round" style="width: 22px; height: 22px;"></i>
+                        <span>BUKA GERBANG SEKARANG</span>
+                    </button>
+                    <small class="d-block text-white text-opacity-50 mt-2" style="font-size: 0.7rem;">
+                        <i data-lucide="shield-check" style="width: 12px; height: 12px; vertical-align: middle;"></i> Terverifikasi Koordinat Aman &bull; Cooldown 5 Detik
+                    </small>
+                </div>
             </div>
         </div>
     </div>
@@ -387,4 +501,150 @@
     </div>
 
 </div>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var btnScroll = document.getElementById('btnScrollToGateGps');
+        var cardGps = document.getElementById('cardBukaPortalGps');
+        if (btnScroll && cardGps) {
+            btnScroll.addEventListener('click', function() {
+                cardGps.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+        }
+
+        var btnOpen = document.getElementById('btnOpenGateGps');
+        var statusText = document.getElementById('gpsDistanceText');
+        var statusBox = document.getElementById('gpsStatusBox');
+
+        // Geolocation Haversine Client Preview Helper
+        function getDistanceFromLatLonInM(lat1, lon1, lat2, lon2) {
+            var R = 6371000; // Radius bumi dalam meter
+            var dLat = (lat2 - lat1) * Math.PI / 180;
+            var dLon = (lon2 - lon1) * Math.PI / 180;
+            var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                    Math.sin(dLon/2) * Math.sin(dLon/2);
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return Math.round(R * c);
+        }
+
+        // Live watch / poll position saat halaman aktif
+        var cachedGateLat = null;
+        var cachedGateLng = null;
+        var cachedMaxRadius = 15;
+
+        // Fetch gate location awal untuk info live
+        fetch('{{ route('api.iot.portal.live_status') }}')
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (data && data.device) {
+                    cachedGateLat = data.device.gate_latitude;
+                    cachedGateLng = data.device.gate_longitude;
+                    cachedMaxRadius = data.device.gate_radius_meters || 15;
+
+                    if (navigator.geolocation && cachedGateLat && cachedGateLng) {
+                        navigator.geolocation.getCurrentPosition(function(pos) {
+                            var dist = getDistanceFromLatLonInM(pos.coords.latitude, pos.coords.longitude, cachedGateLat, cachedGateLng);
+                            if (statusText) {
+                                statusText.innerHTML = 'Jarak Anda ke gerbang: <strong>' + dist + ' meter</strong> (Maks: ' + cachedMaxRadius + ' meter)';
+                            }
+                        }, function() {}, { enableHighAccuracy: true });
+                    }
+                }
+            })
+            .catch(function() {});
+
+        if (btnOpen) {
+            btnOpen.addEventListener('click', function() {
+                if (!navigator.geolocation) {
+                    alert('Browser atau perangkat Anda tidak mendukung akses Geolocation GPS.');
+                    return;
+                }
+
+                var originalHtml = btnOpen.innerHTML;
+                btnOpen.disabled = true;
+                btnOpen.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Mengunci GPS & Membuka...';
+                if (statusText) statusText.textContent = 'Membaca koordinat GPS dengan akurasi tinggi...';
+
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var userLat = position.coords.latitude;
+                    var userLng = position.coords.longitude;
+                    var accuracy = position.coords.accuracy;
+
+                    fetch('{{ route('ronda.portal.open-gps') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            latitude: userLat,
+                            longitude: userLng,
+                            accuracy: accuracy
+                        })
+                    })
+                    .then(function(response) {
+                        return response.json().then(function(data) {
+                            return { ok: response.ok, status: response.status, data: data };
+                        });
+                    })
+                    .then(function(res) {
+                        btnOpen.disabled = false;
+                        btnOpen.innerHTML = originalHtml;
+
+                        if (res.data.status === 'granted') {
+                            if (statusText) {
+                                statusText.innerHTML = '<span class="text-success fw-bold">✓ Portal Terbuka!</span> Jarak: ' + res.data.distance + ' m (Maks: ' + res.data.max_radius + 'm)';
+                            }
+                            alert('BERHASIL! ' + res.data.message);
+                        } else if (res.data.status === 'denied') {
+                            if (statusText) {
+                                statusText.innerHTML = '<span class="text-danger fw-bold">✗ Di Luar Radius:</span> ' + res.data.distance + ' m (Maks: ' + res.data.max_radius + 'm)';
+                            }
+                            alert('AKSES DITOLAK: ' + res.data.message);
+                        } else if (res.data.status === 'cooldown') {
+                            alert(res.data.message);
+                        } else {
+                            alert(res.data.message || 'Gagal memproses pembukaan portal gerbang.');
+                        }
+
+                        if (typeof lucide !== 'undefined') lucide.createIcons();
+                    })
+                    .catch(function(err) {
+                        btnOpen.disabled = false;
+                        btnOpen.innerHTML = originalHtml;
+                        alert('Terjadi kendala jaringan saat menghubungi server: ' + err.message);
+                    });
+                }, function(error) {
+                    btnOpen.disabled = false;
+                    btnOpen.innerHTML = originalHtml;
+                    var msg = 'Gagal mengakses GPS: ';
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            msg += 'Izin akses lokasi ditolak oleh pengguna/browser. Silakan aktifkan izin lokasi.';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            msg += 'Informasi lokasi tidak tersedia di perangkat Anda.';
+                            break;
+                        case error.TIMEOUT:
+                            msg += 'Waktu permintaan lokasi GPS habis (timeout).';
+                            break;
+                        default:
+                            msg += error.message;
+                            break;
+                    }
+                    if (statusText) statusText.textContent = msg;
+                    alert(msg);
+                }, {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                });
+            });
+        }
+    });
+</script>
+@endpush
 @endsection

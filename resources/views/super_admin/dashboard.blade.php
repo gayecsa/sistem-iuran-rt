@@ -200,6 +200,58 @@
         </div>
     </div>
 
+    {{-- GoPay-Style 4-Column Quick Menu Grid (Khusus Mobile < 768px) --}}
+    <div class="haven-quick-grid d-md-none mb-4">
+        <a href="{{ route('super-admin.users') }}" class="haven-quick-item">
+            <div class="haven-quick-icon-wrap" style="background: #EAF3FF; color: #1456A0;">
+                <i data-lucide="users" style="width: 22px; height: 22px;"></i>
+            </div>
+            <span class="haven-quick-label">Pengguna</span>
+        </a>
+        <a href="{{ route('super-admin.buku-kas.index') }}" class="haven-quick-item">
+            <div class="haven-quick-icon-wrap" style="background: #E8F5E9; color: #2E7D32;">
+                <i data-lucide="wallet" style="width: 22px; height: 22px;"></i>
+            </div>
+            <span class="haven-quick-label">Buku Kas</span>
+        </a>
+        <a href="{{ route('super-admin.audit-log.index') }}" class="haven-quick-item">
+            <div class="haven-quick-icon-wrap" style="background: #FEF3C7; color: #B45309;">
+                <i data-lucide="history" style="width: 22px; height: 22px;"></i>
+            </div>
+            <span class="haven-quick-label">Audit Log</span>
+        </a>
+        <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#modalSwitchRole" class="haven-quick-item">
+            <div class="haven-quick-icon-wrap" style="background: #F3E8FF; color: #7E22CE;">
+                <i data-lucide="shuffle" style="width: 22px; height: 22px;"></i>
+            </div>
+            <span class="haven-quick-label">Switch Role</span>
+        </a>
+        <a href="#card-gps-gerbang" class="haven-quick-item">
+            <div class="haven-quick-icon-wrap" style="background: #CCFBF1; color: #0F766E;">
+                <i data-lucide="map-pin" style="width: 22px; height: 22px;"></i>
+            </div>
+            <span class="haven-quick-label">GPS Gerbang</span>
+        </a>
+        <a href="{{ route('super-admin.tarif-iuran.index') }}" class="haven-quick-item">
+            <div class="haven-quick-icon-wrap" style="background: #FFEDD5; color: #C2410C;">
+                <i data-lucide="tag" style="width: 22px; height: 22px;"></i>
+            </div>
+            <span class="haven-quick-label">Tarif Iuran</span>
+        </a>
+        <a href="{{ route('ronda.index', ['tab' => 'portal']) }}" class="haven-quick-item">
+            <div class="haven-quick-icon-wrap" style="background: #E0F2FE; color: #0284C7;">
+                <i data-lucide="cctv" style="width: 22px; height: 22px;"></i>
+            </div>
+            <span class="haven-quick-label">CCTV & Ronda</span>
+        </a>
+        <a href="javascript:void(0)" onclick="toggleMobileSidebar()" class="haven-quick-item">
+            <div class="haven-quick-icon-wrap" style="background: #F1F5F9; color: #475569;">
+                <i data-lucide="layout-grid" style="width: 22px; height: 22px;"></i>
+            </div>
+            <span class="haven-quick-label">Lainnya</span>
+        </a>
+    </div>
+
     {{-- ======================================================================
          2. PANEL STATISTIK MONITOR KESEHATAN SISTEM & KEPENDUDUKAN
          ====================================================================== --}}

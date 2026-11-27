@@ -499,14 +499,7 @@
             {{-- Kartu Profil Ringkas --}}
             <div class="wm-profile-box text-center">
                 <div class="profile-avatar-wrap">
-                    @php
-                        $avatarUrl = $user->foto_profil 
-                            ? asset('storage/' . $user->foto_profil) 
-                            : ($user->profile_photo 
-                                ? asset('storage/' . $user->profile_photo) 
-                                : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=1456A0&color=FFFFFF&bold=true');
-                    @endphp
-                    <img src="{{ $avatarUrl }}" alt="{{ $user->name }}" class="profile-avatar-img" id="userAvatarPreview">
+                    <img src="{{ $user->avatar_url }}" onerror="this.onerror=null;this.src='{{ $user->initials_svg }}';" alt="{{ $user->name }}" class="profile-avatar-img" id="userAvatarPreview">
                     <label for="avatarUploadInput" class="profile-avatar-camera-btn" title="Ganti Foto Profil">
                         <i data-lucide="camera" style="width: 16px; height: 16px;"></i>
                     </label>
@@ -579,6 +572,49 @@
                             @endif
                         </div>
                     </div>
+                </div>
+            </div>
+
+            {{-- Kartu Akses e-KTP / RFID Digital --}}
+            <div class="wm-profile-box p-3 mb-4 text-start">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="small fw-bold text-dark d-flex align-items-center gap-1.5">
+                        <i data-lucide="radio" style="width: 16px; height: 16px; color: var(--wm-primary);"></i>
+                        Akses e-KTP &amp; Kartu RFID
+                    </span>
+                    @if($user->rfid_uid)
+                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-0.5" style="font-size: 0.72rem;">
+                            <i data-lucide="check" style="width: 10px; height: 10px; display: inline-block; vertical-align: -1px;"></i> Terdaftar
+                        </span>
+                    @else
+                        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2.5 py-0.5" style="font-size: 0.72rem;">
+                            Belum Terdaftar
+                        </span>
+                    @endif
+                </div>
+
+                <div class="small text-muted mb-3" style="font-size: 0.78rem; line-height: 1.45;">
+                    @if($user->rfid_uid)
+                        Chip Fisik: <strong class="font-monospace text-primary">{{ $user->masked_rfid_uid }}</strong>
+                        <div class="text-secondary mt-0.5">Dapat digunakan untuk akses gerbang masuk portal &amp; absensi ronda.</div>
+                    @else
+                        <span>Tautkan chip e-KTP asli (14 hex) atau kartu RFID (8 hex) Anda untuk akses gerbang masuk otomatis.</span>
+                    @endif
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-bold" data-bs-toggle="modal" data-bs-target="#modalProfileRekamEktp" style="font-size: 0.78rem;">
+                        <i data-lucide="scan" style="width: 13px; height: 13px; vertical-align: -1px;"></i> {{ $user->rfid_uid ? 'Ganti e-KTP' : 'Rekam e-KTP' }}
+                    </button>
+                    @if($user->rfid_uid)
+                        <form action="{{ route('ronda.portal.unlink') }}" method="POST" class="d-inline" onsubmit="return confirm('Cabut tautan chip e-KTP/RFID dari akun Anda?');">
+                            @csrf
+                            <input type="hidden" name="user_id" value="{{ $user->id }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-bold" style="font-size: 0.78rem;">
+                                <i data-lucide="trash-2" style="width: 13px; height: 13px; vertical-align: -1px;"></i> Cabut
+                            </button>
+                        </form>
+                    @endif
                 </div>
             </div>
 
@@ -1376,6 +1412,75 @@
                 </form>
             </div>
 
+        </div>
+    </div>
+</div>
+
+{{-- MODAL REKAM e-KTP PROFIL SAYA --}}
+<div class="modal fade" id="modalProfileRekamEktp" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg text-start" style="border-radius: 18px; overflow: hidden;">
+            <div class="modal-header p-3.5 text-white" style="background: linear-gradient(135deg, #1456A0 0%, #2878D0 100%);">
+                <div class="d-flex align-items-center gap-2">
+                    <i data-lucide="radio" style="width: 18px; height: 18px;"></i>
+                    <h6 class="modal-title fw-bold mb-0">Tautkan Chip e-KTP / Kartu RFID</h6>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 bg-light">
+                <div class="alert alert-info border-0 rounded-3 mb-3 p-3 d-flex gap-2.5">
+                    <i data-lucide="shield-check" class="text-primary flex-shrink-0" style="width: 20px; height: 20px; margin-top: 2px;"></i>
+                    <div class="small text-dark">
+                        <strong>Kepatuhan Privasi:</strong> Sistem hanya membaca serial UID chip publik fisik kartu (4-byte / 7-byte). Sistem sama sekali <u>tidak</u> membaca data biometrik/terenkripsi Kemendagri.
+                    </div>
+                </div>
+
+                @if($user->isSuperAdmin() || $user->isRw() || $user->isRt())
+                    {{-- Opsi 1: Pindai via Reader ESP32 --}}
+                    <div class="p-3 rounded-3 bg-white border mb-3">
+                        <h6 class="fw-bold text-dark small mb-1 d-flex align-items-center gap-1.5">
+                            <i data-lucide="scan" style="width: 15px; height: 15px; color: #D97706;"></i>
+                            Opsi 1: Pindai Otomatis via Reader ESP32
+                        </h6>
+                        <p class="text-muted small mb-2" style="font-size: 0.76rem;">
+                            Aktifkan mode pendaftaran pada reader gerbang GATE-01, lalu tempelkan e-KTP fisik ke reader.
+                        </p>
+                        <form action="{{ route('ronda.portal.set-mode') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="mode" value="register">
+                            <input type="hidden" name="target_user_id" value="{{ $user->id }}">
+                            <input type="hidden" name="redirect_to" value="portal">
+                            <button type="submit" class="btn btn-sm btn-warning text-dark fw-bold rounded-pill px-3">
+                                <i data-lucide="play" style="width: 13px; height: 13px; vertical-align: -1px;"></i> Aktifkan Scanner ESP32
+                            </button>
+                        </form>
+                    </div>
+                @endif
+
+                {{-- Opsi 2: Simpan UID Manual Langsung --}}
+                <div class="p-3 rounded-3 bg-white border">
+                    <h6 class="fw-bold text-dark small mb-1 d-flex align-items-center gap-1.5">
+                        <i data-lucide="keyboard" style="width: 15px; height: 15px; color: #1456A0;"></i>
+                        Input UID Manual (4-byte / 7-byte)
+                    </h6>
+                    <p class="text-muted small mb-2" style="font-size: 0.76rem;">
+                        Masukkan nomor UID chip kartu (14 digit e-KTP fisik atau 8 digit kartu RFID):
+                    </p>
+                    <form action="{{ route('ronda.portal.manual-register') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="user_id" value="{{ $user->id }}">
+                        <div class="input-group input-group-sm mb-1">
+                            <input type="text" name="rfid_uid" class="form-control font-monospace text-uppercase" placeholder="Contoh: 04A1B2C3D4E5F6" value="{{ $user->rfid_uid }}" required>
+                            <button type="submit" class="btn btn-primary fw-bold" style="background: #1456A0;">
+                                <i data-lucide="save" style="width: 13px; height: 13px; vertical-align: -1px;"></i> Simpan
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer p-2.5 bg-white border-top">
+                <button type="button" class="btn btn-light rounded-pill px-3 py-1 small" data-bs-dismiss="modal">Tutup</button>
+            </div>
         </div>
     </div>
 </div>

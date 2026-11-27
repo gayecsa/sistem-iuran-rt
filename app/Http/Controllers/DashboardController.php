@@ -1317,10 +1317,11 @@ class DashboardController extends Controller
         if ($isPengurus) {
             $portalLogs = PortalGateLog::with('user')->latest('tapped_at')->take(50)->get();
             if ($user->role === 'super_admin' || $user->role === 'admin' || $user->isRw()) {
-                $wargaRfidList = User::whereIn('role', ['warga', 'rt', 'rw', 'admin', 'bendahara'])
+                $wargaRfidList = User::whereIn('role', ['super_admin', 'rw', 'admin', 'bendahara', 'rt', 'warga'])
                     ->where(function ($q) {
                         $q->whereNull('is_active')->orWhere('is_active', true);
                     })
+                    ->orderByRaw("CASE WHEN role = 'super_admin' THEN 1 WHEN role IN ('rw', 'admin', 'bendahara') THEN 2 WHEN role = 'rt' THEN 3 ELSE 4 END")
                     ->orderBy('rt_number')
                     ->orderBy('name')
                     ->get(['id', 'name', 'email', 'role', 'rt_number', 'house_number', 'rfid_uid']);
@@ -1330,9 +1331,12 @@ class DashboardController extends Controller
                     ->where(function ($q) {
                         $q->whereNull('is_active')->orWhere('is_active', true);
                     })
-                    ->where(function($q) use ($cleanRt) {
-                        $q->where('rt_number', $cleanRt)->orWhere('rt_number', intval($cleanRt));
+                    ->where(function($q) use ($cleanRt, $user) {
+                        $q->where('rt_number', $cleanRt)
+                          ->orWhere('rt_number', intval($cleanRt))
+                          ->orWhere('id', $user->id);
                     })
+                    ->orderByRaw("CASE WHEN id = {$user->id} THEN 1 ELSE 2 END")
                     ->orderBy('name')
                     ->get(['id', 'name', 'email', 'role', 'rt_number', 'house_number', 'rfid_uid']);
             }
@@ -1386,8 +1390,8 @@ class DashboardController extends Controller
             if ($user->isRt() && !$user->isRw() && !$user->isSuperAdmin()) {
                 $cleanRt = str_pad($user->clean_rt_number, 3, '0', STR_PAD_LEFT);
                 $targetRt = str_pad($targetUser->clean_rt_number ?? $targetUser->rt_number, 3, '0', STR_PAD_LEFT);
-                if ($cleanRt !== $targetRt) {
-                    return back()->with('error', 'Ketua RT hanya berhak mendaftarkan warga di wilayah RT-nya.');
+                if ($targetUser->id !== $user->id && $cleanRt !== $targetRt) {
+                    return back()->with('error', 'Ketua RT hanya berhak mendaftarkan akun sendiri atau warga di wilayah RT-nya.');
                 }
             }
 
@@ -1413,8 +1417,12 @@ class DashboardController extends Controller
             ['mode' => $request->mode, 'target_user_id' => $targetUserId, 'actor' => $user->name]
         );
 
-        return redirect()->route('ronda.index', ['tab' => 'portal'])
-            ->with('success', 'Mode perangkat berhasil diubah menjadi: ' . ($modeLabels[$request->mode] ?? $request->mode));
+        if ($request->filled('redirect_to') && $request->redirect_to === 'portal') {
+            return redirect()->route('ronda.index', ['tab' => 'portal'])
+                ->with('success', 'Mode perangkat berhasil diubah menjadi: ' . ($modeLabels[$request->mode] ?? $request->mode));
+        }
+
+        return back()->with('success', 'Mode perangkat berhasil diubah menjadi: ' . ($modeLabels[$request->mode] ?? $request->mode));
     }
 
     public function manualRegisterPortal(Request $request)
@@ -1440,14 +1448,14 @@ class DashboardController extends Controller
         if ($user->isRt() && !$user->isRw() && !$user->isSuperAdmin()) {
             $cleanRt = str_pad($user->clean_rt_number, 3, '0', STR_PAD_LEFT);
             $targetRt = str_pad($targetUser->clean_rt_number ?? $targetUser->rt_number, 3, '0', STR_PAD_LEFT);
-            if ($cleanRt !== $targetRt) {
-                return back()->with('error', 'Ketua RT hanya dapat mendaftarkan kartu untuk warga di wilayah RT-nya.');
+            if ($targetUser->id !== $user->id && $cleanRt !== $targetRt) {
+                return back()->with('error', 'Ketua RT hanya dapat mendaftarkan kartu untuk akun sendiri atau warga di wilayah RT-nya.');
             }
         }
 
         $existing = User::where('rfid_uid', $uid)->where('id', '!=', $targetUser->id)->first();
         if ($existing) {
-            return back()->with('error', "UID {$uid} sudah digunakan oleh warga {$existing->name} (RT {$existing->rt_number}).");
+            return back()->with('error', "UID {$uid} sudah digunakan oleh akun {$existing->name} (Role: {$existing->role}).");
         }
 
         $targetUser->update(['rfid_uid' => $uid]);
@@ -1455,12 +1463,11 @@ class DashboardController extends Controller
         ActivityLog::record(
             'keamanan',
             'portal.rfid_manual_registered',
-            "Input manual RFID ({$uid}) untuk warga {$targetUser->name} oleh {$user->name}",
+            "Input manual RFID ({$uid}) untuk {$targetUser->name} oleh {$user->name}",
             ['uid' => $uid, 'user_id' => $targetUser->id]
         );
 
-        return redirect()->route('ronda.index', ['tab' => 'portal'])
-            ->with('success', "Kartu RFID berhasil disimpan untuk {$targetUser->name}.");
+        return back()->with('success', "Kartu e-KTP / RFID berhasil disimpan untuk {$targetUser->name}.");
     }
 
     public function unlinkPortalRfid(Request $request)
@@ -1479,8 +1486,8 @@ class DashboardController extends Controller
         if ($user->isRt() && !$user->isRw() && !$user->isSuperAdmin()) {
             $cleanRt = str_pad($user->clean_rt_number, 3, '0', STR_PAD_LEFT);
             $targetRt = str_pad($targetUser->clean_rt_number ?? $targetUser->rt_number, 3, '0', STR_PAD_LEFT);
-            if ($cleanRt !== $targetRt) {
-                return back()->with('error', 'Ketua RT hanya dapat mencabut kartu warga di wilayah RT-nya.');
+            if ($targetUser->id !== $user->id && $cleanRt !== $targetRt) {
+                return back()->with('error', 'Ketua RT hanya dapat mencabut kartu akun sendiri atau warga di wilayah RT-nya.');
             }
         }
 
@@ -1494,8 +1501,177 @@ class DashboardController extends Controller
             ['old_uid' => $oldUid, 'user_id' => $targetUser->id]
         );
 
-        return redirect()->route('ronda.index', ['tab' => 'portal'])
-            ->with('success', "Kartu RFID milik {$targetUser->name} berhasil dicabut.");
+        return back()->with('success', "Kartu RFID milik {$targetUser->name} berhasil dicabut.");
+    }
+
+    /**
+     * Pengaturan Titik GPS Gerbang & Radius Akses (Khusus Super Admin)
+     */
+    public function updateGateGps(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user->isSuperAdmin()) {
+            return back()->with('error', 'Hanya Super Admin yang berwenang mengubah konfigurasi koordinat dan radius gerbang.');
+        }
+
+        $request->validate([
+            'gate_latitude' => 'required|numeric|between:-90,90',
+            'gate_longitude' => 'required|numeric|between:-180,180',
+            'gate_radius_meters' => 'required|integer|min:3|max:500',
+        ], [
+            'gate_latitude.required' => 'Koordinat Latitude wajib diisi.',
+            'gate_latitude.numeric' => 'Latitude harus berupa angka desimal valid.',
+            'gate_longitude.required' => 'Koordinat Longitude wajib diisi.',
+            'gate_longitude.numeric' => 'Longitude harus berupa angka desimal valid.',
+            'gate_radius_meters.required' => 'Radius gerbang wajib diisi.',
+            'gate_radius_meters.min' => 'Radius minimal adalah 3 meter.',
+            'gate_radius_meters.max' => 'Radius maksimal adalah 500 meter.',
+        ]);
+
+        $device = IotDevice::getDefault();
+        $device->update([
+            'gate_latitude' => $request->gate_latitude,
+            'gate_longitude' => $request->gate_longitude,
+            'gate_radius_meters' => $request->gate_radius_meters,
+        ]);
+
+        ActivityLog::record(
+            'keamanan',
+            'portal.gps_updated',
+            "Super Admin {$user->name} memperbarui koordinat gerbang ({$request->gate_latitude}, {$request->gate_longitude}) radius {$request->gate_radius_meters}m",
+            [
+                'lat' => $request->gate_latitude,
+                'lng' => $request->gate_longitude,
+                'radius' => $request->gate_radius_meters
+            ],
+            $user->id
+        );
+
+        return back()->with('success', "Konfigurasi GPS Portal Gerbang berhasil disimpan (Radius: {$request->gate_radius_meters} meter).");
+    }
+
+    /**
+     * Buka Portal Gerbang via GPS HP untuk Warga & Role Aktif
+     */
+    public function openGateGps(Request $request)
+    {
+        $user = Auth::user();
+
+        // 1. Proteksi Cooldown 5 Detik per User (menggunakan cache Laravel)
+        $cacheKey = 'gate_gps_cooldown_' . $user->id;
+        if (\Illuminate\Support\Facades\Cache::has($cacheKey)) {
+            $remaining = \Illuminate\Support\Facades\Cache::get($cacheKey) - time();
+            if ($remaining > 0) {
+                return response()->json([
+                    'status' => 'cooldown',
+                    'message' => "Mohon tunggu {$remaining} detik sebelum membuka gerbang kembali.",
+                ], 429);
+            }
+        }
+
+        // 2. Validasi Input GPS User
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
+            'accuracy' => 'nullable|numeric',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'invalid_input',
+                'message' => 'Koordinat GPS Anda tidak valid atau gagal dibaca.',
+            ], 422);
+        }
+
+        $userLat = (float) $request->latitude;
+        $userLng = (float) $request->longitude;
+
+        // 3. Ambil data perangkat gerbang
+        $device = IotDevice::getDefault();
+
+        if ($device->gate_latitude === null || $device->gate_longitude === null) {
+            return response()->json([
+                'status' => 'gate_not_configured',
+                'message' => 'Titik koordinat gerbang belum dikonfigurasi oleh Super Admin. Silakan hubungi pengurus.',
+            ], 400);
+        }
+
+        $gateLat = (float) $device->gate_latitude;
+        $gateLng = (float) $device->gate_longitude;
+        $maxRadius = (int) ($device->gate_radius_meters ?: 15);
+
+        // 4. Hitung Jarak Menggunakan Formula Haversine (Server-Side)
+        // Earth radius in meters = 6371000
+        $earthRadius = 6371000;
+        $dLat = deg2rad($userLat - $gateLat);
+        $dLng = deg2rad($userLng - $gateLng);
+
+        $a = sin($dLat / 2) * sin($dLat / 2) +
+             cos(deg2rad($gateLat)) * cos(deg2rad($userLat)) *
+             sin($dLng / 2) * sin($dLng / 2);
+
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+        $distanceMeters = round($earthRadius * $c, 1);
+
+        // 5. Cek Radius
+        if ($distanceMeters <= $maxRadius) {
+            // Pasang Cooldown 5 detik
+            \Illuminate\Support\Facades\Cache::put($cacheKey, time() + 5, 5);
+
+            // Buat RFID string penanda GPS (misal 'GPS-USER-ID')
+            $gpsUid = 'GPS-' . str_pad($user->id, 5, '0', STR_PAD_LEFT);
+
+            $log = PortalGateLog::create([
+                'user_id' => $user->id,
+                'rfid_uid' => $user->rfid_uid ?: $gpsUid,
+                'device_id' => $device->device_code ?: 'GATE-01',
+                'mode' => 'portal',
+                'status' => 'granted',
+                'reason' => "GPS HP • {$distanceMeters} m (Maks: {$maxRadius}m)",
+                'tapped_at' => now(),
+            ]);
+
+            ActivityLog::record(
+                'keamanan',
+                'portal.gps_open_granted',
+                "{$user->name} ({$user->role}) membuka portal gerbang via GPS HP dari jarak {$distanceMeters}m (Radius maks: {$maxRadius}m)",
+                [
+                    'user_id' => $user->id,
+                    'distance' => $distanceMeters,
+                    'max_radius' => $maxRadius,
+                    'user_coord' => ['lat' => $userLat, 'lng' => $userLng],
+                ],
+                $user->id
+            );
+
+            return response()->json([
+                'status' => 'granted',
+                'distance' => $distanceMeters,
+                'max_radius' => $maxRadius,
+                'message' => "Akses Diterima! Portal gerbang berhasil dibuka dari jarak {$distanceMeters} meter.",
+                'log_id' => $log->id,
+            ]);
+        } else {
+            // Jarak di luar radius maksimal
+            $gpsUid = 'GPS-' . str_pad($user->id, 5, '0', STR_PAD_LEFT);
+
+            PortalGateLog::create([
+                'user_id' => $user->id,
+                'rfid_uid' => $user->rfid_uid ?: $gpsUid,
+                'device_id' => $device->device_code ?: 'GATE-01',
+                'mode' => 'portal',
+                'status' => 'denied',
+                'reason' => "Di Luar Radius GPS • {$distanceMeters} m (Maks: {$maxRadius}m)",
+                'tapped_at' => now(),
+            ]);
+
+            return response()->json([
+                'status' => 'denied',
+                'distance' => $distanceMeters,
+                'max_radius' => $maxRadius,
+                'message' => "Posisi Anda terlalu jauh dari gerbang ({$distanceMeters} meter). Radius maksimal akses adalah {$maxRadius} meter.",
+            ], 403);
+        }
     }
 
     public function storeLaporKeamanan(Request $request)

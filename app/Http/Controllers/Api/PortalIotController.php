@@ -185,7 +185,12 @@ class PortalIotController extends Controller
 
             if ($isActive) {
                 $isGranted = true;
-                $reason = 'Warga Terdaftar';
+                $reason = match($user->role) {
+                    'super_admin' => 'Super Admin Terdaftar',
+                    'rw', 'admin', 'bendahara' => 'Pengurus RW Terdaftar',
+                    'rt' => 'Ketua RT Terdaftar',
+                    default => 'Warga Terdaftar'
+                };
             } else {
                 $reason = 'Akun Nonaktif';
             }
@@ -205,7 +210,7 @@ class PortalIotController extends Controller
             ActivityLog::record(
                 'keamanan',
                 'portal.gate_opened',
-                "Akses Gerbang Utama dibuka untuk warga {$user->name} ({$uid})",
+                "Akses Gerbang Utama dibuka untuk {$user->name} ({$uid}) - [{$reason}]",
                 [
                     'log_id' => $log->id,
                     'uid' => $uid,
@@ -214,8 +219,13 @@ class PortalIotController extends Controller
                 ]
             );
 
-            $cleanRt = $user->clean_rt_number ?? $user->rt_number ?? '001';
-            $rtLabel = 'RT ' . str_pad($cleanRt, 3, '0', STR_PAD_LEFT);
+            $rtLabel = match($user->role) {
+                'super_admin' => 'Super Admin Haven',
+                'rw', 'admin' => 'Pengurus RW 013',
+                'bendahara' => 'Bendahara RW 013',
+                'rt' => 'Ketua RT ' . str_pad($user->clean_rt_number ?? $user->rt_number ?? '001', 3, '0', STR_PAD_LEFT),
+                default => 'RT ' . str_pad($user->clean_rt_number ?? $user->rt_number ?? '001', 3, '0', STR_PAD_LEFT)
+            };
 
             return response()->json([
                 'access' => true,
@@ -223,7 +233,7 @@ class PortalIotController extends Controller
                 'status' => 'granted',
                 'name' => $user->name,
                 'rt' => $rtLabel,
-                'role' => ucfirst($user->role ?? 'Warga'),
+                'role' => ucfirst(str_replace('_', ' ', $user->role ?? 'Warga')),
                 'message' => 'Portal Terbuka',
             ], 200);
         }
@@ -265,7 +275,12 @@ class PortalIotController extends Controller
 
             if ($isActive) {
                 $isGranted = true;
-                $reason = 'Absensi Ronda Hadir';
+                $reason = match($user->role) {
+                    'super_admin' => 'Absensi Ronda Hadir (Super Admin)',
+                    'rw', 'admin', 'bendahara' => 'Absensi Ronda Hadir (Pengurus RW)',
+                    'rt' => 'Absensi Ronda Hadir (Ketua RT)',
+                    default => 'Absensi Ronda Hadir'
+                };
             } else {
                 $reason = 'Akun Nonaktif';
             }
@@ -285,7 +300,7 @@ class PortalIotController extends Controller
             ActivityLog::record(
                 'keamanan',
                 'ronda.rfid_checkin',
-                "Absensi kehadiran ronda malam via RFID tercatat untuk {$user->name} ({$uid})",
+                "Absensi kehadiran ronda malam via RFID tercatat untuk {$user->name} ({$uid}) - [{$reason}]",
                 [
                     'log_id' => $log->id,
                     'uid' => $uid,
@@ -294,8 +309,13 @@ class PortalIotController extends Controller
                 ]
             );
 
-            $cleanRt = $user->clean_rt_number ?? $user->rt_number ?? '001';
-            $rtLabel = 'RT ' . str_pad($cleanRt, 3, '0', STR_PAD_LEFT);
+            $rtLabel = match($user->role) {
+                'super_admin' => 'Super Admin Haven',
+                'rw', 'admin' => 'Pengurus RW 013',
+                'bendahara' => 'Bendahara RW 013',
+                'rt' => 'Ketua RT ' . str_pad($user->clean_rt_number ?? $user->rt_number ?? '001', 3, '0', STR_PAD_LEFT),
+                default => 'RT ' . str_pad($user->clean_rt_number ?? $user->rt_number ?? '001', 3, '0', STR_PAD_LEFT)
+            };
 
             return response()->json([
                 'access' => true,
@@ -303,7 +323,7 @@ class PortalIotController extends Controller
                 'status' => 'granted',
                 'name' => $user->name,
                 'rt' => $rtLabel,
-                'role' => ucfirst($user->role ?? 'Warga'),
+                'role' => ucfirst(str_replace('_', ' ', $user->role ?? 'Warga')),
                 'message' => 'Absen Ronda Tercatat',
             ], 200);
         }
@@ -433,11 +453,20 @@ class PortalIotController extends Controller
                 'target_user' => $targetUser ? [
                     'id' => $targetUser->id,
                     'name' => $targetUser->name,
-                    'rt' => 'RT ' . str_pad($targetUser->clean_rt_number ?? $targetUser->rt_number ?? '001', 3, '0', STR_PAD_LEFT),
+                    'rt' => match($targetUser->role) {
+                        'super_admin' => 'Super Admin Haven',
+                        'rw', 'admin' => 'Ketua RW 013',
+                        'bendahara' => 'Bendahara RW 013',
+                        'rt' => 'Ketua RT ' . str_pad($targetUser->clean_rt_number ?? $targetUser->rt_number ?? '001', 3, '0', STR_PAD_LEFT),
+                        default => 'RT ' . str_pad($targetUser->clean_rt_number ?? $targetUser->rt_number ?? '001', 3, '0', STR_PAD_LEFT)
+                    },
                 ] : null,
                 'last_seen_at' => $device->last_seen_at?->toIso8601String(),
                 'last_seen_human' => $device->last_seen_at ? $device->last_seen_at->diffForHumans() : 'Belum pernah terhubung',
                 'last_uid' => $device->last_uid,
+                'gate_latitude' => $device->gate_latitude,
+                'gate_longitude' => $device->gate_longitude,
+                'gate_radius_meters' => $device->gate_radius_meters ?? 15,
             ],
             'last_tap' => $lastTap ? [
                 'id' => $lastTap->id,
@@ -453,8 +482,14 @@ class PortalIotController extends Controller
                 'user' => $lastTap->user ? [
                     'id' => $lastTap->user->id,
                     'name' => $lastTap->user->name,
-                    'role' => ucfirst($lastTap->user->role ?? 'Warga'),
-                    'rt' => 'RT ' . str_pad($lastTap->user->clean_rt_number ?? $lastTap->user->rt_number ?? '001', 3, '0', STR_PAD_LEFT),
+                    'role' => ucfirst(str_replace('_', ' ', $lastTap->user->role ?? 'Warga')),
+                    'rt' => match($lastTap->user->role) {
+                        'super_admin' => 'Super Admin Haven',
+                        'rw', 'admin' => 'Ketua RW 013',
+                        'bendahara' => 'Bendahara RW 013',
+                        'rt' => 'Ketua RT ' . str_pad($lastTap->user->clean_rt_number ?? $lastTap->user->rt_number ?? '001', 3, '0', STR_PAD_LEFT),
+                        default => 'RT ' . str_pad($lastTap->user->clean_rt_number ?? $lastTap->user->rt_number ?? '001', 3, '0', STR_PAD_LEFT)
+                    },
                     'house_number' => $lastTap->user->house_number ?? '-',
                 ] : null,
             ] : null,
@@ -469,8 +504,14 @@ class PortalIotController extends Controller
                     'tapped_at_formatted' => $log->tapped_at?->translatedFormat('d/m/Y H:i:s'),
                     'tapped_at_human' => $log->tapped_at?->diffForHumans(),
                     'user_name' => $log->user?->name ?? 'Tamu / Asing',
-                    'user_rt' => $log->user ? ('RT ' . str_pad($log->user->clean_rt_number ?? $log->user->rt_number ?? '001', 3, '0', STR_PAD_LEFT)) : '-',
-                    'user_role' => $log->user ? ucfirst($log->user->role ?? 'Warga') : '-',
+                    'user_rt' => $log->user ? match($log->user->role) {
+                        'super_admin' => 'Super Admin Haven',
+                        'rw', 'admin' => 'Ketua RW 013',
+                        'bendahara' => 'Bendahara RW 013',
+                        'rt' => 'Ketua RT ' . str_pad($log->user->clean_rt_number ?? $log->user->rt_number ?? '001', 3, '0', STR_PAD_LEFT),
+                        default => 'RT ' . str_pad($log->user->clean_rt_number ?? $log->user->rt_number ?? '001', 3, '0', STR_PAD_LEFT)
+                    } : '-',
+                    'user_role' => $log->user ? ucfirst(str_replace('_', ' ', $log->user->role ?? 'Warga')) : '-',
                 ];
             }),
             'timestamp' => now()->toIso8601String(),

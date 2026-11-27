@@ -136,7 +136,10 @@ class DataKependudukanController extends Controller
         $mutasis = null;
 
         if ($activeTab === 'individu') {
-            $queryWarga = User::whereIn('role', ['warga', 'rt'])->with('kartuKeluarga');
+            $allowedRoles = ($user->isRw() || $user->isSuperAdmin())
+                ? ['warga', 'rt', 'rw', 'admin', 'bendahara', 'super_admin']
+                : ['warga', 'rt'];
+            $queryWarga = User::whereIn('role', $allowedRoles)->with('kartuKeluarga');
 
             if ($user->isRt()) {
                 $cleanRt = str_pad($user->clean_rt_number, 3, '0', STR_PAD_LEFT);

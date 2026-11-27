@@ -543,7 +543,8 @@
         <!-- Sidebar User Footer Card -->
         @auth
             <div class="wm-sidebar-footer">
-                <img src="{{ Auth::user()->profile_photo ? asset('storage/' . Auth::user()->profile_photo) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=1456A0&color=FFFFFF' }}"
+                <img src="{{ Auth::user()->avatar_url }}"
+                     onerror="this.onerror=null;this.src='{{ Auth::user()->initials_svg }}';"
                      alt="Avatar" class="wm-user-avatar">
                 <div class="wm-user-info">
                     <p class="wm-user-name" title="{{ Auth::user()->name }}">{{ Auth::user()->name }}</p>
@@ -593,12 +594,12 @@
         <div class="wm-topbar-right">
             @if($isSuperAdmin)
                 <!-- Tombol Switch Role Super Admin -->
-                <button type="button" class="btn btn-sm rounded-pill px-3 py-1.5 fw-bold d-inline-flex align-items-center gap-2 shadow-sm"
+                <button type="button" class="btn btn-sm rounded-pill px-2.5 px-md-3 py-1 py-md-1.5 fw-bold d-inline-flex align-items-center gap-1.5 shadow-sm wm-switch-role-btn"
                         data-bs-toggle="modal" data-bs-target="#modalSwitchRole"
                         style="background: {{ $isImpersonating ? '#EAF3FF' : '#1456A0' }}; color: {{ $isImpersonating ? '#1456A0' : '#FFFFFF' }}; border: 1.5px solid #1456A0; font-size: 0.78rem;"
                         title="Buka Menu Switch Role Super Admin">
                     <i data-lucide="shuffle" style="width: 14px; height: 14px; margin-right: 2px;"></i>
-                    <span class="d-none d-sm-inline">{{ $isImpersonating ? 'Ganti Peran' : 'Switch Role' }}</span>
+                    <span class="d-none d-md-inline">{{ $isImpersonating ? 'Ganti Peran' : 'Switch Role' }}</span>
                     @if($isImpersonating)
                         <span class="badge bg-warning text-dark rounded-pill px-1.5" style="font-size: 0.65rem;">Aktif</span>
                     @endif
@@ -679,8 +680,9 @@
             @auth
                 <div class="dropdown">
                     <button class="btn btn-link p-0 text-decoration-none dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="{{ Auth::user()->profile_photo ? asset('storage/' . Auth::user()->profile_photo) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=1456A0&color=FFFFFF' }}"
-                             alt="Avatar" class="rounded-circle border" style="width: 38px; height: 38px; object-fit: cover;">
+                        <img src="{{ Auth::user()->avatar_url }}"
+                             onerror="this.onerror=null;this.src='{{ Auth::user()->initials_svg }}';"
+                             alt="Avatar" class="rounded-circle border wm-topbar-avatar-img" style="width: 38px; height: 38px; object-fit: cover;">
                         <span class="d-none d-xl-inline text-dark fw-bold small text-start lh-1">
                             {{ Auth::user()->name }}
                             <small class="d-block text-muted" style="font-size: 0.7rem;">{{ ucwords(str_replace('_', ' ', Auth::user()->role)) }}</small>
@@ -945,9 +947,9 @@
             </script>
         @endif
 
-        <!-- Global Multi-step Back Button for subpages (Disembunyikan pada Halaman Utama Menu Sidebar & Subhalaman Posyandu yang Memiliki Navigasi Sendiri) -->
+        <!-- Global Multi-step Back Button for subpages (Disembunyikan pada Halaman Utama Menu Sidebar, Detail KK yang Memiliki Header Sendiri, & Subhalaman Posyandu yang Memiliki Navigasi Sendiri) -->
         @auth
-            @unless(request()->routeIs('dashboard*') || request()->routeIs('super-admin.*') || request()->routeIs('kependudukan.index') || request()->routeIs('pengumuman.*') || request()->routeIs('keuangan.dashboard') || request()->routeIs('keuangan.index') || request()->routeIs('warga.keuangan.*') || request()->routeIs('kas-rw.*') || request()->routeIs('rw.audit.*') || request()->routeIs('monitoring-rt.index') || request()->routeIs('data-rt.index') || request()->routeIs('bank-sampah*') || request()->routeIs('profile.*') || request()->routeIs('ronda.*') || request()->routeIs('peta.*') || request()->routeIs('wisata.*') || request()->routeIs('pengaduan.*') || request()->routeIs('posyandu') || request()->routeIs('posyandu.*') || request()->routeIs('umkm.*') || request()->routeIs('agenda-rw*') || request()->routeIs('rt.akun.*') || request()->routeIs('rw.surat.*') || request()->routeIs('rt.surat.*') || request()->routeIs('surat.*') || request()->routeIs('rw.surat_master.*'))
+            @unless(request()->routeIs('dashboard*') || request()->routeIs('super-admin.*') || request()->routeIs('kependudukan.index') || request()->routeIs('kependudukan.keluarga*') || request()->routeIs('pengumuman.*') || request()->routeIs('keuangan.dashboard') || request()->routeIs('keuangan.index') || request()->routeIs('warga.keuangan.*') || request()->routeIs('kas-rw.*') || request()->routeIs('rw.audit.*') || request()->routeIs('monitoring-rt.index') || request()->routeIs('data-rt.index') || request()->routeIs('bank-sampah*') || request()->routeIs('profile.*') || request()->routeIs('ronda.*') || request()->routeIs('peta.*') || request()->routeIs('wisata.*') || request()->routeIs('pengaduan.*') || request()->routeIs('posyandu') || request()->routeIs('posyandu.*') || request()->routeIs('umkm.*') || request()->routeIs('agenda-rw*') || request()->routeIs('rt.akun.*') || request()->routeIs('rw.surat.*') || request()->routeIs('rt.surat.*') || request()->routeIs('surat.*') || request()->routeIs('rw.surat_master.*'))
                 <div class="mb-3">
                     <a href="{{ route('nav.back') }}" id="globalBackBtn" class="wm-btn-outline" style="padding: 7px 14px; font-size: 0.85rem;">
                         <i data-lucide="arrow-left" style="width: 16px; height: 16px;"></i> Kembali
@@ -965,6 +967,77 @@
             <p class="mb-0 text-secondary" style="font-size: 0.74rem;">Sistem Koordinasi &amp; Pelayanan Terpadu RW 013, Kelurahan Sukamiskin, Kec. Arcamanik, Kota Bandung 40293.</p>
         </footer>
     </main>
+
+    {{-- ======================================================================
+         MOBILE BOTTOM NAVIGATION BAR ALA APLIKASI MODERN (KHUSUS < 768px - d-md-none)
+         ====================================================================== --}}
+    @auth
+        @php
+            $u = auth()->user();
+            $homeRoute = route('dashboard');
+            if ($u->isSuperAdmin()) {
+                $homeRoute = route('dashboard.super-admin');
+                $financeRoute = route('super-admin.buku-kas.index');
+                $portalRoute = route('ronda.index', ['tab' => 'portal']);
+            } elseif ($u->isRw() || in_array($u->role, ['admin', 'bendahara'])) {
+                $homeRoute = route('dashboard.rw');
+                $financeRoute = route('kas-rw.index');
+                $portalRoute = route('ronda.index', ['tab' => 'portal']);
+            } elseif ($u->isRt() || $u->role === 'rt') {
+                $homeRoute = route('dashboard.rt');
+                $financeRoute = route('keuangan.index');
+                $portalRoute = route('ronda.index', ['tab' => 'portal']);
+            } else {
+                $homeRoute = route('dashboard.warga');
+                $financeRoute = route('keuangan.dashboard');
+                $portalRoute = route('ronda.index', ['tab' => 'portal']);
+            }
+        @endphp
+
+        <nav class="haven-mobile-bottom-nav d-md-none" aria-label="Navigasi Bawah Mobile">
+            <div class="haven-bottom-nav-inner">
+                {{-- 1. Beranda --}}
+                <a href="{{ $homeRoute }}" class="haven-bottom-nav-item {{ request()->routeIs('dashboard*') ? 'active' : '' }}">
+                    <div class="haven-bottom-nav-icon">
+                        <i data-lucide="home"></i>
+                    </div>
+                    <span>Beranda</span>
+                </a>
+
+                {{-- 2. Keuangan / Kas --}}
+                <a href="{{ $financeRoute }}" class="haven-bottom-nav-item {{ (request()->routeIs('keuangan.*') || request()->routeIs('kas-rw.*') || request()->routeIs('super-admin.buku-kas.*')) ? 'active' : '' }}">
+                    <div class="haven-bottom-nav-icon">
+                        <i data-lucide="wallet"></i>
+                    </div>
+                    <span>Keuangan</span>
+                </a>
+
+                {{-- 3. Portal / Ronda --}}
+                <a href="{{ $portalRoute }}" class="haven-bottom-nav-item {{ request()->routeIs('ronda.*') ? 'active' : '' }}">
+                    <div class="haven-bottom-nav-icon">
+                        <i data-lucide="shield-check"></i>
+                    </div>
+                    <span>Portal</span>
+                </a>
+
+                {{-- 4. Menu Drawer (Buka Sidebar Navigasi Penuh) --}}
+                <button type="button" class="haven-bottom-nav-item btn-open-drawer" onclick="toggleMobileSidebar()" aria-label="Buka Menu Lengkap">
+                    <div class="haven-bottom-nav-icon">
+                        <i data-lucide="grid"></i>
+                    </div>
+                    <span>Menu</span>
+                </button>
+
+                {{-- 5. Profil Saya --}}
+                <a href="{{ route('profile.show') }}" class="haven-bottom-nav-item {{ request()->routeIs('profile.*') ? 'active' : '' }}">
+                    <div class="haven-bottom-nav-icon">
+                        <i data-lucide="user"></i>
+                    </div>
+                    <span>Profil</span>
+                </a>
+            </div>
+        </nav>
+    @endauth
 
     {{-- ======================================================================
          FLOATING SPEED DIAL CONTACT WIDGET (WHATSAPP & TELEGRAM) - DIPERTAHANKAN

@@ -2137,6 +2137,34 @@
             setInterval(updateLiveStatus, 2000);
         })();
         @endif
+
+        // Handler Ambil Lokasi GPS untuk Super Admin
+        var btnGetLoc = document.getElementById('btnGetAdminLocation');
+        if (btnGetLoc) {
+            btnGetLoc.addEventListener('click', function() {
+                if (!navigator.geolocation) {
+                    alert('Browser Anda tidak mendukung Geolocation GPS.');
+                    return;
+                }
+                var origText = btnGetLoc.innerHTML;
+                btnGetLoc.disabled = true;
+                btnGetLoc.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Mengunci GPS HP...';
+
+                navigator.geolocation.getCurrentPosition(function(pos) {
+                    var latInput = document.getElementById('inputGateLat');
+                    var lngInput = document.getElementById('inputGateLng');
+                    if (latInput) latInput.value = pos.coords.latitude.toFixed(7);
+                    if (lngInput) lngInput.value = pos.coords.longitude.toFixed(7);
+                    btnGetLoc.disabled = false;
+                    btnGetLoc.innerHTML = '<i data-lucide="check" style="width: 14px; height: 14px; vertical-align: -2px;"></i> Koordinat Terkunci!';
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                }, function(err) {
+                    btnGetLoc.disabled = false;
+                    btnGetLoc.innerHTML = origText;
+                    alert('Gagal mengambil koordinat GPS: ' + err.message + '. Pastikan izin akses lokasi telah aktif.');
+                }, { enableHighAccuracy: true, timeout: 10000 });
+            });
+        }
     });
 </script>
 @endpush

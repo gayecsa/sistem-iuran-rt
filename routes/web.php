@@ -35,6 +35,7 @@ Route::middleware('guest')->group(function () {
     Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
     Route::post('/reset-password', [AuthController::class, 'reset'])->name('password.update');
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register/check-nik-kk', [AuthController::class, 'checkNikKk'])->name('register.check-nik-kk');
     Route::post('/register', [AuthController::class, 'register']);
 });
 
@@ -200,6 +201,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/ronda/portal/set-mode', [DashboardController::class, 'setPortalMode'])->name('ronda.portal.set-mode');
     Route::post('/ronda/portal/manual-register', [DashboardController::class, 'manualRegisterPortal'])->name('ronda.portal.manual-register');
     Route::post('/ronda/portal/unlink', [DashboardController::class, 'unlinkPortalRfid'])->name('ronda.portal.unlink');
+    Route::post('/ronda/portal/update-gps', [DashboardController::class, 'updateGateGps'])->name('ronda.portal.update-gps');
+    Route::post('/ronda/portal/open-gps', [DashboardController::class, 'openGateGps'])->name('ronda.portal.open-gps');
     Route::get('/pengaduan', [DashboardController::class, 'pengaduan'])->name('pengaduan.index');
     Route::post('/pengaduan', [DashboardController::class, 'storePengaduan'])->name('pengaduan.store');
     Route::patch('/pengaduan/{id}/status', [DashboardController::class, 'updateStatusPengaduan'])->name('pengaduan.status');
